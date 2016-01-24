@@ -1,31 +1,43 @@
-function deblur()
+function exercise2()
 
-%% Configuration
+%% Initialization
 %
-% First, we set a few general configuration parameters:
+% The `setup()` command initializes the practical by including
+% MatConvNet. Next, a database of images `text_imdb.mat` is loaded.
 
-opts.dataDir = 'data/deblur' ;
-opts.expDir = 'data/experiment-1' ;
-
-%% Load a dataset
-%
-% Next, we load a dataset of images.
-
+% Initialize the practical
 setup() ;
-imdbPath = fullfile(opts.dataDir, 'imdb4.mat') ;
-if exist(imdbPath) ;
-  imdb = load(imdbPath) ;
-else
-  imdb = getImdb(opts.dataDir) ;
-  save(imdbPath, '-struct', 'imdb') ;
-end
+
+% Load a database of blurred images to train from
+imdb = load('data/text_imdb.mat') ;
+
+% Choose a directory to save the experiment files
+opts.expDir = 'data/text-exp-1' ;
+
+% Learning parameters
+trainOpts.expDir = opts.expDir ;
+trainOpts.batchSize = 16 ;
+trainOpts.learningRate = 0.01 ;
+trainOpts.numEpochs = 30 ;
+trainOpts.gpus = [2] ;
+trainOpts.errorFunction = 'none' ;
+
+%% Step 1: Visualize the database
 
 figure(100) ; clf ;
 subplot(1,2,1) ; imagesc(imdb.images.data(:,:,:,1)) ; axis off image ; title('input (blurred)') ;
 subplot(1,2,2) ; imagesc(imdb.images.label(:,:,:,1)) ; axis off image ; title('desired output (sharp)') ;
 colormap gray ;
 
-%% Network
+%% Step 2: Create a network architecture
+
+% The expected input size (a single 64 x 64 x 1 image patch). This is
+% used for visualization purposes.
+
+net.meta.inputSize = [64 64 1 1] ;
+
+% Add one layer at a time
+
 net.layers = { } ;
 
 net.layers{end+1} = struct(...
@@ -83,77 +95,40 @@ net.layers{end+1} = struct(...
   'aggregate', true, ...
   'instanceWeights', 1/(64*64)) ;
 
-net.meta.inputSize = [64 64 1 1] ;
 
-% check and prepare network
+% Consolidate the network, fixing any missing option
+% in the specification above
+
 net = vl_simplenn_tidy(net) ;
 
-% display network
+% Display network
+
 vl_simplenn_display(net) ;
 
-net.layers{end}.class = ones(1,1,1,1,'single') ;
-res = vl_simplenn(net, imdb.images.data(:,:,:,1)) ;
+%% Step 3: learn the model
 
-net = cnn_train(net, imdb, @getBatch, ...
-  'expDir', opts.expDir, ...
-  'numEpochs', 30, ...
-  'learningRate', 0.01 * [ones(1,30)], ...
-  'continue', true, ...
-  'plotDiagnostics', false, ...
-  'conserveMemory', false, ...
-  'batchSize', 16, ...
-  'gpus', [2], ...
-  'errorFunction',  'none') ;
+net = cnn_train(net, imdb, @getBatch, trainOpts) ;
 
-% evalaute
-net.layers(end) =  [] ; %drop loss layer
+% Deployment: remove the last layer
+net.layers(end) = [] ;
+
+
+%% Step 4: evaluate the model
 
 train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(101) ; set(101,'name','Resluts on the training set') ; clf ;
-show(net, imdb, train(1:30:151)) ;
+figure(101) ; set(101,'name','Resluts on the training set') ;
+showDeblurringResults(net, imdb, train(1:30:151)) ;
 
-figure(102) ; set(102,'name','Resluts on the validation set') ; clf ;
-show(net, imdb, val(1:30:151)) ;
-
-% -------------------------------------------------------------------------
-function show(net, imdb, subset)
-% -------------------------------------------------------------------------
-res = vl_simplenn(net, imdb.images.data(:,:,:,subset)) ;
-preds = res(end).x ;
-n = numel(subset) ;
-for i = 1 : n
-  j = subset(i) ;
-  subplot(n,3,1+3*(i-1)) ;
-  imagesc(imdb.images.data(:,:,:,j),[-1 0]) ;
-  axis off image ; title('original') ;
-  subplot(n,3,2+3*(i-1)) ;
-  imagesc(imdb.images.label(:,:,:,j),[-1 0]) ;
-  axis off image ; title('expected') ;
-  subplot(n,3,3+3*(i-1)) ;
-  imagesc(preds(:,:,:,i),[-1 0]) ;
-  axis off image ; title('achieved') ;
-end
-colormap gray ;
-
-
-%m = mean(imdb.images.data(imdb.images.set==1)) ;
-%imdb.images.data = imdb.images.data - m ;
-%imdb.images.label = imdb.images.label - m ;
-
-% -------------------------------------------------------------------------
-function weights = xavier(varargin)
-% -------------------------------------------------------------------------
-rng(1) ;
-filterSize = [varargin{:}] ;
-scale = sqrt(2/prod(filterSize(1:3))) ;
-filters = randn(filterSize, 'single') * scale ;
-biases = zeros(filterSize(4),1,'single') ;
-weights = {filters, biases} ;
+figure(102) ; set(102,'name','Resluts on the validation set') ;
+showDeblurringResults(net, imdb, val(1:30:151)) ;
 
 % -------------------------------------------------------------------------
 function [im, label] = getBatch(imdb, batch)
 % -------------------------------------------------------------------------
+% The GETBATCH() function is used by the training code to extract the
+% data required fort training the network.
+
 im = imdb.images.data(:,:,:,batch) ;
 label = imdb.images.label(:,:,:,batch) ;

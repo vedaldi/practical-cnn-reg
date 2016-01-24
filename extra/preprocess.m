@@ -2,7 +2,7 @@ function preprocess()
 % Run the Makefile first
 
 opts.dataDir = 'data/text/' ;
-opts.imdbPath = 'data/imdb_text.mat' ;
+opts.imdbPath = 'data/text_imdb.mat' ;
 
 setup() ;
 
