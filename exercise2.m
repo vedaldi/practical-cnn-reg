@@ -8,9 +8,6 @@ function exercise2()
 % Initialize the practical
 setup() ;
 
-% Load a database of blurred images to train from
-imdb = load('data/text_imdb.mat') ;
-
 % Choose a directory to save the experiment files
 opts.expDir = 'data/text-exp-1' ;
 
@@ -22,15 +19,26 @@ trainOpts.numEpochs = 30 ;
 trainOpts.gpus = [2] ;
 trainOpts.errorFunction = 'none' ;
 
-%% Step 1: Visualize the database
 
+%% Part 2.1: Prepare the data
+
+% Load a database of blurred images to train from
+imdb = load('data/text_imdb.mat') ;
+
+% Visualize the first image in the database
 figure(100) ; clf ;
-subplot(1,2,1) ; imagesc(imdb.images.data(:,:,:,1)) ; axis off image ; title('input (blurred)') ;
-subplot(1,2,2) ; imagesc(imdb.images.label(:,:,:,1)) ; axis off image ; title('desired output (sharp)') ;
+
+subplot(1,2,1) ; imagesc(imdb.images.data(:,:,:,1)) ;
+axis off image ; title('input (blurred)') ;
+
+subplot(1,2,2) ; imagesc(imdb.images.label(:,:,:,1)) ;
+axis off image ; title('desired output (sharp)') ;
+
 colormap gray ;
 
-%% Step 2: Create a network architecture
 
+%% Part 2.2: Create a network architecture
+%
 % The expected input size (a single 64 x 64 x 1 image patch). This is
 % used for visualization purposes.
 
@@ -119,10 +127,10 @@ train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
 figure(101) ; set(101,'name','Resluts on the training set') ;
-showDeblurringResults(net, imdb, train(1:30:151)) ;
+showDeblurringResult(net, imdb, train(1:30:151)) ;
 
 figure(102) ; set(102,'name','Resluts on the validation set') ;
-showDeblurringResults(net, imdb, val(1:30:151)) ;
+showDeblurringResult(net, imdb, val(1:30:151)) ;
 
 % -------------------------------------------------------------------------
 function [im, label] = getBatch(imdb, batch)

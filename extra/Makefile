@@ -1,4 +1,81 @@
-# Text deblurring exercise
+name = practical-cnn-reg
+DST = vgg@login.robots.ox.ac.uk:WWW/share
+DSTDOC = vgg@login.robots.ox.ac.uk:WWW/practicals/cnn-reg
+
+.PHONY: prepack, pack, pack-data, pack-code, post, clean, distclean
+
+pack-all: pack-data pack-code pack
+
+code=\
+exercise2.m \
+setup.m \
+showDeblurringResult.m \
+xavier.m \
+matconvnet
+
+doc=\
+doc/images \
+doc/instructions.html
+
+data=\
+data/text_imdb.mat
+
+tarflags=--exclude='.git*'
+
+code:=$(addprefix $(CURDIR)/,$(code))
+data:=$(addprefix $(CURDIR)/,$(data))
+doc:=$(addprefix $(CURDIR)/,$(doc))
+deps:=$(shell find $(code) $(doc) $(data) -type f | sed "s/ /\\\\ /g")
+
+pack: $(TMPDIR)/$(name).tar.gz
+pack-data: $(TMPDIR)/$(name)-data-only.tar.gz
+pack-code: $(TMPDIR)/$(name)-code-only.tar.gz
+
+$(TMPDIR)/$(name).tar.gz: $(deps)
+	rm -rf $(TMPDIR)/$(name)
+	mkdir -p $(TMPDIR)/$(name)/{doc,data}
+	ln -sf $(data) $(TMPDIR)/$(name)/data/
+	ln -sf $(doc) $(TMPDIR)/$(name)/doc/
+	ln -sf $(code) $(TMPDIR)/$(name)/
+	tar -C $(TMPDIR) -czvhf $(TMPDIR)/$(name).tar.gz $(tarflags) $(name)/
+
+$(TMPDIR)/$(name)-data-only.tar.gz: $(deps)
+	rm -rf $(TMPDIR)/$(name)
+	mkdir -p $(TMPDIR)/$(name)/{doc,data}
+	ln -sf $(data) $(TMPDIR)/$(name)/
+	tar -C $(TMPDIR) -czvhf $(TMPDIR)/$(name)-data-only.tar.gz $(tarflags) $(name)/
+
+$(TMPDIR)/$(name)-code-only.tar.gz: $(deps)
+	rm -rf $(TMPDIR)/$(name)
+	mkdir -p $(TMPDIR)/$(name)/{doc,data}
+	ln -sf $(doc) $(TMPDIR)/$(name)/doc/
+	ln -sf $(code) $(TMPDIR)/$(name)/
+	tar -C $(TMPDIR) -czvhf $(TMPDIR)/$(name)-code-only.tar.gz $(tarflags) $(name)/
+
+doc/instructions.html : doc/instructions.md doc/base.html extra/Makefile
+	cp doc/base.html "$@"
+	python -m markdown \
+	  -x toc -x footnotes -x tables -x fenced_code -x attr_list \
+	  "$<" >> "$@"
+	cat doc/end.html >> "$@"
+
+post-doc: doc/instructions.html
+	rsync -rvt doc/images $(DSTDOC)/
+	rsync -vt doc/instructions.html $(DSTDOC)/index.html
+
+post: pack-all
+	rsync -vt $(TMPDIR)/$(name).tar.gz $(DST)/
+	rsync -vt $(TMPDIR)/$(name)-data-only.tar.gz $(DST)/
+	rsync -vt $(TMPDIR)/$(name)-code-only.tar.gz $(DST)/
+
+clean:
+	find . -name '*~' -delete
+
+distclean: clean
+	rm -f $(TMPDIR)/$(name)*.tar.gz
+
+# Preprocessing
+
 papers_url=http://www.robots.ox.ac.uk/~vedaldi/assets/pubs
 papers=\
 blaschko10simultaneous.pdf \
@@ -64,7 +141,7 @@ vedaldi15matconvnet.pdf
 papers:=$(addprefix data/text/,$(papers))
 papers_crops=$(papers:%.pdf=%.png)
 
-all: $(papers) $(papers_crops)
+preproc: $(papers) $(papers_crops)
 
 data/text/%.pdf:
 	wget "$(papers_url)/$(*).pdf" -O "$(@)"
