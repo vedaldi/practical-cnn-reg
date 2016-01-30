@@ -2,8 +2,8 @@ setup() ;
 
 %% Part 2.2:  Backward mode for one layer
 
-% Create a random input image
-x = randn(10,10,'single') ;
+% Create a random input image batch
+x = randn(10,10,1,2,'single') ;
 
 % Define a filter
 w = single([
@@ -26,6 +26,9 @@ set(gcf,'name','Part 2.2: single layer backrpop') ;
 checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 
 %% Part 2.3: Backward mode for two or more layers
+
+% Create a random input image batch
+x = randn(10,10,1,2,'single') ;
 
 % Forward mode: evaluate the conv + ReLU
 y = vl_nnconv(x, w, []) ;

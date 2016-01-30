@@ -88,9 +88,11 @@ title('output image y') ;
 ```
 
 > **Task:** Run the code above and examine the result, which should look like the following image:
-> <img height=400px src="images/conv.png" alt="cover"/>
 
-Let's examine know what happened. The input $\bx$ to the linear convolution operator is an $M \times N$ matrix, which can be interpreted as a gray-scale image. The filter $\bw$ is the $3 \times 3$ matrix
+<img width=80% src="images/conv.png" alt="cover"/>
+
+The input $\bx$ is an $M \times N$ matrix, which can be interpreted as a gray-scale image. The filter $\bw$ is the $3 \times 3$ matrix
+
 $$
 \bw = 
 \begin{bmatrix}
@@ -99,6 +101,7 @@ $$
 0 & -1 & 0 \\
 \end{bmatrix}
 $$
+
 The output of the convolution is a new matrix $\by$ given by[^convolution]
 $$
 y_{ij} = \sum_{uv} w_{uv}\ x_{i+u,\ j+v}
@@ -108,7 +111,7 @@ $$
 > **Questions:**
 > 
 > 1. If $H \times W$ is the size of the input image, $H' \times W'$ the size of the filter, what is the size $H'' \times W''$ of the output image?
-> 2. The filter $\bw$ given above is a discretized Laplacian operator, so that the output image is the Laplacian of the input. This filter respond particularly strongly to certain structures in the image. Which ones?
+> 2. The filter $\bw$ given above is a discretized Laplacian operator. Which type of visual structures (corners, bars, ...) do you think may excite this filter the most?
 
 #### Part 1.1.2: convolution by a filter bank {#part1.1.2}
 
@@ -149,10 +152,10 @@ $$
 
 > **Questions:** 
 > 
-> * If the input tensor $\bx$ has $C$ 
+> * If the input tensor $\bx$ has $C$ feature channels, what should be the third dimension of $\bw$?
 > * In the code above, the command `wbank = cat(4, w1, w2, w3)` concatenates the tensors `w1`, `w2`, and `w3` along the *fourth dimension*. Why is that given that filters should have three dimensions?
 
-#### Part 1.1.3: processing batches) {#part1.1.3}
+#### Part 1.1.3: convolving a batch of data {#part1.1.3}
 
 Finally, in training CNNs it is often important to be able to work efficiently with *batches* of data. MatConvNet allows packing more than one instance of the tensor $\bx$ in a single MATLAB array `x` by stacking instances along the *fourth dimension*:
 
@@ -275,18 +278,16 @@ $$
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
  \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l} 
 $$
-Note that $\bp_L=1$ has the same dimension as $\bx_L$ (the scalar loss) and, being the identity, does not change anything. This gets interesting when products are evaluated from the left to the right, i.e. *backward from the output to the input* of the CNN. The first such factors is given by:
+Note that $\bp_L=1$ has the same dimension as $\bx_L$ (the scalar loss) and, being the identity, does not change anything. Things are more interesting when products are evaluated from the left to the right, i.e. *backward from the output to the input* of the CNN. The first such factors is given by:
 \begin{equation}
 \label{e:factor}
  (\vv \bp_{L-1})^\top = (\vv \bp_L)^\top
  \times
  \frac{\partial \vv f_L}{\partial \vv^\top \bx_L}
 \end{equation}
-This results in a new projection vector $\bp_{L-1}$ which can in turn be multiplied to obtain $\bp_{L-2}, \dots, \bp_l$. The last projection $\bp_l$ is the desired derivative. Crucially, each projection $\bp_q$ takes as much memory as the corresponding variable $\bp_q$.
+This results in a new projection vector $\bp_{L-1}$, which can then be multiplied to the left to obtain $\bp_{L-2}$ and so on. The last projection $\bp_l$ is the desired derivative. Crucially, each projection $\bp_q$ takes as much memory as the corresponding variable $\bx_q$.
 
-The most attentive reader might have noticed that, while projections remain small, each factor \eqref{e:factor} does contain one such large derivatives. The trick is that CNN toolboxes implement, for each layer, a backward mode that computes the projected derivative without explicitly computing these factors.
-
-In particular, for any building block function $\by=f(\bx;\bw)$, a CNN toolbox implements:
+The most attentive reader might have noticed that, while projections remain small, each factor \eqref{e:factor} does contain one of the large derivatives that we cannot compute explicitly. The trick is that CNN toolboxes contain code that can compute the projected derivatives without explicitly computing this large factor. In particular, for any building block function $\by=f(\bx;\bw)$, the toolbox will implement:
 
 * A **forward mode** computing the function $\by=f(\bx;\bw)$.
 * A **backward mode** computing the derivatives of the projected function $\langle \bp, f(\bx;\bw) \rangle$ with respect to the input $\bx$ and parameter $\bw$:
@@ -391,49 +392,65 @@ function y = customLayerForward(x, r)
 y = sum(sum(sum((x - x0).^2, 1), 2), 3) ;
 ```
 
-The function computes the difference `x - r`, squares the individual elements (`.^2`), and then sums the result along the first, second, and third dimensions. The result is a tensor `y` which has dimension $1 \times 1 \times 1$ (a scalar) and value equal to the squared Euclidean distance between `x` and `x0`.
+The function computes the difference `x - r`, squares the individual elements (`.^2`), and then sums the result along the first, second, and third dimensions. The result is a tensor `y` which has dimension $1 \times 1 \times 1 \times N$ (a scalar for each of the $N$ data instances in the batch) and value equal to the squared Euclidean distance between `x` and `x0`.
 
 Next, we need to implement the backward mode as well:
 
-```
+```.language-matlab
 function dx = customLayerBackward(x,r,p)
 dx = 2 * bsxfun(@times, p, x - r) ;
 ```
 
-Note that the backward mode takes the projection tensor `p` as an additional argument. Let us examine what is computed here. The derivative of the squared Euclidean distance is given by
+Note that the backward mode takes the projection tensor `p` as an additional argument. Let us show that this code is correct. Recall that the goal of the backward mode is to compute the derivative of the projected function:
+
+$$
+\langle \bp, f(\bx) \rangle
+= p_{1,1,1,t} \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
+$$
+
+Here the subscript $t$ index the data instance in the batch; note that, for a given $t$, the projection is simply a scalar, since the output of the Euclidean distance is also a scalar.
+
+Next, we compute the derivative w.r.t. each input element $x_{ijkt}$:
 
 $$
 \frac{\partial}{\partial x_{ijk}}
-\sum_{lmn} (x_{lmn} - r_{lmn})^2
-= 2(x_{ijk} - r_{ijk})
+\langle \bp, f(\bx) \rangle
+= 2 p_{1,1,1,t} (x_{ijkt} - r_{ijkt}).
 $$
 
+In the code, the `bsxfun` MATLAB function is used in order to multiply the value $p_{1,1,1,t}$ with all the elements $x_{ijkt} - r_{ijkt}$ in a single step.
+
+> **Tasks:**
+> 
+> 1.  Verify that the forward and backward functions are correct by computing the derivatives numerically.
+> 2.  Change the code such that the Euclidean distance is averaged instead of being summed across spatial location (**Hint:** simply divide by the product of `size(x,1)` and `size(x,2)`).
+> 3.  Make sure that both the forward and backward functions are correctly modified by verifying the result numerically once more.
 
 ## Part 3: Learning a CNN for text deblurring {#part3}
 
-In this part of the practical, we will learn a CNN that generates an image instead of performing classification. This is a simple demonstration of how CNNs can be used well beyond classification tasks.
+By now you should be familiar with two basic CNN layers, convolution and ReLU, as well as with the idea of backpropagation. In this part, we will build on such concepts to learn a CNN model.
 
-The goal of the exercise is to learn a function that takes a blurred text as input and produces a crispier version as output. This problem is generally known as *deblurring* and is widely studied in computer vision, image processing, and computational photography. Here, instead of constructing a deblurring filter from first principles, we simply learn it from data. A key advantage is that the learned function can incorporate a significant amount of domain-specifc knowledge and perform particularly well on the particular domain of interest.
+CNN are often used for classification; however, they are much more general than that. In order to demonstrate their flexibility, here we will design a CNN that takes an image as input and produces an image as output (instead of a class label).
 
-Start by opening in your MATLAB editor `exercise2.m`.
+We will consider in particular the problem of *deblurring images of text*, as in the following example:
+
+![Data example](images/text.png)
 
 ### Part 3.1: preparing the data {#part3.1}
 
-The first task is to load the training and validation data and to understand its format. The code responsible for loading such data is
+The first task is to load the training and validation data and to understand its format. Start by opening in your MATLAB editor `exercise3.m`. The code responsible for loading the data is
 
 ```.language-matlab
 imdb = load('data/text_imdb.mat') ;
 ```
 
-The variable `imdb` is a structure containing $n$ images. The structure has the following fields:
+The variable `imdb` is a structure containing $n$ images, which will be used for training and validation. The structure has the following fields:
 
-* `imdb.images.data`: a $64 \times 64 \times 1 \times n$ array of grayscale images.
-* `imdb.images.label`: a $64 \times 64 \times 1 \times n$ of image "labels"; for this problem, a label is also a grayscale image.
-* `imdb.images.set`: a $1 \times n$ vector containing a 1 for training images and an 2 for validation images.
+* `imdb.images.data`: a $64 \times 64 \times 1 \times n$ array of grayscale blurred images.
+* `imdb.images.label`: a $64 \times 64 \times 1 \times n$ of grayscale sharp images.
+* `imdb.images.set`: a $1 \times n$ vector containing a 1 for training images and an 2 for validation images. 75% of the images are used for training and 25% for test.
 
-Each trainig datapoint is a blurred image of text (extracted from a scientific paper). Its "label" is the sharp version of the same image: learning the deblurring function is formulated as the problem of regressing the sharp image from the blurred one.
-
-Run the following code, which displays the first image and corresponding label in the dataset:
+Run the following code, which displays the first image in the dataset and its label:
 
 ```.language-matlab
 figure(100) ; clf ;
@@ -447,25 +464,25 @@ axis off image ; title('desired output (sharp)') ;
 colormap gray ;
 ```
 
-It should produce the following output:
+> **Task:** make sure you understand the format of `imdb`. Use MATLAB to find out the number of training and validation images as well as the resolution (size) of each image.
 
-![Data example](images/text.png)
+It is often important to center the data to better condition the learning problem. This is usually obtained by subtracting the mean pixel intensity (computed from the training set) from each pixel. Here, however, images are rescaled to have values in the interval $[-1, 0]$.
 
-The images are split in 75% training images and 25% validation images, as indicated by the flag `imdb.images.set`.
+> **Question:** why was the interval $[-1, 0]$ chosen? **Hint:** what intensity corresponds to 'white'? What does the convolution operator do near the image boundaries?
 
-> **Task:** make sure you understand the data format. How many training and validation images are there? What is the resolution of the individual images?
+### Part 3.2: defining a CNN architecture
 
-### Part 3.2: preparing the network
+Here we define a CNN `net` and initialize its weights randomly. A CNN is simply a collection of interlinked layers. While these can be assembled 'manually' as you did in Part 2, it is usually more convenient to use a **wrapper**.
 
-The next task is to construct a network `net` and initialize its weights. We are going to use the SimpleNN wrapper in MatConvNet (more complex architectures can be implemented using the DagNN wrapper).
+MatConvNet contains two wrappers, SimpleNN and DagNN. SimpleNN is suitable for simple networks that are a chain of layers (as opposed to a more general graph). We will use SimpleNN here.
 
-A network is simply a sequence of functions. We initialize this as the empty list:
+This wrapper defines the CNN as a structure `net` containing a cell-array `layers` listed in order of execution. Open `initializeSmallCNN.m` and find this code:
 
 ```.language-matlab
 net.layers = { } ;
 ```
 
-Layers need to be listed in `net.layers` in the order of execution, from first to last. For example, the following code adds the first layer of the network, a convolutional one:
+The first layer of the network is a convolution block:
 
 ```.language-matlab
 net.layers{end+1} = struct(...
@@ -473,19 +490,27 @@ net.layers{end+1} = struct(...
   'type', 'conv', ...
   'weights', {xavier(3,3,1,32)}, ...
   'pad', 1, ...
-  'stride', 1, ...
   'learningRate', [1 1], ...
   'weightDecay', [1 0]) ;
 ```
 
-The `name` field specifies a name for the layer, useful for debugging but otherwise arbitrary. The `type` field specifised which type of layer we want, in this case convolution. The `weights` layer is a cell array containing two arrays, one for the filters and one for the biases. In this example, the filter array has dimension $3 \times 3 \times 1 \times 32$, which is a filter bank of 32 filters, with $3\times 3$ spatial support, and operating on 1 input channel. The biases array has dimension $32 \times 1$ as it specifies one bias per filter. These two arrays are initialize randomly by the `xavier` function, using Xiavier's method.
+The fields are as follows:
 
-The `pad` and `stride` options specify the filter padding and stride. Here the stride is dense (one pixel) and there is a one pixel padding. In this manne, the output tensor has exactly the same spatial dimensions of the input one.
+* `name` specifies a name for the layer, useful for debugging but otherwise arbitrary. 
 
-Finally, the `learningRate` and `weightDecay` options specify filter-specific multipliers for the learning rate and weight decay for the filters and the biases.
+* `type` specifies the layer type, in this case convolution. 
 
+* `weights` is a cell array containing the layer parameters, in this case two tensors for the filters and the biases. The filters are initialized using the `xavier` function to have dimensions $3 \times 3 \times 1 \times 32$ ($3\times 3$ spatial support, 1 input feature channels, and 32 filters). The function also initializes the biases to be zero.
 
-The next layer to be added is simply a ReLU activation function, which is non-linear:
+* `pad` specifies the amount of zero padding to apply to the layer input. By using a padding of one pixel and a $3\times 3$ filter support, the output of the convolution will have exactly the same height and width as the input.
+
+* `learningRate` contains two layer-specific multipliers to adjust the learning rate for the filters and the biases.
+
+* `weightDecay` contains two layer-specific multipliers to adjust the weight decay (regularization strength) for the layer filters and biases. Note that weight decay is not applied to the biases.
+
+> **Question:** what would happen `pad` was zero?
+
+The convolution layer is followed by ReLU, which is given simply by:
 
 ```.language-matlab
 net.layers{end+1} = struct(...
@@ -493,64 +518,78 @@ net.layers{end+1} = struct(...
   'type', 'relu') ;
 ```
 
-The architecture consists of a number of such convolution-ReLU blocks.
+This pattern is repeated (varying the number and dimensions of filters) for a total of three convolutional layers separated by ReLUs.
 
-> **Question:** The last block, generating the final image, is only convolutional, and it has exactly one filter. Why?
+> **Question:** The last layer, generating the output image, is convolutional and is *not* followed by ReLU. Why?
 
-This is still not sufficient to learn the model. We need in facto a loss function too. For this task, we use the Euclidean distance between the generated image and the desired one. This is implemented by the `pdist` block.
+The command `vl_simplenn_display()` can be used to print information about the network. Here is a subset of this information:
 
-```.language-matlab
-net.layers{end+1} = struct(...
-  'name', 'loss', ...
-  'type', 'pdist', ...
-  'p', 2, ...
-  'aggregate', true, ...
-  'instanceWeights', 1/(64*64)) ;
-```
-
-Here `p` is the exponent of the p-distance (set to 2 for Eucliden), `aggregate` means that the individual squared pixel differences should be summed in a grand total for the whole image, and `instanceWeights` is a (homogeneous) scaling factors for all the pixels, set to the inverse area of an image. The latter two options make it so that the squared difference are averaged across pixels, resulting in a normalized Euclidean distance between generated and target images.
-
-We add one last parameter
-
-```.language-matlab
-net.meta.inputSize = [64 64 1 1] ;
-```
-
-which  specifies the expected dimensions of the network input. Finally, we call the `vl_simplenn_tidy()` function to check the network parameters and fill in default values for any parameter that we did not specify yet:
-
-```.language-matlab
-net = vl_simplenn_tidy(net) ;
-```
-
-Finally, we display the parameters of the network just created:
-
-
-```.language-matlab
-vl_simplenn_display(net) ;
-```
+|      layer|    0|    1|    2|    3|    4|         5|     6|
+|:---------:|:---:|:---:|:---:|:---:|:---:|:--------:|:----:|
+|       type|input| conv| relu| conv| relu|      conv|custom|
+|       name|  n/a|conv1|relu1|conv2|relu2|prediction|  loss|
+|    support|  n/a|    3|    1|    3|    1|         3|     1|
+|   filt dim|  n/a|    1|  n/a|   32|  n/a|        32|   n/a|
+|  num filts|  n/a|   32|  n/a|   32|  n/a|         1|   n/a|
+|     stride|  n/a|    1|    1|    1|    1|         1|     1|
+|        pad|  n/a|    1|    0|    1|    0|         1|     0|
+|    rf size|  n/a|    3|    3|    5|    5|         7|     7|
 
 > **Questions:** Look carefully at the generated table and answer the following questions:
 >
 > 1. How many layers are in this network?
-> 3. What is the dimensionality of each intermediate feature map? How is that related with the number of filters in each convolutional layer?
-> 4. Is there a special relationship between number of channels in a feature map and a certain dimension of the following filter bank?
-> 5. What is the receptive field size of each feature? Is that proportionate to the size of a character?
+> 2. What is the support (height and width) and depth (number of feature channels) of each intermediate feature map?
+> 3. How is the number of feature channels related to the 
+>    dimensions of the filters?
+
+The last row reports the *receptive field size* for the layer. This is the size (in pixels) of the local image region that affects a particular element in a feature map. 
+
+> **Question:**  what is the receptive field size of the pixel in the output image (generated by the prediction layer)? Discuss whether a larger receptive field size might be preferable for this problem.
 
 ### Part 3.3: learning the network {#part3.3}
 
+In this part we will use SGD to learn the CNN from the available training data. As noted above, the CNN must however terminate in a loss layer. We add one such layer as follwos:
+
 ```.language-matlab
-trainOpts.expDir = opts.expDir ;
+% Add a loss (using our custom layer)
+net.layers{end+1} = getCustomLayer() ;
+```
+The function `getCustomLayer()` creates a `layer` structure compatible with SimpleNN. This structure contains handles to the functions defined in Part 2, namely `customLayerForward()` and `customLayerBackward()`. 
+
+> **Remark:** If your implementation of these functions is incorrect, the next few steps will fail!
+
+Next, we setup the learning parameters:
+
+```.language-matlab
+trainOpts.expDir = 'data/text-small' ;
 trainOpts.batchSize = 16 ;
 trainOpts.learningRate = 0.01 ;
 trainOpts.numEpochs = 30 ;
 trainOpts.gpus = [] ;
 trainOpts.errorFunction = 'none' ;
+```
 
+The fields are ass follows:
+
+* `expDir` specifies a directory to store intermediate data (snapshot and figures) as well as the final model. Note that the code resumes execution from the last snapshot; therefore change this directory or clear it if you want to start learning from scratch.
+
+* `batchSize` specifies how many images to include in a batch. Here we use 16.
+
+* `learningRate` is the learning rate in SGD.
+
+* `numEpochs` is the number of epochs (passes through the training data) to perform before SGD stops.
+
+* `gpus` contains a list of GPU IDs to use. For now, we do not use any.
+
+* `errorFunction` disable plotting the default error functions that are suitable for classification, but not for our problem.
+
+Finally, we can invoke the learning code:
+
+```
 net = cnn_train(net, imdb, @getBatch, trainOpts) ;
 ```
 
-The `getBatch()` function is a particularly important one. The training script `cnn_train` takes a *handle* to this function and uses it whenever a new batch of data is required. By passing appropriate custom functions, `cnn_train` does not need to know almost anything about the dataset, making it fairly general. In practice, `getBatch()` is often simple:
-
+The `getBatch()` function, passed as a *handle*, is particularly important. The training script `cnn_train` uses `getBatch()` to extract the images and corresponding labels for a certain batch, as follows:
 
 ```.language-matlab
 function [im, label] = getBatch(imdb, batch)
@@ -558,22 +597,82 @@ im = imdb.images.data(:,:,:,batch) ;
 label = imdb.images.label(:,:,:,batch) ;
 ```
 
-The function takes as input the `imdb` structure defined above and a list `batch` of image indexes that should be returned for training. It does so by copying the relative images to the array `im`; it also copies the corresponding labels to `label`. In more complex cases, it may load images from disk on the fly, and-or apply some kind of transformation to the data (for example for data augmentation purposes).
+The function takes as input the `imdb` structure defined above and a list `batch` of image indexes that should be returned for training. In this case, this amounts to simply extracting and copying some data; however, in general `getBatch` can be used to e.g. read images from disk or apply transformations to them on the fly.
+
+## Part 3.4: evaluating the network
+
+The network is evaluated on the validation set during training. The validation error (which in our case is the average squared differences of the predicted output pixels and the desired ones), is a good indicator of how well the network is doing (in practice, one should ultimately evaluate the network on a held-out test set).
+
+However, in our example it is also informative to evaluate the *qualitative* result. This can be done as follows:
+
+```.language-matlab
+
+train = find(imdb.images.set == 1) ;
+val = find(imdb.images.set == 2) ;
+
+figure(101) ; set(101,'name','Resluts on the training set') ;
+showDeblurringResult(net, imdb, train(1:30:151)) ;
+
+figure(102) ; set(102,'name','Resluts on the validation set') ;
+showDeblurringResult(net, imdb, val(1:30:151)) ;
+```
+
+> **Questions:** 
+> 
+> * Do you think the network is doing a good job?
+> * Is there any obvious difference between training and validation performance?
+
+### Part 3.5: Learning a larger model using the GPU
+
+So far, we have trained a single small network to solve this problem. Here, we will experiment with several variants to try to improve the performance as much as possible.
+
+Before we experiment further, however, it is beneficial to switch using a GPU. If you have a GPU and MATLAB Parallel Toolbox installed, you can try running the code on a GPU by changing a single switch. Assuming that the GPU has index 1 (which is always the case if there is a single CUDA-compatible GPU in your machine):
+
+```
+trainOpts.expDir = 'data/text-small-gpu'
+trainOpts.gpus = [1] ;
+```
+
+Note that we change `expDir` in order to start a new experiment from scratch.
+
+> **Task:** Test GPU based training (if possible). How much faster does it run?
+
+Now we are ready to experiment with different CNNs. 
+
+> **Task:** Run a new experiment, this time using the `initializeLargeCNN()` function to construct a larger network.
+
+> **Questions:**
+> 
+> 1.  How much slower is this network compared to the small model?
+> 2.  What about the quantitative performance on the validation set?
+> 3.  What about the qualitative performance?
+
+### Part 3.6: Challenge!
+
+You are now in control. Play around with the model definition and try to improve the performance as much as possible. For example:
+
+* Try adding more layers.
+* Try adding more filters.
+* Try increasing the receptive field size by increasing the filter support (do not forget to adjust the padding).
+* Try sequences of rank-1 filters, such as $7 \times 1$ followed by $1 \times 7$ to increase the receptive field size while maintaining efficiency.
+
+And, of course, make sure to beat the other students.
 
 ## Links and further work
 
 * The code for this practical is written using the software package [MatConvNet](http://www.vlfeat.org/matconvnet). This is a software library written in MATLAB, C++, and CUDA and is freely available as source code and binary.
-* The ImageNet model is the *VGG very deep 16* of Karen Simonyan and Andrew Zisserman.
+
+* MatConvNet can train complex computer vision models, such as VGG VD and Inception. Several of these models, including a few cool demos, are available for download.
+
+* Many more computer vision practicals are available [here](https://www.robots.ox.ac.uk/~vgg/practicals/overview/index.html).
 
 ## Acknowledgements
 
 * Beta testing by: Karel Lenc and Carlos Arteta.
-* Bugfixes/typos by: Sun Yushi.
 
 ## History
 
-* Used in the Oxford AIMS CDT, 2015-16.
-* Used in the Oxford AIMS CDT, 2014-15.
+* Used in the XXX, Matla, 2016..
 
 [^convolution]: if you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index $i-u$ instead of $i+u$ in this expression. The convention $i+u$, which is often used in CNNs, is  often referred to as correlation.
 
