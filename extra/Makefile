@@ -75,7 +75,6 @@ vedaldi09structured.pdf \
 vedaldi10efficient.pdf \
 vedaldi10knowing.pdf \
 vedaldi10vlfeat.pdf \
-vedaldi10vlfeat-tutorial.pdf \
 vedaldi11efficient.pdf \
 vedaldi11learning.pdf \
 vedaldi12self.pdf \
@@ -89,7 +88,7 @@ papers_crops=$(papers:%.pdf=%.png)
 preproc: $(papers) $(papers_crops)
 
 data/text/%.pdf:
-	mkdir -p data/taext ; \
+	mkdir -p data/text ; \
 	wget "$(papers_url)/$(*).pdf" -O "$(@)"
 
 %.png : %.pdf extra/Makefile

@@ -99,11 +99,11 @@ $$
 0 & -1 & 0 \\
 \end{bmatrix}
 $$
-The output of the convolution is a new matrix $\by$ given by
+The output of the convolution is a new matrix $\by$ given by[^convolution]
 $$
 y_{ij} = \sum_{uv} w_{uv}\ x_{i+u,\ j+v}
 $$
-> **Remark**: if you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index $i-u$ instead of $i+u$ in this expression. The convention $i+u$, which is often used in CNNs, is  often referred to as correlation.
+
 
 > **Questions:**
 > 
@@ -151,6 +151,20 @@ $$
 > 
 > * If the input tensor $\bx$ has $C$ 
 > * In the code above, the command `wbank = cat(4, w1, w2, w3)` concatenates the tensors `w1`, `w2`, and `w3` along the *fourth dimension*. Why is that given that filters should have three dimensions?
+
+#### Part 1.1.3: processing batches) {#part1.1.3}
+
+Finally, in training CNNs it is often important to be able to work efficiently with *batches* of data. MatConvNet allows packing more than one instance of the tensor $\bx$ in a single MATLAB array `x` by stacking instances along the *fourth dimension*:
+
+```.language-matlab
+x1 = im2single(rgb2gray(imread('data/ray.jpg'))) ;
+x2 = im2single(rgb2gray(imread('data/crab.jpg'))) ;
+x = cat(4, x1, x2) ;
+
+y = vl_nnconv(x, wbank, []) ;
+```
+
+> **Task:** Run the code above and visualize the result. Convince yourself that each filter is applied to each image.
 
 ### Part 1.2: non-linear activation (ReLU) {#part1.2}
 
@@ -283,13 +297,13 @@ $$
 \frac{\partial}{\partial \bw} \left\langle \bp, f(\bx;\bw) \right\rangle.
 $$
 
-### Backpropagation interface {#part2.1}
+### Part 2.1: Backpropagation interface {#part2.1}
 
 All the building blocks in MatConvNet support forward and backward computation and hence can be used in backpropagation. This is how it looks like for the convolution operator:
 
 ```.language-matlab
 y = vl_nnconv(x,w,b) ; % forward mode (get output)
-p = randn(size(y), 'single') ; % random projection
+p = randn(size(y), 'single') ; % projection tensor (arbitrary)
 [dx,dw,db] = vl_nnconv(x,w,b,p) ; % backward mode (get projected derivatives)
 ```
 
@@ -301,11 +315,9 @@ p = randn(size(y), 'single') ;
 dx = vl_nnrelu(x,p) ;
 ```
 
-### Backward mode in one layer {#part2.2}
+### Part 2.2: Backward mode for one layer {#part2.2}
 
-Implementing new building blocks in a network is conceptually quite easy. However, it is also quite easy to make silly mistakes in computing the derivatives analytically, or in implementing them in software. Therefore, it is *highly recommended* to check derivatives numerically if you implement your own. This is also useful to understand what the backward mode does, so we look at this problem next.
-
-Identify in `exercise2.m` the following code fragment and evaluate it, up to the visualization.
+Implementing new layers in a network is conceptually simple, but error prone. A simple way of testing a layer is to check whether the derivatives computed using the backward mode  approximately match the derivatives computed numerically using the forward mode. The next example, contained in the file `exercise2.m`, shows how to do this:
 
 ```.language-matlab
 % Forward mode: evaluate the convolution
@@ -328,17 +340,28 @@ for i = 1:numel(x)
 end
 ```
 
+> **Questions:**
+> 
+> 1.   Recall that the derivative of a function $y=f(x)$ is given by
+>     $$
+>       \dot f(x) = \lim_{\delta\rightarrow 0} \frac{f(x+\delta) - f(x)}{\delta}
+>     $$
+>     Can you identify the lines in the code above that use this expression?
+> 1.  Note that at line 17 the output value is projected along `p`. Why?
+
+
 > **Tasks:**
 > 
 > 1.   Run the code, visualizing the results. Convince yourself that the numerical and analytical derivatives are nearly identical.
 > 2.   Modify the code to compute the derivative of the *first element* of the output tensor $\by$ with respect to *all the elements* of the input tensor $\bx$. **Hint:** it suffices to change the value of $\bp$.
 > 2.   Modify the code to compute the derivative w.r.t. the convolution parameters $\bw$ instead of the convolution input $\bx$.
 
-### Backward mode in two or more layers {#part2.3}
-The backward mode is more interesting when at least two network layer are involved. Next, we append a ReLU layer to the convolutional one:
+### Part 2.3: Backward mode for two or more layers {#part2.3}
+
+Next, we use the backward mode of convolution and ReLU to implement backpropagation in a network that consists of two layers:
 
 ```.language-matlab
-% Forward mode: evaluate the conv + ReLU
+% Forward mode: evaluate conv followed by ReLU
 y = vl_nnconv(x, w, []) ;
 z = vl_nnrelu(y) ;
 
@@ -357,11 +380,40 @@ dy = vl_nnrelu(z, p) ;
 > 1.  Run the code and visualize the analytical and numerical derivatives. Do they differ?
 > 2.  (Optional) Modify the code above to a chain of three layers: conv + ReLU + conv.
 
+### Part 2.4: Implementing a custom layer
+
+Creating new layers is a common task when testing novel CNN architectures. In this part you will implement a layer computing the Euclidean distance between a tensor `x` and a reference tensor `r`. This layer will be used later to learn a CNN from data.
+
+The first step is to write the forward mode. This is contained in the `customLayerForward.m` function. Open the file and check its content:
+
+```.language-matlab
+function y = customLayerForward(x, r)
+y = sum(sum(sum((x - x0).^2, 1), 2), 3) ;
+```
+
+The function computes the difference `x - r`, squares the individual elements (`.^2`), and then sums the result along the first, second, and third dimensions. The result is a tensor `y` which has dimension $1 \times 1 \times 1$ (a scalar) and value equal to the squared Euclidean distance between `x` and `x0`.
+
+Next, we need to implement the backward mode as well:
+
+```
+function dx = customLayerBackward(x,r,p)
+dx = 2 * bsxfun(@times, p, x - r) ;
+```
+
+Note that the backward mode takes the projection tensor `p` as an additional argument. Let us examine what is computed here. The derivative of the squared Euclidean distance is given by
+
+$$
+\frac{\partial}{\partial x_{ijk}}
+\sum_{lmn} (x_{lmn} - r_{lmn})^2
+= 2(x_{ijk} - r_{ijk})
+$$
+
+
 ## Part 3: Learning a CNN for text deblurring {#part3}
 
 In this part of the practical, we will learn a CNN that generates an image instead of performing classification. This is a simple demonstration of how CNNs can be used well beyond classification tasks.
 
-The goal of the exercise is to learn a function that takes a blurred text as input and produces a crispier version as output. This problem is generally known as *deblurring* and is widely studied in computer vision, image processing, and computational photography. Here, instead of constructing a deblurring filter from first principles, we simply learn it from data. A key advantage is that the learned function can incorporate a significant amount of domain-specifc knowledge and perform particularly well on the particualr domain of interst.
+The goal of the exercise is to learn a function that takes a blurred text as input and produces a crispier version as output. This problem is generally known as *deblurring* and is widely studied in computer vision, image processing, and computational photography. Here, instead of constructing a deblurring filter from first principles, we simply learn it from data. A key advantage is that the learned function can incorporate a significant amount of domain-specifc knowledge and perform particularly well on the particular domain of interest.
 
 Start by opening in your MATLAB editor `exercise2.m`.
 
@@ -522,6 +574,8 @@ The function takes as input the `imdb` structure defined above and a list `batch
 
 * Used in the Oxford AIMS CDT, 2015-16.
 * Used in the Oxford AIMS CDT, 2014-15.
+
+[^convolution]: if you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index $i-u$ instead of $i+u$ in this expression. The convention $i+u$, which is often used in CNNs, is  often referred to as correlation.
 
 [^derivative]: The derivative is computed with respect to a certain assignment $x_0$ and $(w_1,\dots,w_L)$ to the network input and parameters; furthermore, the intermediate derivatives are computed at points $x_1,\dots,x_L$ obtained by evaluating the network at $x_0$.
 

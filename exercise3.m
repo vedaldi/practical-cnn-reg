@@ -16,7 +16,7 @@ trainOpts.expDir = opts.expDir ;
 trainOpts.batchSize = 16 ;
 trainOpts.learningRate = 0.01 ;
 trainOpts.numEpochs = 30 ;
-trainOpts.gpus = [2] ;
+trainOpts.gpus = [] ;
 trainOpts.errorFunction = 'none' ;
 
 

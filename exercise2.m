@@ -1,5 +1,7 @@
 setup() ;
 
+%% Part 2.2:  Backward mode for one layer
+
 % Create a random input image
 x = randn(10,10,'single') ;
 
@@ -19,22 +21,11 @@ p = randn(size(y), 'single') ;
 [dx,dw] = vl_nnconv(x, w, [], p) ;
 
 % Check the derivative numerically
-delta = 0.01 ;
-dx_numerical = zeros(size(dx), 'single') ;
-for i = 1:numel(x)
-  xp = x ; 
-  xp(i) = xp(i) + delta ;
-  yp = vl_nnconv(xp,w,[]) ;
-  dx_numerical(i) =  p(:)' * (yp(:) - y(:)) / delta ;
-end
-
 figure(1) ; clf('reset') ;
-subplot(1,3,1) ; bar3(dx) ; zlim([-20 20]) ;
-title('dx') ;
-subplot(1,3,2) ; bar3(dx_numerical) ; zlim([-20 20]) ;
-title('dx (numerical)') ;
-subplot(1,3,3) ; bar3(abs(dx-dx_numerical)) ; zlim([-20 20]) ;
-title('absolute difference') ;
+set(gcf,'name','Part 2.2: single layer backrpop') ;
+checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
+
+%% Part 2.3: Backward mode for two or more layers
 
 % Forward mode: evaluate the conv + ReLU
 y = vl_nnconv(x, w, []) ;
@@ -48,21 +39,24 @@ dy = vl_nnrelu(z, p) ;
 [dx,dw] = vl_nnconv(x, w, [], dy) ;
 
 % Check the derivative numerically
-delta = 0.01 ;
-dx_numerical = zeros(size(dx), 'single') ;
-for i = 1:numel(x)
-  xp = x ; 
-  xp(i) = xp(i) + delta ;
-  yp = vl_nnconv(xp,w,[]) ;
-  zp = vl_nnrelu(yp) ;
-  dx_numerical(i) =  p(:)' * (zp(:) - z(:)) / delta ;
-end
-
 figure(2) ; clf('reset') ;
-subplot(1,3,1) ; bar3(dx) ; zlim([-20 20]) ;
-title('dx') ;
-subplot(1,3,2) ; bar3(dx_numerical) ; zlim([-20 20]) ;
-title('dx (numerical)') ;
-subplot(1,3,3) ; bar3(abs(dx-dx_numerical)) ; zlim([-20 20]) ;
-title('absolute difference') ;
+set(gcf,'name','Part 2.3: two layers backrpop') ;
+func = @(x) proj(p, vl_nnrelu(vl_nnconv(x, w, []))) ;
+checkDerivativeNumerically(func, x, dx) ;
+
+%% Part 2.4: Design your own layer
+x0 = randn(size(x), 'single') ;
+
+y = customLayerForward(x, x0) ;
+
+p = randn(size(y), 'single') ;
+dx = customLayerBackward(x, x0, p) ;
+
+% Check the derivative numerically
+figure(3) ; clf('reset') ;
+set(gcf,'name','Part 2.4: custom layer') ;
+func = @(x) proj(p, customLayerForward(x,x0)) ;
+checkDerivativeNumerically(func, x, dx) ;
+
+
 

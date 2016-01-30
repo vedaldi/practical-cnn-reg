@@ -60,13 +60,36 @@ wbank = cat(4, w1, w2, w3) ;
 y = vl_nnconv(x, wbank, []) ;
 
 % Show feature channels
-figure(2) ; clf ; set(gcf,'name','P1.1.2: channels') ;
+figure(2) ; clf('reset') ;
+set(gcf,'name','P1.1.2: channels') ;
 colormap gray ;
 showFeatureChannels(y) ;
+
+%% Part 1.1.3: convolving a batch of images
+
+x1 = im2single(rgb2gray(imread('data/ray.jpg'))) ;
+x2 = im2single(rgb2gray(imread('data/crab.jpg'))) ;
+x = cat(4, x1, x2) ;
+
+y = vl_nnconv(x, wbank, []) ;
+
+figure(3) ; clf('reset') ; colormap gray ;
+set(gcf,'name','P1.1.3: filtering a batch') ;
+
+subplot(4,2,1) ; imagesc(x1) ; axis off image ;
+subplot(4,2,3) ; imagesc(y(:,:,1,1)) ; axis off image ;
+subplot(4,2,5) ; imagesc(y(:,:,2,1)) ; axis off image ;
+subplot(4,2,7) ; imagesc(y(:,:,3,1)) ; axis off image ;
+
+subplot(4,2,2) ; imagesc(x2) ; axis off image ;
+subplot(4,2,4) ; imagesc(y(:,:,1,2)) ; axis off image ;
+subplot(4,2,6) ; imagesc(y(:,:,2,2)) ; axis off image ;
+subplot(4,2,8) ; imagesc(y(:,:,3,2)) ; axis off image ;
 
 %% Part 1.2: non-linear activation functions (ReLU)
 
 % Part 1.2.1: Laplacian and ReLU
+x = im2single(rgb2gray(imread('data/ray.jpg'))) ;
 
 % Convolve with the negated Laplacian
 y = vl_nnconv(x, - w, []) ;
