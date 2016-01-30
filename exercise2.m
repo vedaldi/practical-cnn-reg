@@ -1,142 +1,68 @@
-function exercise2()
-
-%% Initialization
-%
-% The `setup()` command initializes the practical by including
-% MatConvNet. Next, a database of images `text_imdb.mat` is loaded.
-
-% Initialize the practical
 setup() ;
 
-% Choose a directory to save the experiment files
-opts.expDir = 'data/text-exp-1' ;
+% Create a random input image
+x = randn(10,10,'single') ;
 
-% Learning parameters
-trainOpts.expDir = opts.expDir ;
-trainOpts.batchSize = 16 ;
-trainOpts.learningRate = 0.01 ;
-trainOpts.numEpochs = 30 ;
-trainOpts.gpus = [2] ;
-trainOpts.errorFunction = 'none' ;
+% Define a filter
+w = single([
+  0 -1 -0
+  -1 4 -1
+  0 -1 0]) ;
 
+% Forward mode: evaluate the convolution
+y = vl_nnconv(x, w, []) ;
 
-%% Part 2.1: Prepare the data
+% Pick a random projection tensor
+p = randn(size(y), 'single') ;
 
-% Load a database of blurred images to train from
-imdb = load('data/text_imdb.mat') ;
+% Backward mode: projected derivatives
+[dx,dw] = vl_nnconv(x, w, [], p) ;
 
-% Visualize the first image in the database
-figure(100) ; clf ;
+% Check the derivative numerically
+delta = 0.01 ;
+dx_numerical = zeros(size(dx), 'single') ;
+for i = 1:numel(x)
+  xp = x ; 
+  xp(i) = xp(i) + delta ;
+  yp = vl_nnconv(xp,w,[]) ;
+  dx_numerical(i) =  p(:)' * (yp(:) - y(:)) / delta ;
+end
 
-subplot(1,2,1) ; imagesc(imdb.images.data(:,:,:,1)) ;
-axis off image ; title('input (blurred)') ;
+figure(1) ; clf('reset') ;
+subplot(1,3,1) ; bar3(dx) ; zlim([-20 20]) ;
+title('dx') ;
+subplot(1,3,2) ; bar3(dx_numerical) ; zlim([-20 20]) ;
+title('dx (numerical)') ;
+subplot(1,3,3) ; bar3(abs(dx-dx_numerical)) ; zlim([-20 20]) ;
+title('absolute difference') ;
 
-subplot(1,2,2) ; imagesc(imdb.images.label(:,:,:,1)) ;
-axis off image ; title('desired output (sharp)') ;
+% Forward mode: evaluate the conv + ReLU
+y = vl_nnconv(x, w, []) ;
+z = vl_nnrelu(y) ;
 
-colormap gray ;
+% Pick a random projection tensor
+p = randn(size(z), 'single') ;
 
+% Backward mode: projected derivatives
+dy = vl_nnrelu(z, p) ;
+[dx,dw] = vl_nnconv(x, w, [], dy) ;
 
-%% Part 2.2: Create a network architecture
-%
-% The expected input size (a single 64 x 64 x 1 image patch). This is
-% used for visualization purposes.
+% Check the derivative numerically
+delta = 0.01 ;
+dx_numerical = zeros(size(dx), 'single') ;
+for i = 1:numel(x)
+  xp = x ; 
+  xp(i) = xp(i) + delta ;
+  yp = vl_nnconv(xp,w,[]) ;
+  zp = vl_nnrelu(yp) ;
+  dx_numerical(i) =  p(:)' * (zp(:) - z(:)) / delta ;
+end
 
-net.meta.inputSize = [64 64 1 1] ;
+figure(2) ; clf('reset') ;
+subplot(1,3,1) ; bar3(dx) ; zlim([-20 20]) ;
+title('dx') ;
+subplot(1,3,2) ; bar3(dx_numerical) ; zlim([-20 20]) ;
+title('dx (numerical)') ;
+subplot(1,3,3) ; bar3(abs(dx-dx_numerical)) ; zlim([-20 20]) ;
+title('absolute difference') ;
 
-% Add one layer at a time
-
-net.layers = { } ;
-
-net.layers{end+1} = struct(...
-  'name', 'conv1', ...
-  'type', 'conv', ...
-  'weights', {xavier(3,3,1,32)}, ...
-  'pad', 1, ...
-  'stride', 1, ...
-  'learningRate', [1 1], ...
-  'weightDecay', [1 0]) ;
-
-net.layers{end+1} = struct(...
-  'name', 'relu1', ...
-  'type', 'relu') ;
-
-net.layers{end+1} = struct(...
-  'name', 'conv2', ...
-  'type', 'conv', ...
-  'weights', {xavier(3,3,32,64)}, ...
-  'pad', 1, ...
-  'stride', 1, ...
-  'learningRate', [1 1], ...
-  'weightDecay', [1 0]) ;
-
-net.layers{end+1} = struct(...
-  'name', 'relu2', ...
-  'type', 'relu') ;
-
-net.layers{end+1} = struct(...
-  'name', 'conv3', ...
-  'type', 'conv', ...
-  'weights', {xavier(3,3,64,64)}, ...
-  'pad', 1, ...
-  'stride', 1, ...
-  'learningRate', [1 1], ...
-  'weightDecay', [1 0]) ;
-
-net.layers{end+1} = struct(...
-  'name', 'relu3', ...
-  'type', 'relu') ;
-
-net.layers{end+1} = struct(...
-  'name', 'prediction', ...
-  'type', 'conv', ...
-  'weights', {xavier(3,3,64,1)}, ...
-  'pad', 1, ...
-  'stride', 1, ...
-  'learningRate', [1 1], ...
-  'weightDecay', [1 0]) ;
-
-net.layers{end+1} = struct(...
-  'name', 'loss', ...
-  'type', 'pdist', ...
-  'p', 2, ...
-  'aggregate', true, ...
-  'instanceWeights', 1/(64*64)) ;
-
-
-% Consolidate the network, fixing any missing option
-% in the specification above
-
-net = vl_simplenn_tidy(net) ;
-
-% Display network
-
-vl_simplenn_display(net) ;
-
-%% Step 3: learn the model
-
-net = cnn_train(net, imdb, @getBatch, trainOpts) ;
-
-% Deployment: remove the last layer
-net.layers(end) = [] ;
-
-
-%% Step 4: evaluate the model
-
-train = find(imdb.images.set == 1) ;
-val = find(imdb.images.set == 2) ;
-
-figure(101) ; set(101,'name','Resluts on the training set') ;
-showDeblurringResult(net, imdb, train(1:30:151)) ;
-
-figure(102) ; set(102,'name','Resluts on the validation set') ;
-showDeblurringResult(net, imdb, val(1:30:151)) ;
-
-% -------------------------------------------------------------------------
-function [im, label] = getBatch(imdb, batch)
-% -------------------------------------------------------------------------
-% The GETBATCH() function is used by the training code to extract the
-% data required fort training the network.
-
-im = imdb.images.data(:,:,:,batch) ;
-label = imdb.images.label(:,:,:,batch) ;

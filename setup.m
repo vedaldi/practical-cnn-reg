@@ -27,3 +27,7 @@ if opts.useGpu
     vl_compilenn('enableGpu', opts.useGpu, 'verbose', opts.verbose) ;
   end
 end
+
+rng(0) ;
+
+

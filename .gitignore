@@ -3,3 +3,5 @@ data/
 local
 local/
 base.css
+doc/prism.css
+doc/prism.js
