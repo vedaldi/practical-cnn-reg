@@ -81,9 +81,3 @@ res = vl_simplenn(net, imdb.examples.blurred{1}) ;
 subplot(1,2,2) ; imagesc(res(end).x, [-1 0]) ;
 axis image off ;
 title('CNN output') ;
-
-function [im, label] = getBatch(imdb, batch)
-% The GETBATCH() function is used by the training code to extract the
-% data required fort training the network.
-im = imdb.images.data(:,:,:,batch) ;
-label = imdb.images.label(:,:,:,batch) ;

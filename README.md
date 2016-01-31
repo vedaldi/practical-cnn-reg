@@ -27,6 +27,7 @@ the following MATLAB functions:
 
 * `checkDerivativeNumerically.m`: check a layer derivatives numerically.
 * `customLayerForward.m` and `customLayerBackward.m`: code (partially) implementing a custom layer.
+* `getBatch.m:`: get a batch of images for training.
 * `getCustomLayer.m`: get the custom layer in SimpleNN format.
 * `initializeSmallCNN.m` and `initializeLargeCNN.m`: initialize CNN models for text deblurring.
 * `setup.m`: setup MATLAB environment.
