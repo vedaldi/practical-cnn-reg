@@ -333,7 +333,7 @@ checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 > 
 > 1.  Recall that the derivative of a function $y=f(x)$ is given by
 >     $$
->       \dot f(x) = \lim_{\delta\rightarrow 0} \frac{f(x+\delta) - f(x)}{\delta}
+>       \frac{\partial f}{\partial x}(x) = \lim_{\delta\rightarrow 0} \frac{f(x+\delta) - f(x)}{\delta}
 >     $$
 >     Open the file `checkDerivativeNumerically.m`. Can you identify the lines in the code above that use this expression?
 > 2.  Note that `checkDerivativeNumerically()` is applied to the function `@(x) proj(p, vl_nnconv(x, w, []))`. This syntax defines a function on the fly (an anonymous closure to be more precise). In this case, the purpose of the closure is to evaluate the expression for a variable `x` and a fixed value of `w`. Furthermore, the closure projects the output of `vl_nnconv()` onto `p` by calling the `proj()` function. Why?
