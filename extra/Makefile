@@ -1,6 +1,7 @@
 # Build practical
 
 name = practical-cnn-reg
+ver = 2016a
 
 code=\
 checkDerivativeNumerically.m \

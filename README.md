@@ -1,8 +1,8 @@
 Convolutional neural network practical (2)
-=========================================
+==========================================
 
 A computer vision practical by the Oxford Visual Geometry group,
-authored by Andrea Vedaldi.
+authored by Andrea Vedaldi, Karel Lenc, and Joao Henriques.
 
 Start from `doc/instructions.html`.
 
@@ -57,7 +57,7 @@ Changes
 License
 -------
 
-    Copyright (c) 16 Andrea Vedaldi
+    Copyright (c) 16 Andrea Vedaldi, Karel Lenc, and Joao Henriques
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation
