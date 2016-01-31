@@ -1,15 +1,6 @@
 function exercise2()
 
-%% Initialization
-%
-% The `setup()` command initializes the practical by including
-% MatConvNet. Next, a database of images `text_imdb.mat` is loaded.
-
-% Initialize the practical
 setup() ;
-
-
-
 
 %% Part 2.1: Prepare the data
 
@@ -83,11 +74,8 @@ showDeblurringResult(net, imdb, train(1:30:151)) ;
 figure(102) ; set(102,'name','Resluts on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
 
-% -------------------------------------------------------------------------
 function [im, label] = getBatch(imdb, batch)
-% -------------------------------------------------------------------------
 % The GETBATCH() function is used by the training code to extract the
 % data required fort training the network.
-
 im = imdb.images.data(:,:,:,batch) ;
 label = imdb.images.label(:,:,:,batch) ;
