@@ -16,7 +16,8 @@ try
   vl_nnconv(single(1),single(1),[]) ;
 catch
   warning('VL_NNCONV() does not seem to be compiled. Trying to compile it now.') ;
-  vl_compilenn('enableGpu', opts.useGpu, 'verbose', opts.verbose) ;
+  vl_compilenn('enableGpu', opts.useGpu, 'verbose', opts.verbose, ...
+               'enableImreadJpeg', false) ;
 end
 
 if opts.useGpu
@@ -24,7 +25,8 @@ if opts.useGpu
     vl_nnconv(gpuArray(single(1)),gpuArray(single(1)),[]) ;
   catch
     warning('GPU support does not seem to be compiled in MatConvNet. Trying to compile it now.') ;
-    vl_compilenn('enableGpu', opts.useGpu, 'verbose', opts.verbose) ;
+    vl_compilenn('enableGpu', opts.useGpu, 'verbose', opts.verbose, ...
+                 'enableImreadJpeg', false) ;
   end
 end
 

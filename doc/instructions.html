@@ -278,7 +278,7 @@ p = randn(size(y), 'single') ; % projection tensor (arbitrary)
 </code></pre>
 
 <p>and this is how it looks for ReLU operator:</p>
-<pre><code class="language-matlab">y = vl_nnreli(x) ;
+<pre><code class="language-matlab">y = vl_nnrelu(x) ;
 p = randn(size(y), 'single') ;
 dx = vl_nnrelu(x,p) ;
 </code></pre>
