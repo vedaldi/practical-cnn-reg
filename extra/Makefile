@@ -10,6 +10,7 @@ customLayerForward.m \
 exercise1.m \
 exercise2.m \
 exercise3.m \
+getBatch.m \
 getCustomLayer.m \
 initializeLargeCNN.m \
 initializeSmallCNN.m \
@@ -25,7 +26,9 @@ doc/images \
 doc/instructions.html
 
 data=\
-data/text_imdb.mat
+data/text_imdb.mat \
+data/ray.jpg \
+data/crab.jpg
 
 include extra/practical/Makefile
 
