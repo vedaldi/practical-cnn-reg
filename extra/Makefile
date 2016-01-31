@@ -80,7 +80,6 @@ vedaldi07complexity.pdf \
 vedaldi07moving-orig.pdf \
 vedaldi07moving.pdf \
 vedaldi07open.pdf \
-vedaldi08invariant.pdf \
 vedaldi08joint.pdf \
 vedaldi08quick.pdf \
 vedaldi08relaxed.pdf \
