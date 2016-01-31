@@ -13,7 +13,7 @@
 <p>This is an <a href="http://www.robots.ox.ac.uk/~vgg">Oxford Visual Geometry Group</a> computer vision practical (Release 2016a).</p>
 <p><img height=400px src="images/cover.png" alt="cover"/></p>
 <p><em>Convolutional neural networks</em> are an important class of learnable representations applicable, among others, to numerous computer vision problems. Deep CNNs, in particular, are composed of several layers of processing, each involving linear as well as non-linear operators, that are learned jointly, in an end-to-end manner, to solve a particular tasks. These methods are now the dominant approach for feature extraction from audiovisual and textual data.</p>
-<p>This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters. The seond part explores backpropagation, including designing custom layers and verifying them numerically. The last part demonstrates learning a CNN for text deblurring, i.e. not for classification, bug for image regression.</p>
+<p>This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters. The second part explores backpropagation, including designing custom layers and verifying them numerically. The last part demonstrates learning a CNN for text deblurring; this differs from the usual problem of image classification and demonstrates the flexibility of these techniques.</p>
 <p>
 <script type="math/tex; mode=display">
    \newcommand{\bx}{\mathbf{x}}
@@ -35,12 +35,12 @@
 <li>Data only: <a href="http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-data-only.tar.gz">practical-cnn-reg-2016a-data-only.tar.gz</a></li>
 <li><a href="https://github.com/vedaldi/practical-cnn-reg">Git repository</a> (for lab setters and developers)</li>
 </ul>
-<p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files <code>exercise2.m</code>, <code>exercise3.m</code>, and <code>exercise4.m</code> are given for <a href="#part2">Part II</a>, <a href="#part3">III</a>, and <a href="part4">IV</a>.</p>
-<p>Each part contains several <strong>Questions</strong> (that require pen and paper) and <strong>Tasks</strong> (that require experimentation or coding) to be answered/completed before proceeding further in the practical.</p>
-<h2 id="part1">Part 1: CNN bludling blocks</h2>
-<p>In this part we will explore two fundamental bulding blocks of CNNs, linear convolution and non-linear activation functions. Open <code>exercise1.m</code> and run the <code>setup()</code> command as explained above.</p>
+<p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files <code>exercise2.m</code>, <code>exercise3.m</code>, and <code>exercise4.m</code> are given for <a href="#part2">Part II</a> and <a href="#part3">III</a>.</p>
+<p>Each part contains several <strong>Questions</strong> (that may require pen and paper) and <strong>Tasks</strong> (that require experimentation or coding) to be answered/completed before proceeding further in the practical.</p>
+<h2 id="part1">Part 1: CNN building blocks</h2>
+<p>In this part we will explore two fundamental building blocks of CNNs, linear convolution and non-linear activation functions. Open <code>exercise1.m</code> and run up to the <code>setup()</code> command, which initializes the MATLAB environment to use MatConvNet.</p>
 <h3 id="part1.1">Part 1.1: convolution</h3>
-<p>A <em>convolutional neural network</em> (CNN) is a sequence of linear and non-linear  convolutional operators. The most important example of a convolutional operator is <em>linear convolution</em>. In this part, we will explore linear convolution and see how to use it in MatConvNet. </p>
+<p>A <em>convolutional neural network</em> (CNN) is a sequence of linear and non-linear convolution-like operators. The most important example of such operators is <em>linear convolution</em>. In this part, we will explore linear convolution and see how to use it in MatConvNet. </p>
 <h4 id="part1.1.1">Part 1.1.1: convolution by a single filter</h4>
 <p>Start by identifying and then running the following code fragment in <code>exercise1.m</code>:</p>
 <pre><code class="language-matlab">% Load an image and convert it to gray scale and single precision
@@ -48,15 +48,15 @@ x = im2single(rgb2gray(imread('data/ray.jpg'))) ;
 
 % Define a filter
 w = single([
-  0 -1 -0
-  -1 4 -1
-  0 -1 0]) ;
+   0 -1 -0
+  -1  4 -1
+   0 -1  0]) ;
 
 % Apply the filter to the image
 y = vl_nnconv(x, w, []) ;
 </code></pre>
 
-<p>The code loads the image <code>data/ray.jpg</code> and applies to it a linear filter using the linear convolution operator. The latter is implemented by the MatConvNet function <code>vl_nnconv()</code>. Note that all variables <code>x</code>, <code>w</code>, and <code>y</code> are in single precision; while MatConvNet supports double precision arithmetic too, single precision is usually preferred in applications where memory is a bottleneck. The result can be visualized as follows:</p>
+<p>The code loads the image <code>data/ray.jpg</code> and applies to it a linear filter using the linear convolution operator. The latter is implemented by the MatConvNet function <code>vl_nnconv()</code>. Note that all variables <code>x</code>, <code>w</code>, and <code>y</code> are in single precision; while MatConvNet supports double precision arithmetic too, single precision is usually preferred in applications as memory is often a bottleneck. The result can be visualized as follows:</p>
 <pre><code class="language-matlab">% Visualize the results
 figure(1) ; clf ; colormap gray ;
 set(gcf,'name','P1.1: convolution') ;
@@ -72,7 +72,6 @@ axis off image ;
 title('filter w') ;
 
 subplot(1,3,3) ;
-subplot(1,3,3) ;
 imagesc(y) ;
 axis off image ;
 title('output image y') ;
@@ -82,8 +81,7 @@ title('output image y') ;
 <p><strong>Task:</strong> Run the code above and examine the result, which should look like the following image:</p>
 </blockquote>
 <p><img width=80% src="images/conv.png" alt="cover"/></p>
-<p>The input $\bx$ is an $M \times N$ matrix, which can be interpreted as a gray-scale image. The filter $\bw$ is the $3 \times 3$ matrix</p>
-<p>
+<p>The input $\bx$ is an $M \times N$ matrix, which can be interpreted as a gray scale image. The filter $\bw$ is the $3 \times 3$ matrix
 <script type="math/tex; mode=display">
 \bw = 
 \begin{bmatrix}
@@ -92,8 +90,7 @@ title('output image y') ;
 0 & -1 & 0 \\
 \end{bmatrix}
 </script>
-</p>
-<p>The output of the convolution is a new matrix $\by$ given by<sup id="fnref:convolution"><a class="footnote-ref" href="#fn:convolution" rel="footnote">1</a></sup>
+The output of the convolution is a new matrix $\by$ given by<sup id="fnref:convolution"><a class="footnote-ref" href="#fn:convolution" rel="footnote">1</a></sup>
 <script type="math/tex; mode=display">
 y_{ij} = \sum_{uv} w_{uv}\ x_{i+u,\ j+v}
 </script>
@@ -110,9 +107,9 @@ y_{ij} = \sum_{uv} w_{uv}\ x_{i+u,\ j+v}
 <p>To see how to define and use a filter bank, create a bank of three filters as follows:</p>
 <pre><code class="language-matlab">% Concatenate three filters in a bank
 w1 = single([
-  0 -1 -0
-  -1 4 -1
-  0 -1 0]) ;
+   0 -1  0
+  -1  4 -1
+   0 -1  0]) ;
 
 w2 = single([
   -1 0 +1
@@ -121,13 +118,13 @@ w2 = single([
 
 w3 = single([
   -1 -1 -1
-  0 0 0 
+   0  0  0 
   +1 +1 +1]) ;
 
 wbank = cat(4, w1, w2, w3) ;
 </code></pre>
 
-<p>The first filter $\bw_1$ is the Laplacian operator seen above; two additional filters $\bw_2$ and $\bw_3$ are horizontal and vertical image derivatives, respectively. Note that the same command <code>vl_nnconv(x, wbank, [])</code> works with a filter bank as well. However, the output <code>y</code> is not just a matrix, but a 3D  array (often called a <em>tensor</em> in the CNN jargon). This tensor has dimensions $H \times W \times K$, where $K$ is the number of <em>feature channels</em>.</p>
+<p>The first filter $\bw_1$ is the Laplacian operator seen above; two additional filters $\bw_2$ and $\bw_3$ are horizontal and vertical image derivatives, respectively. The command <code>vl_nnconv(x, wbank, [])</code> then applies all the filters in the bank to the input image <code>x</code>. Note that the output <code>y</code> is not just a matrix, but a 3D  array (often called a <em>tensor</em> in the CNN jargon). This tensor has dimensions $H \times W \times K$, where $K$ is the number of <em>feature channels</em>.</p>
 <blockquote>
 <p><strong>Question:</strong> What is the number of feature channels $C$ in this example? Why?</p>
 <p><strong>Task:</strong> Run the code above and visualize the individual feature channels in the tensor <code>y</code> by using the provided function <code>showFeatureChannels()</code>. Do the channel responses make sense given the filter used to generate them?</p>
@@ -144,8 +141,8 @@ y_{ijk} = \sum_{uvp} w_{uvpk}\ x_{i+u,\ j+v,\ p}
 <li>In the code above, the command <code>wbank = cat(4, w1, w2, w3)</code> concatenates the tensors <code>w1</code>, <code>w2</code>, and <code>w3</code> along the <em>fourth dimension</em>. Why is that given that filters should have three dimensions?</li>
 </ul>
 </blockquote>
-<h4 id="part1.1.3">Part 1.1.3: convolving a batch of data</h4>
-<p>Finally, in training CNNs it is often important to be able to work efficiently with <em>batches</em> of data. MatConvNet allows packing more than one instance of the tensor $\bx$ in a single MATLAB array <code>x</code> by stacking instances along the <em>fourth dimension</em>:</p>
+<h4 id="part1.1.3">Part 1.1.3: convolving a batch of images</h4>
+<p>Finally, in training CNNs it is often important to be able to work efficiently with <em>batches</em> of data. MatConvNet allows packing more than one instance of the tensor $\bx$ in a single MATLAB array <code>x</code> by stacking the different instances along the <em>fourth dimension</em> of the array:</p>
 <pre><code class="language-matlab">x1 = im2single(rgb2gray(imread('data/ray.jpg'))) ;
 x2 = im2single(rgb2gray(imread('data/crab.jpg'))) ;
 x = cat(4, x1, x2) ;
@@ -161,11 +158,11 @@ y = vl_nnconv(x, wbank, []) ;
 <blockquote>
 <p><strong>Question:</strong> What happens if all layers are linear?</p>
 </blockquote>
-<p>The simplest non-linearity is given by scalar activation functions, which are applied independently to each element in a tensor. Perhaps the simples, and one of the most effective, examples is the <em>Rectified Linear Unit</em> (ReLU) operator:
+<p>The simplest non-linearity is given by scalar activation functions, which are applied independently to each element of a tensor. Perhaps the simplest and one of the most useful examples is the <em>Rectified Linear Unit</em> (ReLU) operator:
 <script type="math/tex; mode=display">
    y_{ijk} = \max \{0, x_{ijk}\}
 </script>
-which simply cuts-off any negative value.</p>
+which simply cuts off any negative value in the data.</p>
 <p>In MatConvNet, ReLU is implemented by the <code>vl_nnrelu</code> function. To demonstrate its use, we convolve the test image with the negated Laplacian, and then apply ReLU to the result:</p>
 <pre><code class="language-matlab">% Convolve with the negated Laplacian
 y = vl_nnconv(x, - w, []) ;
@@ -183,13 +180,13 @@ z = vl_nnrelu(y) ;
 </ul>
 </blockquote>
 <p>ReLU has a very important effect as it implicitly sets to zero the majority of the filter responses. In a certain sense, ReLU works as a detector, with the implicit convention that a certain pattern is detected when a corresponding filter response is large enough (greater than zero).</p>
-<p>In practice, while signals are centered and therefore a threshold of zero is reasonable, in practice there is no particular reason why this should always be appropriate. For this reason, the convolution code allows to specify <em>a bias term</em> for each filter response. Let's use this term to make the response of ReLU more selective:</p>
+<p>In practice, while signals are usually centered and therefore a threshold of zero is reasonable, in practice there is no particular reason why this should always be appropriate. For this reason, the convolution operator allows to specify <em>a bias term</em> for each filter response. Let us use this term to make the response of ReLU more selective:</p>
 <pre><code class="language-matlab">bias = single(- 0.2) ;
 y = vl_nnconv(x, - w, bias) ;
 z = vl_nnrelu(y) ;
 </code></pre>
 
-<p>There is only one <code>bias</code> term because there is only one filter in the bank (note that, as for the reset of the data, <code>bias</code> is a single precision number). The bias is applied after convolution, effectively subtracting 0.2 from the filter responses. Hence, now a response is not suppressed by the subsequent ReLU operator only if it is at least 0.2.</p>
+<p>There is only one <code>bias</code> term because there is only one filter in the bank (note that, as for the reset of the data, <code>bias</code> is a single precision quantity). The bias is applied after convolution, effectively subtracting 0.2 from the filter responses. Hence, now a response is not suppressed by the subsequent ReLU operator only if it is at least 0.2 after convolution.</p>
 <blockquote>
 <p><strong>Task:</strong> Run this code and visualize images <code>x</code>, <code>y</code>, and <code>z</code>.</p>
 <p><strong>Question:</strong> Is the response now more selective?</p>
@@ -227,8 +224,8 @@ During learning, the last layer of the network is the <em>loss function</em> tha
  \frac{\partial f_{l+1}}{\partial x_l}(x_l;w_{l+1}) \times
  \frac{\partial f_{l}}{\partial w_l}(x_{l-1};w_l) 
 </script>
-With tensors, however, there are some complications. Consider for instance the derivative of a function $\by=f(\bx)$ where both $\by$ and $\bx$ are tensors; this is formed by taking the derivative of each scalar element in the output $\by$ w.r.t. each scalar element in the input $\bx$. If $\bx$ has dimensions $H \times W \times C$ and $\by$ has dimensions $H' \times W' \times C'$, then the derivative contains $HWCH'W'C'$ elements, which is often unmanageable (often of the order of several GBs of memory).</p>
-<p>Importantly, all intermediate derivatives in the chain rule are affected by this size explosion, but, since the output is a scalar, the output derivative are not.</p>
+With tensors, however, there are some complications. Consider for instance the derivative of a function $\by=f(\bx)$ where both $\by$ and $\bx$ are tensors; this is formed by taking the derivative of each scalar element in the output $\by$ w.r.t. each scalar element in the input $\bx$. If $\bx$ has dimensions $H \times W \times C$ and $\by$ has dimensions $H' \times W' \times C'$, then the derivative contains $HWCH'W'C'$ elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).</p>
+<p>Note that all intermediate derivatives in the chain rule may be affected by this size explosion except for the derivative of the network output that, being the loss, is a scalar.</p>
 <blockquote>
 <p><strong>Question:</strong> The output derivatives have the same size as the parameters in the network. Why?</p>
 </blockquote>
@@ -254,7 +251,7 @@ The next step is to <em>project</em> the derivative with respect to a tensor $\b
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
  \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l} 
 </script>
-Note that $\bp_L=1$ has the same dimension as $\bx_L$ (the scalar loss) and, being the identity, does not change anything. Things are more interesting when products are evaluated from the left to the right, i.e. <em>backward from the output to the input</em> of the CNN. The first such factors is given by:
+Note that $\bp_L=1$ has the same dimension as $\bx_L$ (the scalar loss) and, being equal to 1, multiplying it to the left of the expression does not change anything. Things are more interesting when products are evaluated from the left to the right, i.e. <em>backward from the output to the input</em> of the CNN. The first such factors is given by:
 <script type="math/tex; mode=display">\begin{equation}
 \label{e:factor}
  (\vv \bp_{L-1})^\top = (\vv \bp_L)^\top
@@ -262,7 +259,7 @@ Note that $\bp_L=1$ has the same dimension as $\bx_L$ (the scalar loss) and, bei
  \frac{\partial \vv f_L}{\partial \vv^\top \bx_L}
 \end{equation}</script>
 This results in a new projection vector $\bp_{L-1}$, which can then be multiplied to the left to obtain $\bp_{L-2}$ and so on. The last projection $\bp_l$ is the desired derivative. Crucially, each projection $\bp_q$ takes as much memory as the corresponding variable $\bx_q$.</p>
-<p>The most attentive reader might have noticed that, while projections remain small, each factor \eqref{e:factor} does contain one of the large derivatives that we cannot compute explicitly. The trick is that CNN toolboxes contain code that can compute the projected derivatives without explicitly computing this large factor. In particular, for any building block function $\by=f(\bx;\bw)$, the toolbox will implement:</p>
+<p>Some might have noticed that, while projections remain small, each factor \eqref{e:factor} does contain one of the large derivatives that we cannot compute explicitly. The trick is that CNN toolboxes contain code that can compute the projected derivatives without explicitly computing this large factor. In particular, for any building block function $\by=f(\bx;\bw)$, a toolbox such as MatConvNet will implement:</p>
 <ul>
 <li>A <strong>forward mode</strong> computing the function $\by=f(\bx;\bw)$.</li>
 <li>A <strong>backward mode</strong> computing the derivatives of the projected function $\langle \bp, f(\bx;\bw) \rangle$ with respect to the input $\bx$ and parameter $\bw$:</li>
@@ -274,20 +271,19 @@ This results in a new projection vector $\bp_{L-1}$, which can then be multiplie
 \frac{\partial}{\partial \bw} \left\langle \bp, f(\bx;\bw) \right\rangle.
 </script>
 </p>
-<h3 id="part2.1">Part 2.1: Backpropagation interface</h3>
-<p>All the building blocks in MatConvNet support forward and backward computation and hence can be used in backpropagation. This is how it looks like for the convolution operator:</p>
+<p>For example, this is how this looks for the convolution operator:</p>
 <pre><code class="language-matlab">y = vl_nnconv(x,w,b) ; % forward mode (get output)
 p = randn(size(y), 'single') ; % projection tensor (arbitrary)
 [dx,dw,db] = vl_nnconv(x,w,b,p) ; % backward mode (get projected derivatives)
 </code></pre>
 
-<p>and this is hat it looks like for ReLU operator:</p>
+<p>and this is how it looks for ReLU operator:</p>
 <pre><code class="language-matlab">y = vl_nnreli(x) ;
 p = randn(size(y), 'single') ;
 dx = vl_nnrelu(x,p) ;
 </code></pre>
 
-<h3 id="part2.2">Part 2.2: Backward mode for one layer</h3>
+<h3 id="part2.1">Part 2.1: Backward mode verification</h3>
 <p>Implementing new layers in a network is conceptually simple, but error prone. A simple way of testing a layer is to check whether the derivatives computed using the backward mode  approximately match the derivatives computed numerically using the forward mode. The next example, contained in the file <code>exercise2.m</code>, shows how to do this:</p>
 <pre><code class="language-matlab">% Forward mode: evaluate the convolution
 y = vl_nnconv(x, w, []) ;
@@ -299,14 +295,9 @@ p = randn(size(y), 'single') ;
 [dx,dw] = vl_nnconv(x, w, [], p) ;
 
 % Check the derivative numerically
-delta = 0.01 ;
-dx_numerical = zeros(size(dx), 'single') ;
-for i = 1:numel(x)
-  xp = x ; 
-  xp(i) = xp(i) + delta ;
-  yp = vl_nnconv(xp,w,[]) ;
-  dx_numerical(i) =  p(:)' * (yp(:) - y(:)) / delta ;
-end
+figure(1) ; clf('reset') ;
+set(gcf,'name','Part 2.1: single layer backrpop') ;
+checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 </code></pre>
 
 <blockquote>
@@ -314,10 +305,10 @@ end
 <ol>
 <li>Recall that the derivative of a function $y=f(x)$ is given by
     <script type="math/tex; mode=display">
-      \dot f(x) = \lim_{\delta\rightarrow 0} \frac{f(x+\delta) - f(x)}{\delta}
+      \frac{\partial f}{\partial x}(x) = \lim_{\delta\rightarrow 0} \frac{f(x+\delta) - f(x)}{\delta}
     </script>
-    Can you identify the lines in the code above that use this expression?</li>
-<li>Note that at line 17 the output value is projected along <code>p</code>. Why?</li>
+    Open the file <code>checkDerivativeNumerically.m</code>. Can you identify the lines in the code above that use this expression?</li>
+<li>Note that <code>checkDerivativeNumerically()</code> is applied to the function <code>@(x) proj(p, vl_nnconv(x, w, []))</code>. This syntax defines a function on the fly (an anonymous closure to be more precise). In this case, the purpose of the closure is to evaluate the expression for a variable <code>x</code> and a fixed value of <code>w</code>. Furthermore, the closure projects the output of <code>vl_nnconv()</code> onto <code>p</code> by calling the <code>proj()</code> function. Why?</li>
 </ol>
 <p><strong>Tasks:</strong></p>
 <ol>
@@ -326,7 +317,7 @@ end
 <li>Modify the code to compute the derivative w.r.t. the convolution parameters $\bw$ instead of the convolution input $\bx$.</li>
 </ol>
 </blockquote>
-<h3 id="part2.3">Part 2.3: Backward mode for two or more layers</h3>
+<h3 id="part2.3">Part 2.2: Backpropagation</h3>
 <p>Next, we use the backward mode of convolution and ReLU to implement backpropagation in a network that consists of two layers:</p>
 <pre><code class="language-matlab">% Forward mode: evaluate conv followed by ReLU
 y = vl_nnconv(x, w, []) ;
@@ -344,19 +335,19 @@ dy = vl_nnrelu(z, p) ;
 <p><strong>Question (important)</strong> In the code above, in backward mode the projection <code>p</code> is fed to the <code>vl_nnrelu</code> operator. However, the <code>vl_nnconv</code> operator now receives <code>dy</code> as projection. Why?</p>
 <p><strong>Tasks:</strong></p>
 <ol>
-<li>Run the code and visualize the analytical and numerical derivatives. Do they differ?</li>
+<li>Run the code and use <code>checkDerivativeNumerically()</code> to compare the analytical and numerical derivatives. Do they differ?</li>
 <li>(Optional) Modify the code above to a chain of three layers: conv + ReLU + conv.</li>
 </ol>
 </blockquote>
-<h3 id="part-24-implementing-a-custom-layer">Part 2.4: Implementing a custom layer</h3>
-<p>Creating new layers is a common task when testing novel CNN architectures. In this part you will implement a layer computing the Euclidean distance between a tensor <code>x</code> and a reference tensor <code>r</code>. This layer will be used later to learn a CNN from data.</p>
+<h3 id="part-23-design-and-verify-your-own-layer">Part 2.3: Design and verify your own layer</h3>
+<p>Creating new layers is a common task when experimenting with novel CNN architectures. In this part you will implement a layer computing the Euclidean distance between a tensor <code>x</code> and a reference tensor <code>r</code>. This layer will be used later to learn a CNN from data.</p>
 <p>The first step is to write the forward mode. This is contained in the <code>customLayerForward.m</code> function. Open the file and check its content:</p>
-<pre><code class="language-matlab">function y = customLayerForward(x, r)
-y = sum(sum(sum((x - x0).^2, 1), 2), 3) ;
+<pre><code class="language-matlab">function y = customLayerForward(x,r)
+y = sum(sum(sum((x - r).^2, 1), 2), 3) ;
 </code></pre>
 
-<p>The function computes the difference <code>x - r</code>, squares the individual elements (<code>.^2</code>), and then sums the result along the first, second, and third dimensions. The result is a tensor <code>y</code> which has dimension $1 \times 1 \times 1 \times N$ (a scalar for each of the $N$ data instances in the batch) and value equal to the squared Euclidean distance between <code>x</code> and <code>x0</code>.</p>
-<p>Next, we need to implement the backward mode as well:</p>
+<p>The function computes the difference <code>x - r</code>, squares the individual elements (<code>.^2</code>), and then sums the results along the first, second, and third dimensions. The overall result is a tensor <code>y</code> which has dimension $1 \times 1 \times 1 \times N$ (a scalar for each of the $N$ data instances in the batch) and value equal to the squared Euclidean distance between <code>x</code> and <code>x0</code>.</p>
+<p>Next, we need to implement the backward mode:</p>
 <pre><code class="language-matlab">function dx = customLayerBackward(x,r,p)
 dx = 2 * bsxfun(@times, p, x - r) ;
 </code></pre>
@@ -368,8 +359,8 @@ dx = 2 * bsxfun(@times, p, x - r) ;
 = p_{1,1,1,t} \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
 </script>
 </p>
-<p>Here the subscript $t$ index the data instance in the batch; note that, for a given $t$, the projection is simply a scalar, since the output of the Euclidean distance is also a scalar.</p>
-<p>Next, we compute the derivative w.r.t. each input element $x_{ijkt}$:</p>
+<p>Here the subscript $t$ index the data instance in the batch; note that, for a given $t$, the projection is simply a scalar, since the output of the Euclidean distance is a scalar.</p>
+<p>In order to see how to implement the backward mode, compute the derivative w.r.t. each input element $x_{ijkt}$:</p>
 <p>
 <script type="math/tex; mode=display">
 \frac{\partial}{\partial x_{ijk}}
@@ -377,13 +368,13 @@ dx = 2 * bsxfun(@times, p, x - r) ;
 = 2 p_{1,1,1,t} (x_{ijkt} - r_{ijkt}).
 </script>
 </p>
-<p>In the code, the <code>bsxfun</code> MATLAB function is used in order to multiply the value $p_{1,1,1,t}$ with all the elements $x_{ijkt} - r_{ijkt}$ in a single step.</p>
+<p>In the code, the <code>bsxfun</code> MATLAB function is used to multiply the value $p_{1,1,1,t}$ with all the elements $x_{ijkt} - r_{ijkt}$ in a single step.</p>
 <blockquote>
 <p><strong>Tasks:</strong></p>
 <ol>
-<li>Verify that the forward and backward functions are correct by computing the derivatives numerically.</li>
-<li>Change the code such that the Euclidean distance is averaged instead of being summed across spatial location (<strong>Hint:</strong> simply divide by the product of <code>size(x,1)</code> and <code>size(x,2)</code>).</li>
-<li>Make sure that both the forward and backward functions are correctly modified by verifying the result numerically once more.</li>
+<li>Verify that the forward and backward functions are correct by computing the derivatives numerically using <code>checkDerivativeNumerically()</code>.</li>
+<li>Change the code such that the Euclidean distance is averaged instead of being summed across spatial locations (<strong>Hint:</strong> simply divide by the result by the product of <code>size(x,1)</code> and <code>size(x,2)</code>).</li>
+<li>Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more.</li>
 </ol>
 </blockquote>
 <h2 id="part3">Part 3: Learning a CNN for text deblurring</h2>
@@ -417,12 +408,12 @@ colormap gray ;
 <blockquote>
 <p><strong>Task:</strong> make sure you understand the format of <code>imdb</code>. Use MATLAB to find out the number of training and validation images as well as the resolution (size) of each image.</p>
 </blockquote>
-<p>It is often important to center the data to better condition the learning problem. This is usually obtained by subtracting the mean pixel intensity (computed from the training set) from each pixel. Here, however, images are rescaled to have values in the interval $[-1, 0]$.</p>
+<p>It is often important to center the data to better condition the learning problem. This is usually obtained by subtracting the mean pixel intensity (computed from the training set) from each pixel. Here, however, pixels are rescaled and shifted to have values in the interval $[-1, 0]$.</p>
 <blockquote>
 <p><strong>Question:</strong> why was the interval $[-1, 0]$ chosen? <strong>Hint:</strong> what intensity corresponds to 'white'? What does the convolution operator do near the image boundaries?</p>
 </blockquote>
 <h3 id="part-32-defining-a-cnn-architecture">Part 3.2: defining a CNN architecture</h3>
-<p>Here we define a CNN <code>net</code> and initialize its weights randomly. A CNN is simply a collection of interlinked layers. While these can be assembled 'manually' as you did in Part 2, it is usually more convenient to use a <strong>wrapper</strong>.</p>
+<p>Next we define a CNN <code>net</code> and initialize its weights randomly. A CNN is simply a collection of interlinked layers. While these can be assembled 'manually' as you did in Part 2, it is usually more convenient to use a <strong>wrapper</strong>.</p>
 <p>MatConvNet contains two wrappers, SimpleNN and DagNN. SimpleNN is suitable for simple networks that are a chain of layers (as opposed to a more general graph). We will use SimpleNN here.</p>
 <p>This wrapper defines the CNN as a structure <code>net</code> containing a cell-array <code>layers</code> listed in order of execution. Open <code>initializeSmallCNN.m</code> and find this code:</p>
 <pre><code class="language-matlab">net.layers = { } ;
@@ -447,7 +438,7 @@ colormap gray ;
 <p><code>type</code> specifies the layer type, in this case convolution. </p>
 </li>
 <li>
-<p><code>weights</code> is a cell array containing the layer parameters, in this case two tensors for the filters and the biases. The filters are initialized using the <code>xavier</code> function to have dimensions $3 \times 3 \times 1 \times 32$ ($3\times 3$ spatial support, 1 input feature channels, and 32 filters). The function also initializes the biases to be zero.</p>
+<p><code>weights</code> is a cell array containing the layer parameters, in this case two tensors for the filters and the biases. The filters are initialized using the <code>xavier()</code> function to have dimensions $3 \times 3 \times 1 \times 32$ ($3\times 3$ spatial support, 1 input feature channels, and 32 filters). <code>xavier()</code> also initializes the biases to be zero.</p>
 </li>
 <li>
 <p><code>pad</code> specifies the amount of zero padding to apply to the layer input. By using a padding of one pixel and a $3\times 3$ filter support, the output of the convolution will have exactly the same height and width as the input.</p>
@@ -460,7 +451,7 @@ colormap gray ;
 </li>
 </ul>
 <blockquote>
-<p><strong>Question:</strong> what would happen <code>pad</code> was zero?</p>
+<p><strong>Question:</strong> what would happen <code>pad</code> was set to zero?</p>
 </blockquote>
 <p>The convolution layer is followed by ReLU, which is given simply by:</p>
 <pre><code class="language-matlab">net.layers{end+1} = struct(...
@@ -468,7 +459,7 @@ colormap gray ;
   'type', 'relu') ;
 </code></pre>
 
-<p>This pattern is repeated (varying the number and dimensions of filters) for a total of three convolutional layers separated by ReLUs.</p>
+<p>This pattern is repeated (possibly varying the number and dimensions of filters) for a total of three convolutional layers separated by ReLUs.</p>
 <blockquote>
 <p><strong>Question:</strong> The last layer, generating the output image, is convolutional and is <em>not</em> followed by ReLU. Why?</p>
 </blockquote>
@@ -573,29 +564,30 @@ colormap gray ;
 <p><strong>Questions:</strong> Look carefully at the generated table and answer the following questions:</p>
 <ol>
 <li>How many layers are in this network?</li>
-<li>What is the support (height and width) and depth (number of feature channels) of each intermediate feature map?</li>
+<li>What is the support (height and width) and depth (number of feature channels) of each intermediate tensor?</li>
 <li>How is the number of feature channels related to the 
    dimensions of the filters?</li>
 </ol>
 </blockquote>
 <p>The last row reports the <em>receptive field size</em> for the layer. This is the size (in pixels) of the local image region that affects a particular element in a feature map. </p>
 <blockquote>
-<p><strong>Question:</strong>  what is the receptive field size of the pixel in the output image (generated by the prediction layer)? Discuss whether a larger receptive field size might be preferable for this problem.</p>
+<p><strong>Question:</strong>  what is the receptive field size of the pixel in the output image (generated by the prediction layer)? Discuss whether a larger receptive field size might be preferable for this problem and how this might be obtained.</p>
 </blockquote>
 <h3 id="part3.3">Part 3.3: learning the network</h3>
-<p>In this part we will use SGD to learn the CNN from the available training data. As noted above, the CNN must however terminate in a loss layer. We add one such layer as follwos:</p>
+<p>In this part we will use SGD to learn the CNN from the available training data. As noted above, the CNN must however terminate in a loss layer. We add one such layer as follows:</p>
 <pre><code class="language-matlab">% Add a loss (using our custom layer)
 net.layers{end+1} = getCustomLayer() ;
 </code></pre>
 
 <p>The function <code>getCustomLayer()</code> creates a <code>layer</code> structure compatible with SimpleNN. This structure contains handles to the functions defined in Part 2, namely <code>customLayerForward()</code> and <code>customLayerBackward()</code>. </p>
 <blockquote>
-<p><strong>Remark:</strong> If your implementation of these functions is incorrect, the next few steps will fail!</p>
+<p><strong>Remark:</strong> If your implementation of <code>customLayerForward()</code> and <code>customLayerBackward()</code> is incorrect, the next few steps will fail!</p>
 </blockquote>
-<p>Next, we setup the learning parameters:</p>
+<p>Next, setup the learning parameters:</p>
 <pre><code class="language-matlab">trainOpts.expDir = 'data/text-small' ;
 trainOpts.batchSize = 16 ;
 trainOpts.learningRate = 0.01 ;
+trainOpts.plotDiagnostics = false ;
 trainOpts.numEpochs = 30 ;
 trainOpts.gpus = [] ;
 trainOpts.errorFunction = 'none' ;
@@ -613,10 +605,13 @@ trainOpts.errorFunction = 'none' ;
 <p><code>learningRate</code> is the learning rate in SGD.</p>
 </li>
 <li>
+<p><code>plotDiagnostic</code> can be used to plot statistics during training. This is slow, but can help setting a reasonable learning rate. Leave if off for now.</p>
+</li>
+<li>
 <p><code>numEpochs</code> is the number of epochs (passes through the training data) to perform before SGD stops.</p>
 </li>
 <li>
-<p><code>gpus</code> contains a list of GPU IDs to use. For now, we do not use any.</p>
+<p><code>gpus</code> contains a list of GPU IDs to use. For now, do not use any.</p>
 </li>
 <li>
 <p><code>errorFunction</code> disable plotting the default error functions that are suitable for classification, but not for our problem.</p>
@@ -632,19 +627,33 @@ im = imdb.images.data(:,:,:,batch) ;
 label = imdb.images.label(:,:,:,batch) ;
 </code></pre>
 
-<p>The function takes as input the <code>imdb</code> structure defined above and a list <code>batch</code> of image indexes that should be returned for training. In this case, this amounts to simply extracting and copying some data; however, in general <code>getBatch</code> can be used to e.g. read images from disk or apply transformations to them on the fly.</p>
-<h2 id="part-34-evaluating-the-network">Part 3.4: evaluating the network</h2>
-<p>The network is evaluated on the validation set during training. The validation error (which in our case is the average squared differences of the predicted output pixels and the desired ones), is a good indicator of how well the network is doing (in practice, one should ultimately evaluate the network on a held-out test set).</p>
-<p>However, in our example it is also informative to evaluate the <em>qualitative</em> result. This can be done as follows:</p>
-<pre><code class="language-matlab">
-train = find(imdb.images.set == 1) ;
+<p>The function takes as input the <code>imdb</code> structure defined above and a list <code>batch</code> of image indexes that should be returned for training. In this case, this amounts to simply extract and copy some data; however, in general <code>getBatch</code> can be used to e.g. read images from disk or apply transformations to them on the fly.</p>
+<blockquote>
+<p><strong>Task:</strong> run the training code and wait for learning to be complete. Note that the model is saved in `data/text-small/net-epoch-16.mat', where 16 is the number of the last epoch.</p>
+</blockquote>
+<h2 id="part-34-evaluate-the-model">Part 3.4: evaluate the model</h2>
+<p>The network is evaluated on the validation set during training. The validation error (which in our case is the average squared differences between the predicted output pixels and the desired ones), is a good indicator of how well the network is doing (in practice, one should ultimately evaluate the network on a held-out test set).</p>
+<p>In our example it is also informative to evaluate the <em>qualitative</em> result of the model. This can be done as follows:</p>
+<pre><code class="language-matlab">train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(101) ; set(101,'name','Resluts on the training set') ;
+figure(4) ; set(3,'name','Resluts on the training set') ;
 showDeblurringResult(net, imdb, train(1:30:151)) ;
 
-figure(102) ; set(102,'name','Resluts on the validation set') ;
+figure(5) ; set(4,'name','Resluts on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
+</code></pre>
+
+<p>Since the CNN is convolutional, it can be applied to arbitrarily-sized images. <code>imdb.examples</code> contains a few larger examples too. The following code shows one:</p>
+<pre><code class="language-matlab">figure(6) ; set(5,'name','Larger example in the validation set') ;
+colormap gray ;
+subplot(1,2,1) ; imagesc(imdb.examples.blurred{1}, [-1 0]) ;
+axis image off ;
+title('CNN input') ;
+res = vl_simplenn(net, imdb.examples.blurred{1}) ;
+subplot(1,2,2) ; imagesc(res(end).x, [-1 0]) ;
+axis image off ;
+title('CNN output') ;
 </code></pre>
 
 <blockquote>
@@ -656,14 +665,14 @@ showDeblurringResult(net, imdb, val(1:30:151)) ;
 </blockquote>
 <h3 id="part-35-learning-a-larger-model-using-the-gpu">Part 3.5: Learning a larger model using the GPU</h3>
 <p>So far, we have trained a single small network to solve this problem. Here, we will experiment with several variants to try to improve the performance as much as possible.</p>
-<p>Before we experiment further, however, it is beneficial to switch using a GPU. If you have a GPU and MATLAB Parallel Toolbox installed, you can try running the code on a GPU by changing a single switch. Assuming that the GPU has index 1 (which is always the case if there is a single CUDA-compatible GPU in your machine):</p>
+<p>Before we experiment further, however, it is beneficial to switch to using a GPU. If you have a GPU and MATLAB Parallel Toolbox installed, you can try running the code above on the GPU by changing a single switch. Assuming that the GPU has index 1 (which is always the case if there is a single CUDA-compatible GPU in your machine), use:</p>
 <pre><code>trainOpts.expDir = 'data/text-small-gpu'
 trainOpts.gpus = [1] ;
 </code></pre>
 
-<p>Note that we change <code>expDir</code> in order to start a new experiment from scratch.</p>
+<p>Do not forget to also change <code>expDir</code> in order to start a new experiment from scratch.</p>
 <blockquote>
-<p><strong>Task:</strong> Test GPU based training (if possible). How much faster does it run?</p>
+<p><strong>Task:</strong> Test GPU-based training (if possible). How much faster does it run compared to CPU-based training?</p>
 </blockquote>
 <p>Now we are ready to experiment with different CNNs. </p>
 <blockquote>
@@ -698,11 +707,11 @@ trainOpts.gpus = [1] ;
 </ul>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
-<li>NVIDIA and Mathworks.</li>
+<li>NVIDIA and MathWorks.</li>
 </ul>
 <h2 id="history">History</h2>
 <ul>
-<li>Used in the XXX, Matla, 2016..</li>
+<li>Used in the <a href="http://ivl-net.eu/ivl-net-training-school-2016/">IV &amp; L Net</a> summer school, Malta, 2016.</li>
 </ul>
 <div class="footnote">
 <hr />
