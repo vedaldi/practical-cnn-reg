@@ -11,6 +11,8 @@ imdb.images.label = {} ;
 names = dir(fullfile(dataDir, '*.png')) ;
 names = {names.name}  ;
 
+numCollected = 0 ;
+
 for i = 1:numel(names)
   im = imread(fullfile(dataDir, names{i})) ;
   im = im2single(im) ;
@@ -21,6 +23,12 @@ for i = 1:numel(names)
   G = fspecial('gaussian', [5 5], 2);
   im = imfilter(label,G,'same') ;
   s = 1+ (i > numel(names)*.75) ;
+
+  if s == 2 && numCollected < 10
+    numCollected = numCollected + 1 ;
+    imdb.examples.sharp{numCollected} = label ;
+    imdb.examples.blurred{numCollected} = im ;
+  end
 
   % further break each image in 64 x 64 tiles
   for i = 0:7

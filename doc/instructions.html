@@ -41,6 +41,11 @@
 <li><a href="#part3.3">Part 3.3: learning the network</a></li>
 </ul>
 </li>
+<li><a href="#part-34-evaluating-the-network">Part 3.4: evaluating the network</a><ul>
+<li><a href="#part-35-learning-a-larger-model-using-the-gpu">Part 3.5: Learning a larger model using the GPU</a></li>
+<li><a href="#part-36-challenge">Part 3.6: Challenge!</a></li>
+</ul>
+</li>
 <li><a href="#links-and-further-work">Links and further work</a></li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
 <li><a href="#history">History</a></li>
@@ -627,7 +632,7 @@ net.layers{end+1} = getCustomLayer() ;
 <p><strong>Remark:</strong> If your implementation of these functions is incorrect, the next few steps will fail!</p>
 </blockquote>
 <p>Next, we setup the learning parameters:</p>
-<pre><code class="language-matlab">trainOpts.expDir = 'data/text-small-network' ;
+<pre><code class="language-matlab">trainOpts.expDir = 'data/text-small' ;
 trainOpts.batchSize = 16 ;
 trainOpts.learningRate = 0.01 ;
 trainOpts.numEpochs = 30 ;
@@ -667,20 +672,76 @@ label = imdb.images.label(:,:,:,batch) ;
 </code></pre>
 
 <p>The function takes as input the <code>imdb</code> structure defined above and a list <code>batch</code> of image indexes that should be returned for training. In this case, this amounts to simply extracting and copying some data; however, in general <code>getBatch</code> can be used to e.g. read images from disk or apply transformations to them on the fly.</p>
+<h2 id="part-34-evaluating-the-network">Part 3.4: evaluating the network</h2>
+<p>The network is evaluated on the validation set during training. The validation error (which in our case is the average squared differences of the predicted output pixels and the desired ones), is a good indicator of how well the network is doing (in practice, one should ultimately evaluate the network on a held-out test set).</p>
+<p>However, in our example it is also informative to evaluate the <em>qualitative</em> result. This can be done as follows:</p>
+<pre><code class="language-matlab">
+train = find(imdb.images.set == 1) ;
+val = find(imdb.images.set == 2) ;
+
+figure(101) ; set(101,'name','Resluts on the training set') ;
+showDeblurringResult(net, imdb, train(1:30:151)) ;
+
+figure(102) ; set(102,'name','Resluts on the validation set') ;
+showDeblurringResult(net, imdb, val(1:30:151)) ;
+</code></pre>
+
+<blockquote>
+<p><strong>Questions:</strong> </p>
+<ul>
+<li>Do you think the network is doing a good job?</li>
+<li>Is there any obvious difference between training and validation performance?</li>
+</ul>
+</blockquote>
+<h3 id="part-35-learning-a-larger-model-using-the-gpu">Part 3.5: Learning a larger model using the GPU</h3>
+<p>So far, we have trained a single small network to solve this problem. Here, we will experiment with several variants to try to improve the performance as much as possible.</p>
+<p>Before we experiment further, however, it is beneficial to switch using a GPU. If you have a GPU and MATLAB Parallel Toolbox installed, you can try running the code on a GPU by changing a single switch. Assuming that the GPU has index 1 (which is always the case if there is a single CUDA-compatible GPU in your machine):</p>
+<pre><code>trainOpts.expDir = 'data/text-small-gpu'
+trainOpts.gpus = [1] ;
+</code></pre>
+
+<p>Note that we change <code>expDir</code> in order to start a new experiment from scratch.</p>
+<blockquote>
+<p><strong>Task:</strong> Test GPU based training (if possible). How much faster does it run?</p>
+</blockquote>
+<p>Now we are ready to experiment with different CNNs. </p>
+<blockquote>
+<p><strong>Task:</strong> Run a new experiment, this time using the <code>initializeLargeCNN()</code> function to construct a larger network.</p>
+<p><strong>Questions:</strong></p>
+<ol>
+<li>How much slower is this network compared to the small model?</li>
+<li>What about the quantitative performance on the validation set?</li>
+<li>What about the qualitative performance?</li>
+</ol>
+</blockquote>
+<h3 id="part-36-challenge">Part 3.6: Challenge!</h3>
+<p>You are now in control. Play around with the model definition and try to improve the performance as much as possible. For example:</p>
+<ul>
+<li>Try adding more layers.</li>
+<li>Try adding more filters.</li>
+<li>Try increasing the receptive field size by increasing the filter support (do not forget to adjust the padding).</li>
+<li>Try sequences of rank-1 filters, such as $7 \times 1$ followed by $1 \times 7$ to increase the receptive field size while maintaining efficiency.</li>
+</ul>
+<p>And, of course, make sure to beat the other students.</p>
 <h2 id="links-and-further-work">Links and further work</h2>
 <ul>
-<li>The code for this practical is written using the software package <a href="http://www.vlfeat.org/matconvnet">MatConvNet</a>. This is a software library written in MATLAB, C++, and CUDA and is freely available as source code and binary.</li>
-<li>The ImageNet model is the <em>VGG very deep 16</em> of Karen Simonyan and Andrew Zisserman.</li>
+<li>
+<p>The code for this practical is written using the software package <a href="http://www.vlfeat.org/matconvnet">MatConvNet</a>. This is a software library written in MATLAB, C++, and CUDA and is freely available as source code and binary.</p>
+</li>
+<li>
+<p>MatConvNet can train complex computer vision models, such as VGG VD and Inception. Several of these models, including a few cool demos, are available for download.</p>
+</li>
+<li>
+<p>Many more computer vision practicals are available <a href="https://www.robots.ox.ac.uk/~vgg/practicals/overview/index.html">here</a>.</p>
+</li>
 </ul>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
 <li>Beta testing by: Karel Lenc and Carlos Arteta.</li>
-<li>Bugfixes/typos by: Sun Yushi.</li>
 </ul>
 <h2 id="history">History</h2>
 <ul>
-<li>Used in the Oxford AIMS CDT, 2015-16.</li>
-<li>Used in the Oxford AIMS CDT, 2014-15.</li>
+<li>Used in the XXX, Matla, 2016..</li>
 </ul>
 <div class="footnote">
 <hr />

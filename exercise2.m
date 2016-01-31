@@ -1,6 +1,6 @@
 setup() ;
 
-%% Part 2.2:  Backward mode for one layer
+%% Part 2.1:  Backward mode for one layer
 
 % Create a random input image batch
 x = randn(10,10,1,2,'single') ;
@@ -22,10 +22,10 @@ p = randn(size(y), 'single') ;
 
 % Check the derivative numerically
 figure(1) ; clf('reset') ;
-set(gcf,'name','Part 2.2: single layer backrpop') ;
+set(gcf,'name','Part 2.1: single layer backrpop') ;
 checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 
-%% Part 2.3: Backward mode for two or more layers
+%% Part 2.2: Backpropagation
 
 % Create a random input image batch
 x = randn(10,10,1,2,'single') ;
@@ -43,11 +43,12 @@ dy = vl_nnrelu(z, p) ;
 
 % Check the derivative numerically
 figure(2) ; clf('reset') ;
-set(gcf,'name','Part 2.3: two layers backrpop') ;
+set(gcf,'name','Part 2.2: two layers backrpop') ;
 func = @(x) proj(p, vl_nnrelu(vl_nnconv(x, w, []))) ;
 checkDerivativeNumerically(func, x, dx) ;
 
-%% Part 2.4: Design your own layer
+%% Part 2.3: Design and test your own layer
+
 x0 = randn(size(x), 'single') ;
 
 y = customLayerForward(x, x0) ;
@@ -57,9 +58,6 @@ dx = customLayerBackward(x, x0, p) ;
 
 % Check the derivative numerically
 figure(3) ; clf('reset') ;
-set(gcf,'name','Part 2.4: custom layer') ;
+set(gcf,'name','Part 2.3: custom layer') ;
 func = @(x) proj(p, customLayerForward(x,x0)) ;
 checkDerivativeNumerically(func, x, dx) ;
-
-
-

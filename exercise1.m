@@ -1,4 +1,4 @@
-setup() ;  
+setup() ;
 
 %% Part 1.1: convolution
 
@@ -97,13 +97,13 @@ y = vl_nnconv(x, - w, []) ;
 % Apply the ReLU operator
 z = vl_nnrelu(y) ;
 
-figure(4) ; clf ; set(gcf,'name','P1.2.1: Laplacian anr ReLU') ;
+figure(4) ; clf ; set(gcf,'name','P1.2.1: Laplacian and ReLU') ;
 colormap gray ;
 subplot(1,3,1); imagesc(x) ; axis off image ; title('image x') ;
 subplot(1,3,2); imagesc(y) ; axis off image ; title('Laplacian y')
 subplot(1,3,3); imagesc(z) ; axis off image ; title('ReLU z') ;
 
-% Part 1.2.2: adding a bias
+% Part 1.2.2: effect of adding a bias
 
 bias = single(- 0.2) ;
 y = vl_nnconv(x, - w, bias) ;
