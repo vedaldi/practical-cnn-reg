@@ -9,9 +9,9 @@ x = im2single(rgb2gray(imread('data/ray.jpg'))) ;
 
 % Define a filter
 w = single([
-  0 -1 -0
-  -1 4 -1
-  0 -1 0]) ;
+   0 -1  0
+  -1  4 -1
+   0 -1  0]) ;
 
 % Apply the filter to the image
 y = vl_nnconv(x, w, []) ;
@@ -39,9 +39,9 @@ title('output image y') ;
 
 % Concatenate three fitlers in a bank
 w1 = single([
-  0 -1 -0
-  -1 4 -1
-  0 -1 0]) ;
+   0 -1  0
+  -1  4 -1
+   0 -1  0]) ;
 
 w2 = single([
   -1 0 +1
@@ -50,7 +50,7 @@ w2 = single([
 
 w3 = single([
   -1 -1 -1
-  0 0 0
+   0  0  0
   +1 +1 +1]) ;
 
 wbank = cat(4, w1, w2, w3) ;
