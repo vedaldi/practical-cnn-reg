@@ -2,7 +2,7 @@
 
 *By Andrea Vedaldi, Karel Lenc, and Joao Henriques*
 
-This is an [Oxford Visual Geometry Group](http://www.robots.ox.ac.uk/~vgg) computer vision practical, authored by [Andrea Vedaldi](http://www.robots.ox.ac.uk/~vedaldi/) and Andrew Zisserman (Release 2015a).
+This is an [Oxford Visual Geometry Group](http://www.robots.ox.ac.uk/~vgg) computer vision practical (Release 2016a).
 
 <img height=400px src="images/cover.png" alt="cover"/>
 
