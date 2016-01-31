@@ -2,7 +2,7 @@ setup() ;
 
 %% Part 1.1: convolution
 
-% Part 1.1.1: convolution by a single filter
+%% Part 1.1.1: convolution by a single filter
 
 % Load an image and convert it to gray scale and single precision
 x = im2single(rgb2gray(imread('data/ray.jpg'))) ;
@@ -87,7 +87,7 @@ subplot(4,2,8) ; imagesc(y(:,:,3,2)) ; axis off image ;
 
 %% Part 1.2: non-linear activation functions (ReLU)
 
-% Part 1.2.1: Laplacian and ReLU
+%% Part 1.2.1: Laplacian and ReLU
 x = im2single(rgb2gray(imread('data/ray.jpg'))) ;
 
 % Convolve with the negated Laplacian
@@ -102,7 +102,7 @@ subplot(1,3,1); imagesc(x) ; axis off image ; title('image x') ;
 subplot(1,3,2); imagesc(y) ; axis off image ; title('Laplacian y')
 subplot(1,3,3); imagesc(z) ; axis off image ; title('ReLU z') ;
 
-% Part 1.2.2: effect of adding a bias
+%% Part 1.2.2: effect of adding a bias
 
 bias = single(- 0.2) ;
 y = vl_nnconv(x, - w, bias) ;
