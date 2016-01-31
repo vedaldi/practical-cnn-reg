@@ -1,6 +1,6 @@
-# VGG Convolutional Neural Networks Practical
+# VGG Convolutional Neural Networks Practical (2)
 
-*By Andrea Vedaldi and Andrew Zisserman*
+*By Andrea Vedaldi, Karel Lenc, and Joao Henriques*
 
 This is an [Oxford Visual Geometry Group](http://www.robots.ox.ac.uk/~vgg) computer vision practical, authored by [Andrea Vedaldi](http://www.robots.ox.ac.uk/~vedaldi/) and Andrew Zisserman (Release 2015a).
 
@@ -8,9 +8,7 @@ This is an [Oxford Visual Geometry Group](http://www.robots.ox.ac.uk/~vgg) compu
 
 *Convolutional neural networks* are an important class of learnable representations applicable, among others, to numerous computer vision problems. Deep CNNs, in particular, are composed of several layers of processing, each involving linear as well as non-linear operators, that are learned jointly, in an end-to-end manner, to solve a particular tasks. These methods are now the dominant approach for feature extraction from audiovisual and textual data.
 
-This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters, with a particular emphasis on understanding back-propagation. The second part looks at learning two basic CNNs. The first one is a simple non-linear filter capturing particular image structures, while the second one is a network that recognises typewritten characters (using a variety of different fonts). These examples illustrate the use of stochastic gradient descent with momentum, the definition of an objective function, the construction of mini-batches of data, and data jittering. The last part shows how powerful CNN models can be downloaded off-the-shelf and used directly in applications, bypassing the expensive training process.
-
-[TOC]
+This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters. The seond part explores backpropagation, including designing custom layers and verifying them numerically. The last part demonstrates learning a CNN for text deblurring, i.e. not for classification, bug for image regression.
 
 $$
    \newcommand{\bx}{\mathbf{x}}
@@ -31,7 +29,7 @@ Read and understand the [requirements and installation instructions](../overview
 * Code and data: [practical-cnn-reg-2016a.tar.gz](http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a.tar.gz)
 * Code only: [practical-cnn-reg-2016a-code-only.tar.gz](http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-code-only.tar.gz)
 * Data only: [practical-cnn-reg-2016a-data-only.tar.gz](http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-data-only.tar.gz)
-* [Git repository](https://github.com/vedaldi/practical-cnn) (for lab setters and developers)
+* [Git repository](https://github.com/vedaldi/practical-cnn-reg) (for lab setters and developers)
 
 After the installation is complete, open and edit the script `exercise1.m` in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for [Part I](#part1) of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files `exercise2.m`, `exercise3.m`, and `exercise4.m` are given for [Part II](#part2), [III](#part3), and [IV](part4).
 
@@ -668,7 +666,7 @@ And, of course, make sure to beat the other students.
 
 ## Acknowledgements
 
-* Beta testing by: Karel Lenc and Carlos Arteta.
+* NVIDIA and Mathworks.
 
 ## History
 

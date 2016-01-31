@@ -8,51 +8,12 @@
   <link rel="stylesheet" href="prism.css" />
 </head>
 <body>
-<h1 id="vgg-convolutional-neural-networks-practical">VGG Convolutional Neural Networks Practical</h1>
-<p><em>By Andrea Vedaldi and Andrew Zisserman</em></p>
+<h1 id="vgg-convolutional-neural-networks-practical-2">VGG Convolutional Neural Networks Practical (2)</h1>
+<p><em>By Andrea Vedaldi, Karel Lenc, and Joao Henriques</em></p>
 <p>This is an <a href="http://www.robots.ox.ac.uk/~vgg">Oxford Visual Geometry Group</a> computer vision practical, authored by <a href="http://www.robots.ox.ac.uk/~vedaldi/">Andrea Vedaldi</a> and Andrew Zisserman (Release 2015a).</p>
 <p><img height=400px src="images/cover.png" alt="cover"/></p>
 <p><em>Convolutional neural networks</em> are an important class of learnable representations applicable, among others, to numerous computer vision problems. Deep CNNs, in particular, are composed of several layers of processing, each involving linear as well as non-linear operators, that are learned jointly, in an end-to-end manner, to solve a particular tasks. These methods are now the dominant approach for feature extraction from audiovisual and textual data.</p>
-<p>This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters, with a particular emphasis on understanding back-propagation. The second part looks at learning two basic CNNs. The first one is a simple non-linear filter capturing particular image structures, while the second one is a network that recognises typewritten characters (using a variety of different fonts). These examples illustrate the use of stochastic gradient descent with momentum, the definition of an objective function, the construction of mini-batches of data, and data jittering. The last part shows how powerful CNN models can be downloaded off-the-shelf and used directly in applications, bypassing the expensive training process.</p>
-<div class="toc">
-<ul>
-<li><a href="#vgg-convolutional-neural-networks-practical">VGG Convolutional Neural Networks Practical</a><ul>
-<li><a href="#getting-started">Getting started</a></li>
-<li><a href="#part1">Part 1: CNN bludling blocks</a><ul>
-<li><a href="#part1.1">Part 1.1: convolution</a><ul>
-<li><a href="#part1.1.1">Part 1.1.1: convolution by a single filter</a></li>
-<li><a href="#part1.1.2">Part 1.1.2: convolution by a filter bank</a></li>
-<li><a href="#part1.1.3">Part 1.1.3: convolving a batch of data</a></li>
-</ul>
-</li>
-<li><a href="#part1.2">Part 1.2: non-linear activation (ReLU)</a></li>
-</ul>
-</li>
-<li><a href="#part2">Part 2: backpropagation</a><ul>
-<li><a href="#part2.1">Part 2.1: Backpropagation interface</a></li>
-<li><a href="#part2.2">Part 2.2: Backward mode for one layer</a></li>
-<li><a href="#part2.3">Part 2.3: Backward mode for two or more layers</a></li>
-<li><a href="#part-24-implementing-a-custom-layer">Part 2.4: Implementing a custom layer</a></li>
-</ul>
-</li>
-<li><a href="#part3">Part 3: Learning a CNN for text deblurring</a><ul>
-<li><a href="#part3.1">Part 3.1: preparing the data</a></li>
-<li><a href="#part-32-defining-a-cnn-architecture">Part 3.2: defining a CNN architecture</a></li>
-<li><a href="#part3.3">Part 3.3: learning the network</a></li>
-</ul>
-</li>
-<li><a href="#part-34-evaluating-the-network">Part 3.4: evaluating the network</a><ul>
-<li><a href="#part-35-learning-a-larger-model-using-the-gpu">Part 3.5: Learning a larger model using the GPU</a></li>
-<li><a href="#part-36-challenge">Part 3.6: Challenge!</a></li>
-</ul>
-</li>
-<li><a href="#links-and-further-work">Links and further work</a></li>
-<li><a href="#acknowledgements">Acknowledgements</a></li>
-<li><a href="#history">History</a></li>
-</ul>
-</li>
-</ul>
-</div>
+<p>This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters. The seond part explores backpropagation, including designing custom layers and verifying them numerically. The last part demonstrates learning a CNN for text deblurring, i.e. not for classification, bug for image regression.</p>
 <p>
 <script type="math/tex; mode=display">
    \newcommand{\bx}{\mathbf{x}}
@@ -72,7 +33,7 @@
 <li>Code and data: <a href="http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a.tar.gz">practical-cnn-reg-2016a.tar.gz</a></li>
 <li>Code only: <a href="http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-code-only.tar.gz">practical-cnn-reg-2016a-code-only.tar.gz</a></li>
 <li>Data only: <a href="http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-data-only.tar.gz">practical-cnn-reg-2016a-data-only.tar.gz</a></li>
-<li><a href="https://github.com/vedaldi/practical-cnn">Git repository</a> (for lab setters and developers)</li>
+<li><a href="https://github.com/vedaldi/practical-cnn-reg">Git repository</a> (for lab setters and developers)</li>
 </ul>
 <p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files <code>exercise2.m</code>, <code>exercise3.m</code>, and <code>exercise4.m</code> are given for <a href="#part2">Part II</a>, <a href="#part3">III</a>, and <a href="part4">IV</a>.</p>
 <p>Each part contains several <strong>Questions</strong> (that require pen and paper) and <strong>Tasks</strong> (that require experimentation or coding) to be answered/completed before proceeding further in the practical.</p>
@@ -737,7 +698,7 @@ trainOpts.gpus = [1] ;
 </ul>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
-<li>Beta testing by: Karel Lenc and Carlos Arteta.</li>
+<li>NVIDIA and Mathworks.</li>
 </ul>
 <h2 id="history">History</h2>
 <ul>
