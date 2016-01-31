@@ -3,9 +3,19 @@
 name = practical-cnn-reg
 
 code=\
+checkDerivativeNumerically.m \
+customLayerBackward.m \
+customLayerForward.m \
+exercise1.m \
 exercise2.m \
+exercise3.m \
+getCustomLayer.m \
+initializeLargeCNN.m \
+initializeSmallCNN.m \
+proj.m \
 setup.m \
 showDeblurringResult.m \
+showFeatureChannels.m \
 xavier.m \
 matconvnet
 
