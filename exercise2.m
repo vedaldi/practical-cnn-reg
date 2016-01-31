@@ -1,6 +1,6 @@
 setup() ;
 
-%% Part 2.1:  Backward mode for one layer
+%% Part 2.1:  Backward mode verification
 
 % Create a random input image batch
 x = randn(10,10,1,2,'single') ;
@@ -30,7 +30,7 @@ checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 % Create a random input image batch
 x = randn(10,10,1,2,'single') ;
 
-% Forward mode: evaluate the conv + ReLU
+% Forward mode: evaluate the conv follwed by ReLU
 y = vl_nnconv(x, w, []) ;
 z = vl_nnrelu(y) ;
 
@@ -47,7 +47,7 @@ set(gcf,'name','Part 2.2: two layers backrpop') ;
 func = @(x) proj(p, vl_nnrelu(vl_nnconv(x, w, []))) ;
 checkDerivativeNumerically(func, x, dx) ;
 
-%% Part 2.3: Design and test your own layer
+%% Part 2.3: Design and verify your own layer
 
 x0 = randn(size(x), 'single') ;
 

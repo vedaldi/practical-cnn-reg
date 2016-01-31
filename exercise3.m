@@ -6,7 +6,7 @@ setup() ;
 imdb = load('data/text_imdb.mat') ;
 
 % Visualize the first image in the database
-figure(100) ; clf ;
+figure(2) ; clf ;
 
 subplot(1,2,1) ; imagesc(imdb.images.data(:,:,:,1)) ;
 axis off image ; title('input (blurred)') ;
@@ -30,7 +30,7 @@ vl_simplenn_display(net) ;
 % Evaluate network on an image
 res = vl_simplenn(net, imdb.images.data(:,:,:,1)) ;
 
-figure(2) ; clf ; colormap gray ;
+figure(3) ; clf ; colormap gray ;
 set(gcf,'name', 'Part X: network input') ;
 subplot(1,2,1) ;
 imagesc(res(1).x) ; axis image off  ;
@@ -60,19 +60,18 @@ net = cnn_train(net, imdb, @getBatch, trainOpts) ;
 % Deploy: remove loss
 net.layers(end) = [] ;
 
-
 %% Part 3.4: evaluate the model
 
 train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(3) ; set(3,'name','Resluts on the training set') ;
+figure(4) ; set(3,'name','Resluts on the training set') ;
 showDeblurringResult(net, imdb, train(1:30:151)) ;
 
-figure(4) ; set(4,'name','Resluts on the validation set') ;
+figure(5) ; set(4,'name','Resluts on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
 
-figure(5) ; set(5,'name','Large example in the validation set') ;
+figure(6) ; set(5,'name','Larger example in the validation set') ;
 colormap gray ;
 subplot(1,2,1) ; imagesc(imdb.examples.blurred{1}, [-1 0]) ;
 axis image off ;

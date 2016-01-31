@@ -31,12 +31,11 @@ axis off image ;
 title('filter w') ;
 
 subplot(1,3,3) ;
-subplot(1,3,3) ;
 imagesc(y) ;
 axis off image ;
 title('output image y') ;
 
-% Part 1.1.2: convolution by a bank of filters
+%% Part 1.1.2: convolution by a bank of filters
 
 % Concatenate three fitlers in a bank
 w1 = single([
@@ -51,9 +50,9 @@ w2 = single([
 
 w3 = single([
   -1 -1 -1
-  0 0 0 
+  0 0 0
   +1 +1 +1]) ;
-  
+
 wbank = cat(4, w1, w2, w3) ;
 
 % Apply convolution
@@ -114,4 +113,3 @@ colormap gray ;
 subplot(1,3,1); imagesc(x) ; axis off image ; title('image x') ;
 subplot(1,3,2); imagesc(y) ; axis off image ; title('Laplacian y with bias')
 subplot(1,3,3); imagesc(z) ; axis off image ; title('ReLU z') ;
-
