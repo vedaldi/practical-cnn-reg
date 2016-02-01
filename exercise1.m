@@ -37,7 +37,7 @@ title('output image y') ;
 
 %% Part 1.1.2: convolution by a bank of filters
 
-% Concatenate three fitlers in a bank
+% Concatenate three filters in a bank
 w1 = single([
    0 -1  0
   -1  4 -1

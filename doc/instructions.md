@@ -31,7 +31,7 @@ Read and understand the [requirements and installation instructions](../overview
 * Data only: [practical-cnn-reg-2016a-data-only.tar.gz](http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-data-only.tar.gz)
 * [Git repository](https://github.com/vedaldi/practical-cnn-reg) (for lab setters and developers)
 
-After the installation is complete, open and edit the script `exercise1.m` in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for [Part I](#part1) of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files `exercise2.m`, `exercise3.m`, and `exercise4.m` are given for [Part II](#part2) and [III](#part3).
+After the installation is complete, open and edit the script `exercise1.m` in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for [Part I](#part1) of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files `exercise2.m`, and `exercise3.m`, are given for [Part II](#part2) and [III](#part3).
 
 Each part contains several **Questions** (that may require pen and paper) and **Tasks** (that require experimentation or coding) to be answered/completed before proceeding further in the practical.
 
@@ -410,7 +410,7 @@ In the code, the `bsxfun` MATLAB function is used to multiply the value $p_{1,1,
 > **Tasks:**
 > 
 > 1.  Verify that the forward and backward functions are correct by computing the derivatives numerically using `checkDerivativeNumerically()`.
-> 2.  Change the code such that the Euclidean distance is averaged instead of being summed across spatial locations (**Hint:** simply divide by the result by the product of `size(x,1)` and `size(x,2)`).
+> 2.  Change the code such that the Euclidean distance is averaged instead of being summed across spatial locations (**Hint:** simply divide the result by the product of `size(x,1)` and `size(x,2)`).
 > 3.  Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more.
 
 ## Part 3: Learning a CNN for text deblurring {#part3}
@@ -495,7 +495,7 @@ The fields are as follows:
 
 * `weightDecay` contains two layer-specific multipliers to adjust the weight decay (regularization strength) for the layer filters and biases. Note that weight decay is not applied to the biases.
 
-> **Question:** what would happen `pad` was set to zero?
+> **Question:** what would happen if `pad` was set to zero?
 
 The convolution layer is followed by ReLU, which is given simply by:
 
@@ -557,7 +557,7 @@ trainOpts.gpus = [] ;
 trainOpts.errorFunction = 'none' ;
 ```
 
-The fields are ass follows:
+The fields are as follows:
 
 * `expDir` specifies a directory to store intermediate data (snapshot and figures) as well as the final model. Note that the code resumes execution from the last snapshot; therefore change this directory or clear it if you want to start learning from scratch.
 
@@ -571,7 +571,7 @@ The fields are ass follows:
 
 * `gpus` contains a list of GPU IDs to use. For now, do not use any.
 
-* `errorFunction` disable plotting the default error functions that are suitable for classification, but not for our problem.
+* `errorFunction` disables plotting the default error functions that are suitable for classification, but not for our problem.
 
 Finally, we can invoke the learning code:
 
@@ -679,7 +679,7 @@ And, of course, make sure to beat the other students.
 
 * Used in the [IV & L Net](http://ivl-net.eu/ivl-net-training-school-2016/) summer school, Malta, 2016.
 
-[^convolution]: if you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index $i-u$ instead of $i+u$ in this expression. The convention $i+u$, which is often used in CNNs, is  often referred to as correlation.
+[^convolution]: If you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index $i-u$ instead of $i+u$ in this expression. The convention $i+u$, which is often used in CNNs, is  often referred to as correlation.
 
 [^derivative]: The derivative is computed with respect to a certain assignment $x_0$ and $(w_1,\dots,w_L)$ to the network input and parameters; furthermore, the intermediate derivatives are computed at points $x_1,\dots,x_L$ obtained by evaluating the network at $x_0$.
 

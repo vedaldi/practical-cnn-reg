@@ -65,10 +65,10 @@ net.layers(end) = [] ;
 train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(4) ; set(3,'name','Resluts on the training set') ;
+figure(4) ; set(3,'name','Results on the training set') ;
 showDeblurringResult(net, imdb, train(1:30:151)) ;
 
-figure(5) ; set(4,'name','Resluts on the validation set') ;
+figure(5) ; set(4,'name','Results on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
 
 figure(6) ; set(5,'name','Larger example in the validation set') ;
