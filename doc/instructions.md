@@ -376,16 +376,17 @@ The first step is to write the forward mode. This is contained in the `customLay
 
 ```.language-matlab
 function y = customLayerForward(x,r)
-y = sum(sum(sum((x - r).^2, 1), 2), 3) ;
+dif = x - r ;
+y = sum(dif(:).^2) ;
 ```
 
-The function computes the difference `x - r`, squares the individual elements (`.^2`), and then sums the results along the first, second, and third dimensions. The overall result is a tensor `y` which has dimension $1 \times 1 \times 1 \times N$ (a scalar for each of the $N$ data instances in the batch) and value equal to the squared Euclidean distance between `x` and `x0`.
+The function computes the difference `x - r`, squares the individual elements (`.^2`), and then sums the results. The vectorization `dif(:)` just turns the tensor into a simple vector, so that the sum will work for all elements (otherwise it would sum only one dimension). The overall result is a scalar `y`, which is the sum of the squared Euclidean distances between `x` and `r`, for all data instances.
 
 Next, we need to implement the backward mode:
 
 ```.language-matlab
 function dx = customLayerBackward(x,r,p)
-dx = 2 * bsxfun(@times, p, x - r) ;
+dx = 2 * p * (x - r) ;
 ```
 
 Note that the backward mode takes the projection tensor `p` as an additional argument. Let us show that this code is correct. Recall that the goal of the backward mode is to compute the derivative of the projected function:
@@ -410,7 +411,7 @@ In the code, the `bsxfun` MATLAB function is used to multiply the value $p_{1,1,
 > **Tasks:**
 > 
 > 1.  Verify that the forward and backward functions are correct by computing the derivatives numerically using `checkDerivativeNumerically()`.
-> 2.  Change the code such that the Euclidean distance is averaged instead of being summed across spatial locations (**Hint:** simply divide the result by the product of `size(x,1)` and `size(x,2)`).
+> 2.  Change the code to compute the L1 distance (sum of absolute differences) instead of the squared Euclidean distance.
 > 3.  Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more.
 
 ## Part 3: Learning a CNN for text deblurring {#part3}

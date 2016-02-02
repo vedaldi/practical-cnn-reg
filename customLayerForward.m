@@ -1,2 +1,6 @@
 function y = customLayerForward(x,r)
-y = sum(sum(sum((x - r).^2, 1), 2), 3) ;
+
+dif = x - r ;
+y = sum(dif(:).^2) ;
+
+y = y / (size(x,1) * size(x,2)) ;  % normalize by image size
