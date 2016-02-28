@@ -14,7 +14,7 @@ This practical explores the basics of learning (deep) CNNs. The first part intro
 
 $$
    \newcommand{\bx}{\mathbf{x}}
-   \newcommand{\by}{\mathbf{y}}a
+   \newcommand{\by}{\mathbf{y}}
    \newcommand{\bz}{\mathbf{z}}
    \newcommand{\bw}{\mathbf{w}}
    \newcommand{\bp}{\mathbf{p}}
