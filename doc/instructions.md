@@ -376,11 +376,11 @@ The first step is to write the forward mode. This is contained in the `customLay
 
 ```.language-matlab
 function y = customLayerForward(x,r)
-dif = x - r ;
-y = sum(dif(:).^2) ;
+delta = x - r ;
+y = sum(delta(:).^2) ;
 ```
 
-The function computes the difference `x - r`, squares the individual elements (`.^2`), and then sums the results. The vectorization `dif(:)` just turns the tensor into a simple vector, so that the sum will work for all elements (otherwise it would sum only one dimension). The overall result is a scalar `y`, which is the sum of the squared Euclidean distances between `x` and `r`, for all data instances.
+The function computes the difference `x - r`, squares the individual elements (`.^2`), and then sums the results. The vectorization `delta(:)` just turns the tensor into a vector by stacking, so that the sum is carried across all elements (by default `sum` operates only along the first dimension). The overall result is a scalar `y`, which is the sum of the squared Euclidean distances between `x` and `r`, for all data instances.
 
 Next, we need to implement the backward mode:
 
@@ -393,20 +393,18 @@ Note that the backward mode takes the projection tensor `p` as an additional arg
 
 $$
 \langle \bp, f(\bx) \rangle
-= p_{1,1,1,t} \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
+= p \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
 $$
 
-Here the subscript $t$ index the data instance in the batch; note that, for a given $t$, the projection is simply a scalar, since the output of the Euclidean distance is a scalar.
+Here the subscript $t$ index the data instance in the batch; note that, since this function computes the sum of Euclidean distances for all tensor instances, the output $f(\bx)$ is a scalar, and so is the projection $\bp = p$.
 
 In order to see how to implement the backward mode, compute the derivative w.r.t. each input element $x_{ijkt}$:
 
 $$
-\frac{\partial}{\partial x_{ijk}}
+\frac{\partial}{\partial x_{ijkt}}
 \langle \bp, f(\bx) \rangle
-= 2 p_{1,1,1,t} (x_{ijkt} - r_{ijkt}).
+= 2 p (x_{ijkt} - r_{ijkt}).
 $$
-
-In the code, the `bsxfun` MATLAB function is used to multiply the value $p_{1,1,1,t}$ with all the elements $x_{ijkt} - r_{ijkt}$ in a single step.
 
 > **Tasks:**
 > 

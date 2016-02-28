@@ -35,7 +35,7 @@
 <li>Data only: <a href="http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-data-only.tar.gz">practical-cnn-reg-2016a-data-only.tar.gz</a></li>
 <li><a href="https://github.com/vedaldi/practical-cnn-reg">Git repository</a> (for lab setters and developers)</li>
 </ul>
-<p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files <code>exercise2.m</code>, <code>exercise3.m</code>, and <code>exercise4.m</code> are given for <a href="#part2">Part II</a> and <a href="#part3">III</a>.</p>
+<p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files <code>exercise2.m</code>, and <code>exercise3.m</code>, are given for <a href="#part2">Part II</a> and <a href="#part3">III</a>.</p>
 <p>Each part contains several <strong>Questions</strong> (that may require pen and paper) and <strong>Tasks</strong> (that require experimentation or coding) to be answered/completed before proceeding further in the practical.</p>
 <h2 id="part1">Part 1: CNN building blocks</h2>
 <p>In this part we will explore two fundamental building blocks of CNNs, linear convolution and non-linear activation functions. Open <code>exercise1.m</code> and run up to the <code>setup()</code> command, which initializes the MATLAB environment to use MatConvNet.</p>
@@ -343,37 +343,37 @@ dy = vl_nnrelu(z, p) ;
 <p>Creating new layers is a common task when experimenting with novel CNN architectures. In this part you will implement a layer computing the Euclidean distance between a tensor <code>x</code> and a reference tensor <code>r</code>. This layer will be used later to learn a CNN from data.</p>
 <p>The first step is to write the forward mode. This is contained in the <code>customLayerForward.m</code> function. Open the file and check its content:</p>
 <pre><code class="language-matlab">function y = customLayerForward(x,r)
-y = sum(sum(sum((x - r).^2, 1), 2), 3) ;
+delta = x - r ;
+y = sum(delta(:).^2) ;
 </code></pre>
 
-<p>The function computes the difference <code>x - r</code>, squares the individual elements (<code>.^2</code>), and then sums the results along the first, second, and third dimensions. The overall result is a tensor <code>y</code> which has dimension $1 \times 1 \times 1 \times N$ (a scalar for each of the $N$ data instances in the batch) and value equal to the squared Euclidean distance between <code>x</code> and <code>x0</code>.</p>
+<p>The function computes the difference <code>x - r</code>, squares the individual elements (<code>.^2</code>), and then sums the results. The vectorization <code>delta(:)</code> just turns the tensor into a vector by stacking, so that the sum is carried across all elements (by default <code>sum</code> operates only along the first dimension). The overall result is a scalar <code>y</code>, which is the sum of the squared Euclidean distances between <code>x</code> and <code>r</code>, for all data instances.</p>
 <p>Next, we need to implement the backward mode:</p>
 <pre><code class="language-matlab">function dx = customLayerBackward(x,r,p)
-dx = 2 * bsxfun(@times, p, x - r) ;
+dx = 2 * p * (x - r) ;
 </code></pre>
 
 <p>Note that the backward mode takes the projection tensor <code>p</code> as an additional argument. Let us show that this code is correct. Recall that the goal of the backward mode is to compute the derivative of the projected function:</p>
 <p>
 <script type="math/tex; mode=display">
 \langle \bp, f(\bx) \rangle
-= p_{1,1,1,t} \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
+= p \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
 </script>
 </p>
-<p>Here the subscript $t$ index the data instance in the batch; note that, for a given $t$, the projection is simply a scalar, since the output of the Euclidean distance is a scalar.</p>
+<p>Here the subscript $t$ index the data instance in the batch; note that, since this function computes the sum of Euclidean distances for all tensor instances, the output $f(\bx)$ is a scalar, and so is the projection $\bp = p$.</p>
 <p>In order to see how to implement the backward mode, compute the derivative w.r.t. each input element $x_{ijkt}$:</p>
 <p>
 <script type="math/tex; mode=display">
-\frac{\partial}{\partial x_{ijk}}
+\frac{\partial}{\partial x_{ijkt}}
 \langle \bp, f(\bx) \rangle
-= 2 p_{1,1,1,t} (x_{ijkt} - r_{ijkt}).
+= 2 p (x_{ijkt} - r_{ijkt}).
 </script>
 </p>
-<p>In the code, the <code>bsxfun</code> MATLAB function is used to multiply the value $p_{1,1,1,t}$ with all the elements $x_{ijkt} - r_{ijkt}$ in a single step.</p>
 <blockquote>
 <p><strong>Tasks:</strong></p>
 <ol>
 <li>Verify that the forward and backward functions are correct by computing the derivatives numerically using <code>checkDerivativeNumerically()</code>.</li>
-<li>Change the code such that the Euclidean distance is averaged instead of being summed across spatial locations (<strong>Hint:</strong> simply divide by the result by the product of <code>size(x,1)</code> and <code>size(x,2)</code>).</li>
+<li>Change the code to compute the L1 distance (sum of absolute differences) instead of the squared Euclidean distance.</li>
 <li>Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more.</li>
 </ol>
 </blockquote>
@@ -451,7 +451,7 @@ colormap gray ;
 </li>
 </ul>
 <blockquote>
-<p><strong>Question:</strong> what would happen <code>pad</code> was set to zero?</p>
+<p><strong>Question:</strong> what would happen if <code>pad</code> was set to zero?</p>
 </blockquote>
 <p>The convolution layer is followed by ReLU, which is given simply by:</p>
 <pre><code class="language-matlab">net.layers{end+1} = struct(...
@@ -593,7 +593,7 @@ trainOpts.gpus = [] ;
 trainOpts.errorFunction = 'none' ;
 </code></pre>
 
-<p>The fields are ass follows:</p>
+<p>The fields are as follows:</p>
 <ul>
 <li>
 <p><code>expDir</code> specifies a directory to store intermediate data (snapshot and figures) as well as the final model. Note that the code resumes execution from the last snapshot; therefore change this directory or clear it if you want to start learning from scratch.</p>
@@ -614,7 +614,7 @@ trainOpts.errorFunction = 'none' ;
 <p><code>gpus</code> contains a list of GPU IDs to use. For now, do not use any.</p>
 </li>
 <li>
-<p><code>errorFunction</code> disable plotting the default error functions that are suitable for classification, but not for our problem.</p>
+<p><code>errorFunction</code> disables plotting the default error functions that are suitable for classification, but not for our problem.</p>
 </li>
 </ul>
 <p>Finally, we can invoke the learning code:</p>
@@ -717,7 +717,7 @@ trainOpts.gpus = [1] ;
 <hr />
 <ol>
 <li id="fn:convolution">
-<p>if you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index $i-u$ instead of $i+u$ in this expression. The convention $i+u$, which is often used in CNNs, is  often referred to as correlation.&#160;<a class="footnote-backref" href="#fnref:convolution" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>If you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index $i-u$ instead of $i+u$ in this expression. The convention $i+u$, which is often used in CNNs, is  often referred to as correlation.&#160;<a class="footnote-backref" href="#fnref:convolution" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:derivative">
 <p>The derivative is computed with respect to a certain assignment $x_0$ and $(w_1,\dots,w_L)$ to the network input and parameters; furthermore, the intermediate derivatives are computed at points $x_1,\dots,x_L$ obtained by evaluating the network at $x_0$.&#160;<a class="footnote-backref" href="#fnref:derivative" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
