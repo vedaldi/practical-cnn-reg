@@ -69,6 +69,11 @@ $$</mathjax></p>
 <li>Data only: <a href="http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-data-only.tar.gz">practical-cnn-reg-2016a-data-only.tar.gz</a></li>
 <li><a href="https://github.com/vedaldi/practical-cnn-reg">Git repository</a> (for lab setters and developers)</li>
 </ul>
+<p>You can either unpack the archive manually, or use the following MATLAB one-liner:</p>
+<pre><code class="language-matlab">untar('http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a.tar.gz')
+cd practical-cnn-reg-2016a
+</code></pre>
+
 <p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files <code>exercise2.m</code>, and <code>exercise3.m</code>, are given for <a href="#part2">Part II</a> and <a href="#part3">III</a>.</p>
 <p>Each part contains several <strong>Questions</strong> (that may require pen and paper) and <strong>Tasks</strong> (that require experimentation or coding) to be answered/completed before proceeding further in the practical.</p>
 <h2 id="part1">Part 1: CNN building blocks</h2>
@@ -691,8 +696,12 @@ title('CNN output') ;
 </blockquote>
 <h3 id="part-35-learning-a-larger-model-using-the-gpu">Part 3.5: Learning a larger model using the GPU</h3>
 <p>So far, we have trained a single small network to solve this problem. Here, we will experiment with several variants to try to improve the performance as much as possible.</p>
-<p>Before we experiment further, however, it is beneficial to switch to using a GPU. If you have a GPU and MATLAB Parallel Toolbox installed, you can try running the code above on the GPU by changing a single switch. Assuming that the GPU has index 1 (which is always the case if there is a single CUDA-compatible GPU in your machine), use:</p>
-<pre><code>trainOpts.expDir = 'data/text-small-gpu'
+<p>Before we experiment further, however, it is beneficial to switch to using a GPU. If you have a GPU and MATLAB Parallel Toolbox installed, you can try running the code above on the GPU by changing a single switch. To prepare MatConvNet to use the GPU, change the first line of the script from <code>setup</code> to:</p>
+<pre><code class="language-matlab">setup('useGpu', true) ;
+</code></pre>
+
+<p>Assuming that the GPU has index 1 (which is always the case if there is a single CUDA-compatible GPU in your machine), modify the training options to tell MatConvNet to use that GPU:</p>
+<pre><code class="language-matlab">trainOpts.expDir = 'data/text-small-gpu'
 trainOpts.gpus = [1] ;
 </code></pre>
 

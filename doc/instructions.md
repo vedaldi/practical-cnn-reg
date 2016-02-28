@@ -33,6 +33,13 @@ Read and understand the [requirements and installation instructions](../overview
 * Data only: [practical-cnn-reg-2016a-data-only.tar.gz](http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a-data-only.tar.gz)
 * [Git repository](https://github.com/vedaldi/practical-cnn-reg) (for lab setters and developers)
 
+You can either unpack the archive manually, or use the following MATLAB one-liner:
+
+```.language-matlab
+untar('http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a.tar.gz')
+cd practical-cnn-reg-2016a
+```
+
 After the installation is complete, open and edit the script `exercise1.m` in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for [Part I](#part1) of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files `exercise2.m`, and `exercise3.m`, are given for [Part II](#part2) and [III](#part3).
 
 Each part contains several **Questions** (that may require pen and paper) and **Tasks** (that require experimentation or coding) to be answered/completed before proceeding further in the practical.
@@ -632,15 +639,18 @@ title('CNN output') ;
 
 So far, we have trained a single small network to solve this problem. Here, we will experiment with several variants to try to improve the performance as much as possible.
 
-Before we experiment further, however, it is beneficial to switch to using a GPU. If you have a GPU and MATLAB Parallel Toolbox installed, you can try running the code above on the GPU by changing a single switch. Assuming that the GPU has index 1 (which is always the case if there is a single CUDA-compatible GPU in your machine), use:
-
+Before we experiment further, however, it is beneficial to switch to using a GPU. If you have a GPU and MATLAB Parallel Toolbox installed, you can try running the code above on the GPU by changing a single switch. To prepare MatConvNet to use the GPU, change the first line of the script from `setup` to:
+```.language-matlab
+setup('useGpu', true) ;
 ```
+Assuming that the GPU has index 1 (which is always the case if there is a single CUDA-compatible GPU in your machine), modify the training options to tell MatConvNet to use that GPU:
+
+```.language-matlab
 trainOpts.expDir = 'data/text-small-gpu'
 trainOpts.gpus = [1] ;
 ```
 
 Do not forget to also change `expDir` in order to start a new experiment from scratch.
-
 > **Task:** Test GPU-based training (if possible). How much faster does it run compared to CPU-based training?
 
 Now we are ready to experiment with different CNNs. 
