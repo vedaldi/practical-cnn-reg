@@ -59,5 +59,5 @@ dx = customLayerBackward(x, x0, p) ;
 % Check the derivative numerically
 figure(3) ; clf('reset') ;
 set(gcf,'name','Part 2.3: custom layer') ;
-func = @(x) proj(p, customLayerForward(x,x0)) ;
+func = @(x) proj(p, customLayerForward(x, x0)) ;
 checkDerivativeNumerically(func, x, dx) ;

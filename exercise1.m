@@ -18,7 +18,7 @@ y = vl_nnconv(x, w, []) ;
 
 % Visualize the results
 figure(1) ; clf ; colormap gray ;
-set(gcf,'name','P1.1: convolution') ;
+set(gcf,'name','Part 1.1: convolution') ;
 
 subplot(1,3,1) ;
 imagesc(x) ;
@@ -60,7 +60,7 @@ y = vl_nnconv(x, wbank, []) ;
 
 % Show feature channels
 figure(2) ; clf('reset') ;
-set(gcf,'name','P1.1.2: channels') ;
+set(gcf,'name','Part 1.1.2: channels') ;
 colormap gray ;
 showFeatureChannels(y) ;
 
@@ -73,7 +73,7 @@ x = cat(4, x1, x2) ;
 y = vl_nnconv(x, wbank, []) ;
 
 figure(3) ; clf('reset') ; colormap gray ;
-set(gcf,'name','P1.1.3: filtering a batch') ;
+set(gcf,'name','Part 1.1.3: filtering a batch') ;
 
 subplot(4,2,1) ; imagesc(x1) ; axis off image ;
 subplot(4,2,3) ; imagesc(y(:,:,1,1)) ; axis off image ;
@@ -96,7 +96,7 @@ y = vl_nnconv(x, - w, []) ;
 % Apply the ReLU operator
 z = vl_nnrelu(y) ;
 
-figure(4) ; clf ; set(gcf,'name','P1.2.1: Laplacian and ReLU') ;
+figure(4) ; clf ; set(gcf,'name','Part 1.2.1: Laplacian and ReLU') ;
 colormap gray ;
 subplot(1,3,1); imagesc(x) ; axis off image ; title('image x') ;
 subplot(1,3,2); imagesc(y) ; axis off image ; title('Laplacian y')
@@ -108,7 +108,7 @@ bias = single(- 0.2) ;
 y = vl_nnconv(x, - w, bias) ;
 z = vl_nnrelu(y) ;
 
-figure(5) ; clf ; set(gcf,'name','P1.2.2: adding a bias') ;
+figure(5) ; clf ; set(gcf,'name','Part 1.2.2: adding a bias') ;
 colormap gray ;
 subplot(1,3,1); imagesc(x) ; axis off image ; title('image x') ;
 subplot(1,3,2); imagesc(y) ; axis off image ; title('Laplacian y with bias')
