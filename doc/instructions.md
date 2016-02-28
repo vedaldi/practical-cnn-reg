@@ -1,4 +1,4 @@
-# VGG Convolutional Neural Networks Practical (2)
+# VGG CNN Practical: Image Regression
 
 *By Andrea Vedaldi, Karel Lenc, and Joao Henriques*
 
@@ -10,9 +10,11 @@ This is an [Oxford Visual Geometry Group](http://www.robots.ox.ac.uk/~vgg) compu
 
 This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters. The second part explores backpropagation, including designing custom layers and verifying them numerically. The last part demonstrates learning a CNN for text deblurring; this differs from the usual problem of image classification and demonstrates the flexibility of these techniques.
 
+[TOC]
+
 $$
    \newcommand{\bx}{\mathbf{x}}
-   \newcommand{\by}{\mathbf{y}}
+   \newcommand{\by}{\mathbf{y}}a
    \newcommand{\bz}{\mathbf{z}}
    \newcommand{\bw}{\mathbf{w}}
    \newcommand{\bp}{\mathbf{p}}
@@ -39,11 +41,11 @@ Each part contains several **Questions** (that may require pen and paper) and **
 
 In this part we will explore two fundamental building blocks of CNNs, linear convolution and non-linear activation functions. Open `exercise1.m` and run up to the `setup()` command, which initializes the MATLAB environment to use MatConvNet.
 
-### Part 1.1: convolution {#part1.1}
+### Part 1.1: Convolution {#part1.1}
 
 A *convolutional neural network* (CNN) is a sequence of linear and non-linear convolution-like operators. The most important example of such operators is *linear convolution*. In this part, we will explore linear convolution and see how to use it in MatConvNet. 
 
-#### Part 1.1.1: convolution by a single filter {#part1.1.1}
+#### Part 1.1.1: Convolution by a single filter {#part1.1.1}
 
 Start by identifying and then running the following code fragment in `exercise1.m`:
 
@@ -108,7 +110,7 @@ $$
 > 1. If $H \times W$ is the size of the input image, $H' \times W'$ the size of the filter, what is the size $H'' \times W''$ of the output image?
 > 2. The filter $\bw$ given above is a discretized Laplacian operator. Which type of visual structures (corners, bars, ...) do you think may excite this filter the most?
 
-#### Part 1.1.2: convolution by a filter bank {#part1.1.2}
+#### Part 1.1.2: Convolution by a filter bank {#part1.1.2}
 
 In neural networks, one usually operates with *filter banks* instead of individual filters. Each filter can be though of as computing a different *feature channel*, characterizing a particular statistical property of the input image.
 
@@ -150,7 +152,7 @@ $$
 > * If the input tensor $\bx$ has $C$ feature channels, what should be the third dimension of $\bw$?
 > * In the code above, the command `wbank = cat(4, w1, w2, w3)` concatenates the tensors `w1`, `w2`, and `w3` along the *fourth dimension*. Why is that given that filters should have three dimensions?
 
-#### Part 1.1.3: convolving a batch of images {#part1.1.3}
+#### Part 1.1.3: Convolving a batch of images {#part1.1.3}
 
 Finally, in training CNNs it is often important to be able to work efficiently with *batches* of data. MatConvNet allows packing more than one instance of the tensor $\bx$ in a single MATLAB array `x` by stacking the different instances along the *fourth dimension* of the array:
 
@@ -164,7 +166,7 @@ y = vl_nnconv(x, wbank, []) ;
 
 > **Task:** Run the code above and visualize the result. Convince yourself that each filter is applied to each image.
 
-### Part 1.2: non-linear activation (ReLU) {#part1.2}
+### Part 1.2: Non-linear activation (ReLU) {#part1.2}
 
 CNNs are obtained by composing several operators, individually called *layers*. In addition to convolution and other linear layers, CNNs should contain non-linear layers as well.
 
@@ -211,7 +213,7 @@ There is only one `bias` term because there is only one filter in the bank (note
 
 > **Remark:** There are many other building blocks used in CNNs, the most important of which is perhaps max pooling. However, convolution and ReLU can solve already many problems, as we will see in the remainder of the practical.
 
-## Part 2: backpropagation {#part2}
+## Part 2: Backpropagation {#part2}
 
 Training CNNs is normally done using a gradient-based optimization method. The CNN $f$ is the composition of $L$ layers $f_l$ each with parameters $\bw_l$, which in the simplest case of a chain looks like:
 $$
@@ -422,7 +424,7 @@ We will consider in particular the problem of *deblurring images of text*, as in
 
 ![Data example](images/text.png)
 
-### Part 3.1: preparing the data {#part3.1}
+### Part 3.1: Preparing the data {#part3.1}
 
 The first task is to load the training and validation data and to understand its format. Start by opening in your MATLAB editor `exercise3.m`. The code responsible for loading the data is
 
@@ -456,7 +458,7 @@ It is often important to center the data to better condition the learning proble
 
 > **Question:** why was the interval $[-1, 0]$ chosen? **Hint:** what intensity corresponds to 'white'? What does the convolution operator do near the image boundaries?
 
-### Part 3.2: defining a CNN architecture
+### Part 3.2: Defining a CNN architecture
 
 Next we define a CNN `net` and initialize its weights randomly. A CNN is simply a collection of interlinked layers. While these can be assembled 'manually' as you did in Part 2, it is usually more convenient to use a **wrapper**.
 
@@ -532,7 +534,7 @@ The last row reports the *receptive field size* for the layer. This is the size 
 
 > **Question:**  what is the receptive field size of the pixel in the output image (generated by the prediction layer)? Discuss whether a larger receptive field size might be preferable for this problem and how this might be obtained.
 
-### Part 3.3: learning the network {#part3.3}
+### Part 3.3: Learning the network {#part3.3}
 
 In this part we will use SGD to learn the CNN from the available training data. As noted above, the CNN must however terminate in a loss layer. We add one such layer as follows:
 
@@ -590,7 +592,7 @@ The function takes as input the `imdb` structure defined above and a list `batch
 
 > **Task:** run the training code and wait for learning to be complete. Note that the model is saved in `data/text-small/net-epoch-16.mat', where 16 is the number of the last epoch.
 
-## Part 3.4: evaluate the model
+### Part 3.4: Evaluate the model
 
 The network is evaluated on the validation set during training. The validation error (which in our case is the average squared differences between the predicted output pixels and the desired ones), is a good indicator of how well the network is doing (in practice, one should ultimately evaluate the network on a held-out test set).
 
