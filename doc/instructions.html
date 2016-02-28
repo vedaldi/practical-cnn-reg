@@ -50,8 +50,7 @@
 </li>
 </ul>
 </div>
-<p>
-<script type="math/tex; mode=display">
+<p><mathjax>$$
    \newcommand{\bx}{\mathbf{x}}
    \newcommand{\by}{\mathbf{y}}a
    \newcommand{\bz}{\mathbf{z}}
@@ -61,8 +60,7 @@
    \newcommand{\cN}{\mathcal{N}}
    \newcommand{\vc}{\operatorname{vec}}
    \newcommand{\vv}{\operatorname{vec}}
-</script>
-</p>
+$$</mathjax></p>
 <h2 id="getting-started">Getting started</h2>
 <p>Read and understand the <a href="../overview/index.html#installation">requirements and installation instructions</a>. The download links for this practical are:</p>
 <ul>
@@ -117,25 +115,24 @@ title('output image y') ;
 <p><strong>Task:</strong> Run the code above and examine the result, which should look like the following image:</p>
 </blockquote>
 <p><img width=80% src="images/conv.png" alt="cover"/></p>
-<p>The input $\bx$ is an $M \times N$ matrix, which can be interpreted as a gray scale image. The filter $\bw$ is the $3 \times 3$ matrix
-<script type="math/tex; mode=display">
+<p>The input <mathjax>$\bx$</mathjax> is an <mathjax>$M \times N$</mathjax> matrix, which can be interpreted as a gray scale image. The filter <mathjax>$\bw$</mathjax> is the <mathjax>$3 \times 3$</mathjax> matrix
+<mathjax>$$
 \bw = 
 \begin{bmatrix}
-0 & -1 & 0 \\
--1 & 4 & -1 \\
-0 & -1 & 0 \\
+0 &amp; -1 &amp; 0 \\
+-1 &amp; 4 &amp; -1 \\
+0 &amp; -1 &amp; 0 \\
 \end{bmatrix}
-</script>
-The output of the convolution is a new matrix $\by$ given by<sup id="fnref:convolution"><a class="footnote-ref" href="#fn:convolution" rel="footnote">1</a></sup>
-<script type="math/tex; mode=display">
+$$</mathjax>
+The output of the convolution is a new matrix <mathjax>$\by$</mathjax> given by<sup id="fnref:convolution"><a class="footnote-ref" href="#fn:convolution" rel="footnote">1</a></sup>
+<mathjax>$$
 y_{ij} = \sum_{uv} w_{uv}\ x_{i+u,\ j+v}
-</script>
-</p>
+$$</mathjax></p>
 <blockquote>
 <p><strong>Questions:</strong></p>
 <ol>
-<li>If $H \times W$ is the size of the input image, $H' \times W'$ the size of the filter, what is the size $H'' \times W''$ of the output image?</li>
-<li>The filter $\bw$ given above is a discretized Laplacian operator. Which type of visual structures (corners, bars, ...) do you think may excite this filter the most?</li>
+<li>If <mathjax>$H \times W$</mathjax> is the size of the input image, <mathjax>$H' \times W'$</mathjax> the size of the filter, what is the size <mathjax>$H'' \times W''$</mathjax> of the output image?</li>
+<li>The filter <mathjax>$\bw$</mathjax> given above is a discretized Laplacian operator. Which type of visual structures (corners, bars, ...) do you think may excite this filter the most?</li>
 </ol>
 </blockquote>
 <h4 id="part1.1.2">Part 1.1.2: Convolution by a filter bank</h4>
@@ -160,25 +157,24 @@ w3 = single([
 wbank = cat(4, w1, w2, w3) ;
 </code></pre>
 
-<p>The first filter $\bw_1$ is the Laplacian operator seen above; two additional filters $\bw_2$ and $\bw_3$ are horizontal and vertical image derivatives, respectively. The command <code>vl_nnconv(x, wbank, [])</code> then applies all the filters in the bank to the input image <code>x</code>. Note that the output <code>y</code> is not just a matrix, but a 3D  array (often called a <em>tensor</em> in the CNN jargon). This tensor has dimensions $H \times W \times K$, where $K$ is the number of <em>feature channels</em>.</p>
+<p>The first filter <mathjax>$\bw_1$</mathjax> is the Laplacian operator seen above; two additional filters <mathjax>$\bw_2$</mathjax> and <mathjax>$\bw_3$</mathjax> are horizontal and vertical image derivatives, respectively. The command <code>vl_nnconv(x, wbank, [])</code> then applies all the filters in the bank to the input image <code>x</code>. Note that the output <code>y</code> is not just a matrix, but a 3D  array (often called a <em>tensor</em> in the CNN jargon). This tensor has dimensions <mathjax>$H \times W \times K$</mathjax>, where <mathjax>$K$</mathjax> is the number of <em>feature channels</em>.</p>
 <blockquote>
-<p><strong>Question:</strong> What is the number of feature channels $C$ in this example? Why?</p>
+<p><strong>Question:</strong> What is the number of feature channels <mathjax>$C$</mathjax> in this example? Why?</p>
 <p><strong>Task:</strong> Run the code above and visualize the individual feature channels in the tensor <code>y</code> by using the provided function <code>showFeatureChannels()</code>. Do the channel responses make sense given the filter used to generate them?</p>
 </blockquote>
 <p>In a CNN, not only the output tensor, but also the input tensor <code>x</code> and the filters <code>wbank</code> can have multiple feature channels. In this case, the convolution formula becomes:
-<script type="math/tex; mode=display">
+<mathjax>$$
 y_{ijk} = \sum_{uvp} w_{uvpk}\ x_{i+u,\ j+v,\ p}
-</script>
-</p>
+$$</mathjax></p>
 <blockquote>
 <p><strong>Questions:</strong> </p>
 <ul>
-<li>If the input tensor $\bx$ has $C$ feature channels, what should be the third dimension of $\bw$?</li>
+<li>If the input tensor <mathjax>$\bx$</mathjax> has <mathjax>$C$</mathjax> feature channels, what should be the third dimension of <mathjax>$\bw$</mathjax>?</li>
 <li>In the code above, the command <code>wbank = cat(4, w1, w2, w3)</code> concatenates the tensors <code>w1</code>, <code>w2</code>, and <code>w3</code> along the <em>fourth dimension</em>. Why is that given that filters should have three dimensions?</li>
 </ul>
 </blockquote>
 <h4 id="part1.1.3">Part 1.1.3: Convolving a batch of images</h4>
-<p>Finally, in training CNNs it is often important to be able to work efficiently with <em>batches</em> of data. MatConvNet allows packing more than one instance of the tensor $\bx$ in a single MATLAB array <code>x</code> by stacking the different instances along the <em>fourth dimension</em> of the array:</p>
+<p>Finally, in training CNNs it is often important to be able to work efficiently with <em>batches</em> of data. MatConvNet allows packing more than one instance of the tensor <mathjax>$\bx$</mathjax> in a single MATLAB array <code>x</code> by stacking the different instances along the <em>fourth dimension</em> of the array:</p>
 <pre><code class="language-matlab">x1 = im2single(rgb2gray(imread('data/ray.jpg'))) ;
 x2 = im2single(rgb2gray(imread('data/crab.jpg'))) ;
 x = cat(4, x1, x2) ;
@@ -195,9 +191,9 @@ y = vl_nnconv(x, wbank, []) ;
 <p><strong>Question:</strong> What happens if all layers are linear?</p>
 </blockquote>
 <p>The simplest non-linearity is given by scalar activation functions, which are applied independently to each element of a tensor. Perhaps the simplest and one of the most useful examples is the <em>Rectified Linear Unit</em> (ReLU) operator:
-<script type="math/tex; mode=display">
+<mathjax>$$
    y_{ijk} = \max \{0, x_{ijk}\}
-</script>
+$$</mathjax>
 which simply cuts off any negative value in the data.</p>
 <p>In MatConvNet, ReLU is implemented by the <code>vl_nnrelu</code> function. To demonstrate its use, we convolve the test image with the negated Laplacian, and then apply ReLU to the result:</p>
 <pre><code class="language-matlab">% Convolve with the negated Laplacian
@@ -229,8 +225,8 @@ z = vl_nnrelu(y) ;
 <p><strong>Remark:</strong> There are many other building blocks used in CNNs, the most important of which is perhaps max pooling. However, convolution and ReLU can solve already many problems, as we will see in the remainder of the practical.</p>
 </blockquote>
 <h2 id="part2">Part 2: Backpropagation</h2>
-<p>Training CNNs is normally done using a gradient-based optimization method. The CNN $f$ is the composition of $L$ layers $f_l$ each with parameters $\bw_l$, which in the simplest case of a chain looks like:
-<script type="math/tex; mode=display">
+<p>Training CNNs is normally done using a gradient-based optimization method. The CNN <mathjax>$f$</mathjax> is the composition of <mathjax>$L$</mathjax> layers <mathjax>$f_l$</mathjax> each with parameters <mathjax>$\bw_l$</mathjax>, which in the simplest case of a chain looks like:
+<mathjax>$$
  \bx_0
  \longrightarrow 
  \underset{\displaystyle\underset{\displaystyle\bw_1}{\uparrow}}{\boxed{f_1}} 
@@ -248,10 +244,10 @@ z = vl_nnrelu(y) ;
  \underset{\displaystyle\underset{\displaystyle\bw_2}{\uparrow}}{\boxed{f_L}}
  \longrightarrow
  \bx_L
-</script>
-During learning, the last layer of the network is the <em>loss function</em> that should be minimized. Hence, the output $\bx_L = x_L$ of the network is a <strong>scalar</strong> quantity.</p>
+$$</mathjax>
+During learning, the last layer of the network is the <em>loss function</em> that should be minimized. Hence, the output <mathjax>$\bx_L = x_L$</mathjax> of the network is a <strong>scalar</strong> quantity.</p>
 <p>The gradient is easily computed using using the <strong>chain rule</strong>. If <em>all</em> network variables and parameters are scalar, this is given by<sup id="fnref:derivative"><a class="footnote-ref" href="#fn:derivative" rel="footnote">2</a></sup>:
-<script type="math/tex; mode=display">
+<mathjax>$$
  \frac{\partial f}{\partial w_l}(x_0;w_1,\dots,w_L)
  =
  \frac{\partial f_L}{\partial x_L}(x_L;w_L) \times
@@ -259,14 +255,14 @@ During learning, the last layer of the network is the <em>loss function</em> tha
  \times
  \frac{\partial f_{l+1}}{\partial x_l}(x_l;w_{l+1}) \times
  \frac{\partial f_{l}}{\partial w_l}(x_{l-1};w_l) 
-</script>
-With tensors, however, there are some complications. Consider for instance the derivative of a function $\by=f(\bx)$ where both $\by$ and $\bx$ are tensors; this is formed by taking the derivative of each scalar element in the output $\by$ w.r.t. each scalar element in the input $\bx$. If $\bx$ has dimensions $H \times W \times C$ and $\by$ has dimensions $H' \times W' \times C'$, then the derivative contains $HWCH'W'C'$ elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).</p>
+$$</mathjax>
+With tensors, however, there are some complications. Consider for instance the derivative of a function <mathjax>$\by=f(\bx)$</mathjax> where both <mathjax>$\by$</mathjax> and <mathjax>$\bx$</mathjax> are tensors; this is formed by taking the derivative of each scalar element in the output <mathjax>$\by$</mathjax> w.r.t. each scalar element in the input <mathjax>$\bx$</mathjax>. If <mathjax>$\bx$</mathjax> has dimensions <mathjax>$H \times W \times C$</mathjax> and <mathjax>$\by$</mathjax> has dimensions <mathjax>$H' \times W' \times C'$</mathjax>, then the derivative contains <mathjax>$HWCH'W'C'$</mathjax> elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).</p>
 <p>Note that all intermediate derivatives in the chain rule may be affected by this size explosion except for the derivative of the network output that, being the loss, is a scalar.</p>
 <blockquote>
 <p><strong>Question:</strong> The output derivatives have the same size as the parameters in the network. Why?</p>
 </blockquote>
-<p><strong>Back-propagation</strong> allows computing the output derivatives in a memory-efficient manner. To see how, the first step is to generalize the equation above to tensors using a matrix notation. This is done by converting tensors into vectors by using the $\vv$ (stacking)<sup id="fnref:stacking"><a class="footnote-ref" href="#fn:stacking" rel="footnote">3</a></sup> operator:
-<script type="math/tex; mode=display">
+<p><strong>Back-propagation</strong> allows computing the output derivatives in a memory-efficient manner. To see how, the first step is to generalize the equation above to tensors using a matrix notation. This is done by converting tensors into vectors by using the <mathjax>$\vv$</mathjax> (stacking)<sup id="fnref:stacking"><a class="footnote-ref" href="#fn:stacking" rel="footnote">3</a></sup> operator:
+<mathjax>$$
  \frac{\partial \vv f}{\partial \vv^\top \bw_l}
  =
  \frac{\partial \vv f_L}{\partial \vv^\top \bx_L} \times
@@ -274,9 +270,9 @@ With tensors, however, there are some complications. Consider for instance the d
  \times
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
  \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l} 
-</script>
-The next step is to <em>project</em> the derivative with respect to a tensor $\bp_L = 1$ as follows:
-<script type="math/tex; mode=display">
+$$</mathjax>
+The next step is to <em>project</em> the derivative with respect to a tensor <mathjax>$\bp_L = 1$</mathjax> as follows:
+<mathjax>$$
  (\vv \bp_L)^\top \times \frac{\partial \vv f}{\partial \vv^\top \bw_l}
  =
  (\vv \bp_L)^\top
@@ -286,27 +282,25 @@ The next step is to <em>project</em> the derivative with respect to a tensor $\b
  \times
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
  \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l} 
-</script>
-Note that $\bp_L=1$ has the same dimension as $\bx_L$ (the scalar loss) and, being equal to 1, multiplying it to the left of the expression does not change anything. Things are more interesting when products are evaluated from the left to the right, i.e. <em>backward from the output to the input</em> of the CNN. The first such factors is given by:
-<script type="math/tex; mode=display">\begin{equation}
+$$</mathjax>
+Note that <mathjax>$\bp_L=1$</mathjax> has the same dimension as <mathjax>$\bx_L$</mathjax> (the scalar loss) and, being equal to 1, multiplying it to the left of the expression does not change anything. Things are more interesting when products are evaluated from the left to the right, i.e. <em>backward from the output to the input</em> of the CNN. The first such factors is given by:
+\begin{equation}
 \label{e:factor}
  (\vv \bp_{L-1})^\top = (\vv \bp_L)^\top
  \times
  \frac{\partial \vv f_L}{\partial \vv^\top \bx_L}
-\end{equation}</script>
-This results in a new projection vector $\bp_{L-1}$, which can then be multiplied to the left to obtain $\bp_{L-2}$ and so on. The last projection $\bp_l$ is the desired derivative. Crucially, each projection $\bp_q$ takes as much memory as the corresponding variable $\bx_q$.</p>
-<p>Some might have noticed that, while projections remain small, each factor \eqref{e:factor} does contain one of the large derivatives that we cannot compute explicitly. The trick is that CNN toolboxes contain code that can compute the projected derivatives without explicitly computing this large factor. In particular, for any building block function $\by=f(\bx;\bw)$, a toolbox such as MatConvNet will implement:</p>
+\end{equation}
+This results in a new projection vector <mathjax>$\bp_{L-1}$</mathjax>, which can then be multiplied to the left to obtain <mathjax>$\bp_{L-2}$</mathjax> and so on. The last projection <mathjax>$\bp_l$</mathjax> is the desired derivative. Crucially, each projection <mathjax>$\bp_q$</mathjax> takes as much memory as the corresponding variable <mathjax>$\bx_q$</mathjax>.</p>
+<p>Some might have noticed that, while projections remain small, each factor \eqref{e:factor} does contain one of the large derivatives that we cannot compute explicitly. The trick is that CNN toolboxes contain code that can compute the projected derivatives without explicitly computing this large factor. In particular, for any building block function <mathjax>$\by=f(\bx;\bw)$</mathjax>, a toolbox such as MatConvNet will implement:</p>
 <ul>
-<li>A <strong>forward mode</strong> computing the function $\by=f(\bx;\bw)$.</li>
-<li>A <strong>backward mode</strong> computing the derivatives of the projected function $\langle \bp, f(\bx;\bw) \rangle$ with respect to the input $\bx$ and parameter $\bw$:</li>
+<li>A <strong>forward mode</strong> computing the function <mathjax>$\by=f(\bx;\bw)$</mathjax>.</li>
+<li>A <strong>backward mode</strong> computing the derivatives of the projected function <mathjax>$\langle \bp, f(\bx;\bw) \rangle$</mathjax> with respect to the input <mathjax>$\bx$</mathjax> and parameter <mathjax>$\bw$</mathjax>:</li>
 </ul>
-<p>
-<script type="math/tex; mode=display">
+<p><mathjax>$$
 \frac{\partial}{\partial \bx} \left\langle \bp, f(\bx;\bw) \right\rangle,
 \qquad
 \frac{\partial}{\partial \bw} \left\langle \bp, f(\bx;\bw) \right\rangle.
-</script>
-</p>
+$$</mathjax></p>
 <p>For example, this is how this looks for the convolution operator:</p>
 <pre><code class="language-matlab">y = vl_nnconv(x,w,b) ; % forward mode (get output)
 p = randn(size(y), 'single') ; % projection tensor (arbitrary)
@@ -339,18 +333,18 @@ checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 <blockquote>
 <p><strong>Questions:</strong></p>
 <ol>
-<li>Recall that the derivative of a function $y=f(x)$ is given by
-    <script type="math/tex; mode=display">
+<li>Recall that the derivative of a function <mathjax>$y=f(x)$</mathjax> is given by
+    <mathjax>$$
       \frac{\partial f}{\partial x}(x) = \lim_{\delta\rightarrow 0} \frac{f(x+\delta) - f(x)}{\delta}
-    </script>
+    $$</mathjax>
     Open the file <code>checkDerivativeNumerically.m</code>. Can you identify the lines in the code above that use this expression?</li>
 <li>Note that <code>checkDerivativeNumerically()</code> is applied to the function <code>@(x) proj(p, vl_nnconv(x, w, []))</code>. This syntax defines a function on the fly (an anonymous closure to be more precise). In this case, the purpose of the closure is to evaluate the expression for a variable <code>x</code> and a fixed value of <code>w</code>. Furthermore, the closure projects the output of <code>vl_nnconv()</code> onto <code>p</code> by calling the <code>proj()</code> function. Why?</li>
 </ol>
 <p><strong>Tasks:</strong></p>
 <ol>
 <li>Run the code, visualizing the results. Convince yourself that the numerical and analytical derivatives are nearly identical.</li>
-<li>Modify the code to compute the derivative of the <em>first element</em> of the output tensor $\by$ with respect to <em>all the elements</em> of the input tensor $\bx$. <strong>Hint:</strong> it suffices to change the value of $\bp$.</li>
-<li>Modify the code to compute the derivative w.r.t. the convolution parameters $\bw$ instead of the convolution input $\bx$.</li>
+<li>Modify the code to compute the derivative of the <em>first element</em> of the output tensor <mathjax>$\by$</mathjax> with respect to <em>all the elements</em> of the input tensor <mathjax>$\bx$</mathjax>. <strong>Hint:</strong> it suffices to change the value of <mathjax>$\bp$</mathjax>.</li>
+<li>Modify the code to compute the derivative w.r.t. the convolution parameters <mathjax>$\bw$</mathjax> instead of the convolution input <mathjax>$\bx$</mathjax>.</li>
 </ol>
 </blockquote>
 <h3 id="part2.3">Part 2.2: Backpropagation</h3>
@@ -390,21 +384,17 @@ dx = 2 * p * (x - r) ;
 </code></pre>
 
 <p>Note that the backward mode takes the projection tensor <code>p</code> as an additional argument. Let us show that this code is correct. Recall that the goal of the backward mode is to compute the derivative of the projected function:</p>
-<p>
-<script type="math/tex; mode=display">
+<p><mathjax>$$
 \langle \bp, f(\bx) \rangle
 = p \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
-</script>
-</p>
-<p>Here the subscript $t$ index the data instance in the batch; note that, since this function computes the sum of Euclidean distances for all tensor instances, the output $f(\bx)$ is a scalar, and so is the projection $\bp = p$.</p>
-<p>In order to see how to implement the backward mode, compute the derivative w.r.t. each input element $x_{ijkt}$:</p>
-<p>
-<script type="math/tex; mode=display">
+$$</mathjax></p>
+<p>Here the subscript <mathjax>$t$</mathjax> index the data instance in the batch; note that, since this function computes the sum of Euclidean distances for all tensor instances, the output <mathjax>$f(\bx)$</mathjax> is a scalar, and so is the projection <mathjax>$\bp = p$</mathjax>.</p>
+<p>In order to see how to implement the backward mode, compute the derivative w.r.t. each input element <mathjax>$x_{ijkt}$</mathjax>:</p>
+<p><mathjax>$$
 \frac{\partial}{\partial x_{ijkt}}
 \langle \bp, f(\bx) \rangle
 = 2 p (x_{ijkt} - r_{ijkt}).
-</script>
-</p>
+$$</mathjax></p>
 <blockquote>
 <p><strong>Tasks:</strong></p>
 <ol>
@@ -423,11 +413,11 @@ dx = 2 * p * (x - r) ;
 <pre><code class="language-matlab">imdb = load('data/text_imdb.mat') ;
 </code></pre>
 
-<p>The variable <code>imdb</code> is a structure containing $n$ images, which will be used for training and validation. The structure has the following fields:</p>
+<p>The variable <code>imdb</code> is a structure containing <mathjax>$n$</mathjax> images, which will be used for training and validation. The structure has the following fields:</p>
 <ul>
-<li><code>imdb.images.data</code>: a $64 \times 64 \times 1 \times n$ array of grayscale blurred images.</li>
-<li><code>imdb.images.label</code>: a $64 \times 64 \times 1 \times n$ of grayscale sharp images.</li>
-<li><code>imdb.images.set</code>: a $1 \times n$ vector containing a 1 for training images and an 2 for validation images. 75% of the images are used for training and 25% for test.</li>
+<li><code>imdb.images.data</code>: a <mathjax>$64 \times 64 \times 1 \times n$</mathjax> array of grayscale blurred images.</li>
+<li><code>imdb.images.label</code>: a <mathjax>$64 \times 64 \times 1 \times n$</mathjax> of grayscale sharp images.</li>
+<li><code>imdb.images.set</code>: a <mathjax>$1 \times n$</mathjax> vector containing a 1 for training images and an 2 for validation images. 75% of the images are used for training and 25% for test.</li>
 </ul>
 <p>Run the following code, which displays the first image in the dataset and its label:</p>
 <pre><code class="language-matlab">figure(100) ; clf ;
@@ -444,9 +434,9 @@ colormap gray ;
 <blockquote>
 <p><strong>Task:</strong> make sure you understand the format of <code>imdb</code>. Use MATLAB to find out the number of training and validation images as well as the resolution (size) of each image.</p>
 </blockquote>
-<p>It is often important to center the data to better condition the learning problem. This is usually obtained by subtracting the mean pixel intensity (computed from the training set) from each pixel. Here, however, pixels are rescaled and shifted to have values in the interval $[-1, 0]$.</p>
+<p>It is often important to center the data to better condition the learning problem. This is usually obtained by subtracting the mean pixel intensity (computed from the training set) from each pixel. Here, however, pixels are rescaled and shifted to have values in the interval <mathjax>$[-1, 0]$</mathjax>.</p>
 <blockquote>
-<p><strong>Question:</strong> why was the interval $[-1, 0]$ chosen? <strong>Hint:</strong> what intensity corresponds to 'white'? What does the convolution operator do near the image boundaries?</p>
+<p><strong>Question:</strong> why was the interval <mathjax>$[-1, 0]$</mathjax> chosen? <strong>Hint:</strong> what intensity corresponds to 'white'? What does the convolution operator do near the image boundaries?</p>
 </blockquote>
 <h3 id="part-32-defining-a-cnn-architecture">Part 3.2: Defining a CNN architecture</h3>
 <p>Next we define a CNN <code>net</code> and initialize its weights randomly. A CNN is simply a collection of interlinked layers. While these can be assembled 'manually' as you did in Part 2, it is usually more convenient to use a <strong>wrapper</strong>.</p>
@@ -474,10 +464,10 @@ colormap gray ;
 <p><code>type</code> specifies the layer type, in this case convolution. </p>
 </li>
 <li>
-<p><code>weights</code> is a cell array containing the layer parameters, in this case two tensors for the filters and the biases. The filters are initialized using the <code>xavier()</code> function to have dimensions $3 \times 3 \times 1 \times 32$ ($3\times 3$ spatial support, 1 input feature channels, and 32 filters). <code>xavier()</code> also initializes the biases to be zero.</p>
+<p><code>weights</code> is a cell array containing the layer parameters, in this case two tensors for the filters and the biases. The filters are initialized using the <code>xavier()</code> function to have dimensions <mathjax>$3 \times 3 \times 1 \times 32$</mathjax> (<mathjax>$3\times 3$</mathjax> spatial support, 1 input feature channels, and 32 filters). <code>xavier()</code> also initializes the biases to be zero.</p>
 </li>
 <li>
-<p><code>pad</code> specifies the amount of zero padding to apply to the layer input. By using a padding of one pixel and a $3\times 3$ filter support, the output of the convolution will have exactly the same height and width as the input.</p>
+<p><code>pad</code> specifies the amount of zero padding to apply to the layer input. By using a padding of one pixel and a <mathjax>$3\times 3$</mathjax> filter support, the output of the convolution will have exactly the same height and width as the input.</p>
 </li>
 <li>
 <p><code>learningRate</code> contains two layer-specific multipliers to adjust the learning rate for the filters and the biases.</p>
@@ -726,7 +716,7 @@ trainOpts.gpus = [1] ;
 <li>Try adding more layers.</li>
 <li>Try adding more filters.</li>
 <li>Try increasing the receptive field size by increasing the filter support (do not forget to adjust the padding).</li>
-<li>Try sequences of rank-1 filters, such as $7 \times 1$ followed by $1 \times 7$ to increase the receptive field size while maintaining efficiency.</li>
+<li>Try sequences of rank-1 filters, such as <mathjax>$7 \times 1$</mathjax> followed by <mathjax>$1 \times 7$</mathjax> to increase the receptive field size while maintaining efficiency.</li>
 </ul>
 <p>And, of course, make sure to beat the other students.</p>
 <h2 id="links-and-further-work">Links and further work</h2>
@@ -753,16 +743,16 @@ trainOpts.gpus = [1] ;
 <hr />
 <ol>
 <li id="fn:convolution">
-<p>If you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index $i-u$ instead of $i+u$ in this expression. The convention $i+u$, which is often used in CNNs, is  often referred to as correlation.&#160;<a class="footnote-backref" href="#fnref:convolution" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>If you are familiar with convolution as defined in mathematics and signal processing, you might expect to find the index <mathjax>$i-u$</mathjax> instead of <mathjax>$i+u$</mathjax> in this expression. The convention <mathjax>$i+u$</mathjax>, which is often used in CNNs, is  often referred to as correlation.&#160;<a class="footnote-backref" href="#fnref:convolution" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:derivative">
-<p>The derivative is computed with respect to a certain assignment $x_0$ and $(w_1,\dots,w_L)$ to the network input and parameters; furthermore, the intermediate derivatives are computed at points $x_1,\dots,x_L$ obtained by evaluating the network at $x_0$.&#160;<a class="footnote-backref" href="#fnref:derivative" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>The derivative is computed with respect to a certain assignment <mathjax>$x_0$</mathjax> and <mathjax>$(w_1,\dots,w_L)$</mathjax> to the network input and parameters; furthermore, the intermediate derivatives are computed at points <mathjax>$x_1,\dots,x_L$</mathjax> obtained by evaluating the network at <mathjax>$x_0$</mathjax>.&#160;<a class="footnote-backref" href="#fnref:derivative" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:stacking">
-<p>The stacking operator $\vv$ simply unfolds a tensor in a vector by stacking its elements in some pre-defined order.&#160;<a class="footnote-backref" href="#fnref:stacking" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>The stacking operator <mathjax>$\vv$</mathjax> simply unfolds a tensor in a vector by stacking its elements in some pre-defined order.&#160;<a class="footnote-backref" href="#fnref:stacking" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:lattice">
-<p>A two-dimensional <em>lattice</em> is a discrete grid embedded in $R^2$, similar for example to a checkerboard.&#160;<a class="footnote-backref" href="#fnref:lattice" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p>A two-dimensional <em>lattice</em> is a discrete grid embedded in <mathjax>$R^2$</mathjax>, similar for example to a checkerboard.&#160;<a class="footnote-backref" href="#fnref:lattice" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div><script type="text/x-mathjax-config">
