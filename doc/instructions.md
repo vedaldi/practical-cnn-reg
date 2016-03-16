@@ -683,7 +683,7 @@ And, of course, make sure to beat the other students.
 
 ## Acknowledgements
 
-* NVIDIA and MathWorks.
+* NVIDIA and MathWorks for valuable help setting up the development environment for this tutorial.
 
 ## History
 
