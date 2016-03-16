@@ -382,7 +382,9 @@ dy = vl_nnrelu(z, p) ;
 
 ### Part 2.3: Design and verify your own layer
 
-Creating new layers is a common task when experimenting with novel CNN architectures. In this part you will implement a layer computing the Euclidean distance between a tensor `x` and a reference tensor `r`. This layer will be used later to learn a CNN from data.
+Creating new layers is a common task when experimenting with novel CNN architectures. MatConvNet makes this particularly easy, since you can use all standard Matlab operators and functions. The same code also works on the GPU.
+
+In this part you will implement a layer computing the Euclidean distance between a tensor `x` and a reference tensor `r`. This layer will be used later to learn a CNN from data.
 
 The first step is to write the forward mode. This is contained in the `l2LossForward.m` function. Open the file and check its content:
 
