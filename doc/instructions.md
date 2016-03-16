@@ -50,7 +50,7 @@ In this part we will explore two fundamental building blocks of CNNs, linear con
 
 ### Part 1.1: Convolution {#part1.1}
 
-A *convolutional neural network* (CNN) is a sequence of linear and non-linear convolution-like operators. The most important example of such operators is *linear convolution*. In this part, we will explore linear convolution and see how to use it in MatConvNet. 
+A *convolutional neural network* (CNN) is a sequence of linear and non-linear convolution-like operators. The most important example of such operators is *linear convolution*. In this part, we will explore linear convolution and see how to use it in MatConvNet.
 
 #### Part 1.1.1: Convolution by a single filter {#part1.1.1}
 
@@ -99,7 +99,7 @@ title('output image y') ;
 
 The input $\bx$ is an $M \times N$ matrix, which can be interpreted as a gray scale image. The filter $\bw$ is the $3 \times 3$ matrix
 $$
-\bw = 
+\bw =
 \begin{bmatrix}
 0 & -1 & 0 \\
 -1 & 4 & -1 \\
@@ -113,7 +113,7 @@ $$
 
 
 > **Questions:**
-> 
+>
 > 1. If $H \times W$ is the size of the input image, $H' \times W'$ the size of the filter, what is the size $H'' \times W''$ of the output image?
 > 2. The filter $\bw$ given above is a discretized Laplacian operator. Which type of visual structures (corners, bars, ...) do you think may excite this filter the most?
 
@@ -137,9 +137,9 @@ w2 = single([
 
 w3 = single([
   -1 -1 -1
-   0  0  0 
+   0  0  0
   +1 +1 +1]) ;
-  
+
 wbank = cat(4, w1, w2, w3) ;
 ```
 
@@ -154,8 +154,8 @@ $$
 y_{ijk} = \sum_{uvp} w_{uvpk}\ x_{i+u,\ j+v,\ p}
 $$
 
-> **Questions:** 
-> 
+> **Questions:**
+>
 > * If the input tensor $\bx$ has $C$ feature channels, what should be the third dimension of $\bw$?
 > * In the code above, the command `wbank = cat(4, w1, w2, w3)` concatenates the tensors `w1`, `w2`, and `w3` along the *fourth dimension*. Why is that given that filters should have three dimensions?
 
@@ -197,9 +197,9 @@ z = vl_nnrelu(y) ;
 
 > **Task:** Run this code and visualize images `x`, `y`, and `z`.
 
-> **Questions:** 
-> 
-> *   Which kind of image structures are preferred by this filter? 
+> **Questions:**
+>
+> *   Which kind of image structures are preferred by this filter?
 > *   Why did we negate the Laplacian?
 
 ReLU has a very important effect as it implicitly sets to zero the majority of the filter responses. In a certain sense, ReLU works as a detector, with the implicit convention that a certain pattern is detected when a corresponding filter response is large enough (greater than zero).
@@ -225,14 +225,14 @@ There is only one `bias` term because there is only one filter in the bank (note
 Training CNNs is normally done using a gradient-based optimization method. The CNN $f$ is the composition of $L$ layers $f_l$ each with parameters $\bw_l$, which in the simplest case of a chain looks like:
 $$
  \bx_0
- \longrightarrow 
- \underset{\displaystyle\underset{\displaystyle\bw_1}{\uparrow}}{\boxed{f_1}} 
+ \longrightarrow
+ \underset{\displaystyle\underset{\displaystyle\bw_1}{\uparrow}}{\boxed{f_1}}
  \longrightarrow
  \bx_1
  \longrightarrow
  \underset{\displaystyle\underset{\displaystyle\bw_2}{\uparrow}}{\boxed{f_2}}
  \longrightarrow
- \bx_2 
+ \bx_2
  \longrightarrow
  \dots
  \longrightarrow
@@ -252,7 +252,7 @@ $$
  \cdots
  \times
  \frac{\partial f_{l+1}}{\partial x_l}(x_l;w_{l+1}) \times
- \frac{\partial f_{l}}{\partial w_l}(x_{l-1};w_l) 
+ \frac{\partial f_{l}}{\partial w_l}(x_{l-1};w_l)
 $$
 With tensors, however, there are some complications. Consider for instance the derivative of a function $\by=f(\bx)$ where both $\by$ and $\bx$ are tensors; this is formed by taking the derivative of each scalar element in the output $\by$ w.r.t. each scalar element in the input $\bx$. If $\bx$ has dimensions $H \times W \times C$ and $\by$ has dimensions $H' \times W' \times C'$, then the derivative contains $HWCH'W'C'$ elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).
 
@@ -268,7 +268,7 @@ $$
  \cdots
  \times
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
- \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l} 
+ \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l}
 $$
 The next step is to *project* the derivative with respect to a tensor $\bp_L = 1$ as follows:
 $$
@@ -280,7 +280,7 @@ $$
  \cdots
  \times
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
- \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l} 
+ \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l}
 $$
 Note that $\bp_L=1$ has the same dimension as $\bx_L$ (the scalar loss) and, being equal to 1, multiplying it to the left of the expression does not change anything. Things are more interesting when products are evaluated from the left to the right, i.e. *backward from the output to the input* of the CNN. The first such factors is given by:
 \begin{equation}
@@ -339,7 +339,7 @@ checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 ```
 
 > **Questions:**
-> 
+>
 > 1.  Recall that the derivative of a function $y=f(x)$ is given by
 >     $$
 >       \frac{\partial f}{\partial x}(x) = \lim_{\delta\rightarrow 0} \frac{f(x+\delta) - f(x)}{\delta}
@@ -348,7 +348,7 @@ checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 > 2.  Note that `checkDerivativeNumerically()` is applied to the function `@(x) proj(p, vl_nnconv(x, w, []))`. This syntax defines a function on the fly (an anonymous closure to be more precise). In this case, the purpose of the closure is to evaluate the expression for a variable `x` and a fixed value of `w`. Furthermore, the closure projects the output of `vl_nnconv()` onto `p` by calling the `proj()` function. Why?
 
 > **Tasks:**
-> 
+>
 > 1.   Run the code, visualizing the results. Convince yourself that the numerical and analytical derivatives are nearly identical.
 > 2.   Modify the code to compute the derivative of the *first element* of the output tensor $\by$ with respect to *all the elements* of the input tensor $\bx$. **Hint:** it suffices to change the value of $\bp$.
 > 2.   Modify the code to compute the derivative w.r.t. the convolution parameters $\bw$ instead of the convolution input $\bx$.
@@ -381,10 +381,10 @@ dy = vl_nnrelu(z, p) ;
 
 Creating new layers is a common task when experimenting with novel CNN architectures. In this part you will implement a layer computing the Euclidean distance between a tensor `x` and a reference tensor `r`. This layer will be used later to learn a CNN from data.
 
-The first step is to write the forward mode. This is contained in the `customLayerForward.m` function. Open the file and check its content:
+The first step is to write the forward mode. This is contained in the `l2LossForward.m` function. Open the file and check its content:
 
 ```.language-matlab
-function y = customLayerForward(x,r)
+function y = l2LossForward(x,r)
 delta = x - r ;
 y = sum(delta(:).^2) ;
 ```
@@ -394,7 +394,7 @@ The function computes the difference `x - r`, squares the individual elements (`
 Next, we need to implement the backward mode:
 
 ```.language-matlab
-function dx = customLayerBackward(x,r,p)
+function dx = l2LossBackward(x,r,p)
 dx = 2 * p * (x - r) ;
 ```
 
@@ -416,9 +416,9 @@ $$
 $$
 
 > **Tasks:**
-> 
+>
 > 1.  Verify that the forward and backward functions are correct by computing the derivatives numerically using `checkDerivativeNumerically()`.
-> 2.  Change the code to compute the L1 distance (sum of absolute differences) instead of the squared Euclidean distance.
+> 2.  Implement the `l1LossForward.m` and `l1LossBackward.m` to compute the L1 distance (sum of absolute differences).
 > 3.  Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more.
 
 ## Part 3: Learning a CNN for text deblurring {#part3}
@@ -491,9 +491,9 @@ net.layers{end+1} = struct(...
 
 The fields are as follows:
 
-* `name` specifies a name for the layer, useful for debugging but otherwise arbitrary. 
+* `name` specifies a name for the layer, useful for debugging but otherwise arbitrary.
 
-* `type` specifies the layer type, in this case convolution. 
+* `type` specifies the layer type, in this case convolution.
 
 * `weights` is a cell array containing the layer parameters, in this case two tensors for the filters and the biases. The filters are initialized using the `xavier()` function to have dimensions $3 \times 3 \times 1 \times 32$ ($3\times 3$ spatial support, 1 input feature channels, and 32 filters). `xavier()` also initializes the biases to be zero.
 
@@ -534,10 +534,10 @@ The command `vl_simplenn_display()` can be used to print information about the n
 >
 > 1. How many layers are in this network?
 > 2. What is the support (height and width) and depth (number of feature channels) of each intermediate tensor?
-> 3. How is the number of feature channels related to the 
+> 3. How is the number of feature channels related to the
 >    dimensions of the filters?
 
-The last row reports the *receptive field size* for the layer. This is the size (in pixels) of the local image region that affects a particular element in a feature map. 
+The last row reports the *receptive field size* for the layer. This is the size (in pixels) of the local image region that affects a particular element in a feature map.
 
 > **Question:**  what is the receptive field size of the pixel in the output image (generated by the prediction layer)? Discuss whether a larger receptive field size might be preferable for this problem and how this might be obtained.
 
@@ -547,11 +547,9 @@ In this part we will use SGD to learn the CNN from the available training data. 
 
 ```.language-matlab
 % Add a loss (using our custom layer)
-net.layers{end+1} = getCustomLayer() ;
+net = addCustomLossLayer(net, @l2LossForward, @l2LossBackward) ;
 ```
-The function `getCustomLayer()` creates a `layer` structure compatible with SimpleNN. This structure contains handles to the functions defined in Part 2, namely `customLayerForward()` and `customLayerBackward()`. 
-
-> **Remark:** If your implementation of `customLayerForward()` and `customLayerBackward()` is incorrect, the next few steps will fail!
+The function `addCustomLossLayer()` creates a `layer` structure compatible with SimpleNN and adds it as the last of the network. This structure contains handles to the functions defined in Part 2, namely `l2LossForward()` and `l2LossBackward()`.
 
 Next, setup the learning parameters:
 
@@ -630,8 +628,8 @@ axis image off ;
 title('CNN output') ;
 ```
 
-> **Questions:** 
-> 
+> **Questions:**
+>
 > * Do you think the network is doing a good job?
 > * Is there any obvious difference between training and validation performance?
 
@@ -653,12 +651,12 @@ trainOpts.gpus = [1] ;
 Do not forget to also change `expDir` in order to start a new experiment from scratch.
 > **Task:** Test GPU-based training (if possible). How much faster does it run compared to CPU-based training?
 
-Now we are ready to experiment with different CNNs. 
+Now we are ready to experiment with different CNNs.
 
 > **Task:** Run a new experiment, this time using the `initializeLargeCNN()` function to construct a larger network.
 
 > **Questions:**
-> 
+>
 > 1.  How much slower is this network compared to the small model?
 > 2.  What about the quantitative performance on the validation set?
 > 3.  What about the qualitative performance?
@@ -669,6 +667,7 @@ You are now in control. Play around with the model definition and try to improve
 
 * Try adding more layers.
 * Try adding more filters.
+* Try different loss
 * Try increasing the receptive field size by increasing the filter support (do not forget to adjust the padding).
 * Try sequences of rank-1 filters, such as $7 \times 1$ followed by $1 \times 7$ to increase the receptive field size while maintaining efficiency.
 

@@ -43,10 +43,10 @@ title('CNN output (not trained yet)') ;
 
 %% Part 3.3: learn the model
 
-% Add a loss (using our custom layer), if not already present
-if ~strcmp(net.layers{end}.type, 'loss')
-  net.layers{end+1} = getCustomLayer() ;
-end
+% Add a loss (using our custom layer)
+net = addCustomLossLayer(net, @l2LossForward, @l2LossBackward) ;
+% Uncomment to use your implementation of L1 loss
+%net = addCustomLossLayer(net, @l1LossForward, @l1LossBackward) ;
 
 % Train
 trainOpts.expDir = 'data/text-small' ;
