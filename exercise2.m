@@ -3,7 +3,7 @@ setup() ;
 %% Part 2.1:  Backward mode verification
 
 % Create a random input image batch
-x = randn(10,10,1,2,'single') ;
+x = randn(10, 10, 1, 2, 'single') ;
 
 % Define a filter
 w = single([
@@ -15,7 +15,7 @@ w = single([
 y = vl_nnconv(x, w, []) ;
 
 % Pick a random projection tensor
-p = randn(size(y), 'single') ;
+p = randn(size(y), 'like', y) ;
 
 % Backward mode: projected derivatives
 [dx,dw] = vl_nnconv(x, w, [], p) ;
@@ -28,14 +28,14 @@ checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 %% Part 2.2: Backpropagation
 
 % Create a random input image batch
-x = randn(10,10,1,2,'single') ;
+x = randn(10, 10, 1, 2, 'single') ;
 
 % Forward mode: evaluate the conv follwed by ReLU
 y = vl_nnconv(x, w, []) ;
 z = vl_nnrelu(y) ;
 
 % Pick a random projection tensor
-p = randn(size(z), 'single') ;
+p = randn(size(z), 'like', z) ;
 
 % Backward mode: projected derivatives
 dy = vl_nnrelu(z, p) ;
