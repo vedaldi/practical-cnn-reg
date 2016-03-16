@@ -675,7 +675,7 @@ And, of course, make sure to beat the other students.
 
 ## Links and further work
 
-* The code for this practical is written using the software package [MatConvNet](http://www.vlfeat.org/matconvnet). This is a software library written in MATLAB, C++, and CUDA and is freely available as source code and binary.
+* The code for this practical is written using the software package [MatConvNet](http://www.vlfeat.org/matconvnet). This is a software library written in MATLAB, C++, and CUDA and its source code is freely available.
 
 * MatConvNet can train complex computer vision models, such as VGG VD and Inception. Several of these models, including a few cool demos, are available for download.
 
