@@ -1,4 +1,5 @@
 setup() ;
+% setup('useGpu', true); % Uncomment to initialise with a GPU support
 
 %% Part 3.1: Prepare the data
 
@@ -50,11 +51,14 @@ net = addCustomLossLayer(net, @l2LossForward, @l2LossBackward) ;
 
 % Train
 trainOpts.expDir = 'data/text-small' ;
+trainOpts.gpus = [] ;
+% Uncomment for GPU training:
+%trainOpts.expDir = 'data/text-small-gpu' ;
+%trainOpts.gpus = [1] ;
 trainOpts.batchSize = 16 ;
 trainOpts.learningRate = 0.02 ;
 trainOpts.plotDiagnostics = false ;
 trainOpts.numEpochs = 20 ;
-trainOpts.gpus = [] ;
 trainOpts.errorFunction = 'none' ;
 
 net = cnn_train(net, imdb, @getBatch, trainOpts) ;
