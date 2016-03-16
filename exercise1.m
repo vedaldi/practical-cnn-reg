@@ -98,9 +98,9 @@ z = vl_nnrelu(y) ;
 
 figure(4) ; clf ; set(gcf,'name','Part 1.2.1: Laplacian and ReLU') ;
 colormap gray ;
-subplot(1,3,1); imagesc(x) ; axis off image ; title('image x') ;
-subplot(1,3,2); imagesc(y) ; axis off image ; title('Laplacian y')
-subplot(1,3,3); imagesc(z) ; axis off image ; title('ReLU z') ;
+subplot(2,2,1); imagesc(x) ; axis off image ; title('Image x') ;
+subplot(2,2,2); imagesc(y) ; axis off image ; title('Laplacian y')
+subplot(2,2,3); imagesc(z) ; axis off image ; title('ReLU z') ;
 
 %% Part 1.2.2: effect of adding a bias
 
@@ -110,6 +110,6 @@ z = vl_nnrelu(y) ;
 
 figure(5) ; clf ; set(gcf,'name','Part 1.2.2: adding a bias') ;
 colormap gray ;
-subplot(1,3,1); imagesc(x) ; axis off image ; title('image x') ;
-subplot(1,3,2); imagesc(y) ; axis off image ; title('Laplacian y with bias')
-subplot(1,3,3); imagesc(z) ; axis off image ; title('ReLU z') ;
+subplot(2,2,1); imagesc(x) ; axis off image ; title('Image x') ;
+subplot(2,2,2); imagesc(y) ; axis off image ; title('Laplacian y with bias')
+subplot(2,2,3); imagesc(z) ; axis off image ; title('ReLU z') ;
