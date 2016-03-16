@@ -699,7 +699,6 @@ And, of course, make sure to beat the other students.
 [^derivative]: The derivative is computed with respect to a certain assignment $x_0$ and $(w_1,\dots,w_L)$ to the network input and parameters; furthermore, the intermediate derivatives are computed at points $x_1,\dots,x_L$ obtained by evaluating the network at $x_0$.
 
 [^stacking]: The stacking operator $\vv$ simply unfolds a tensor in a vector by stacking its elements in some pre-defined order. For example:
-
 $$
 \vv\begin{bmatrix}
 1 & 3 & 5\\
