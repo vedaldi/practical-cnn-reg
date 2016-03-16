@@ -9,10 +9,10 @@ imdb = load('data/text_imdb.mat') ;
 figure(2) ; set(2, 'name', 'Part 3.1: Data') ; clf ;
 
 subplot(1,2,1) ; imagesc(imdb.images.data(:,:,:,1)) ;
-axis off image ; title('input (blurred)') ;
+axis off image ; title('Input (blurred)') ;
 
 subplot(1,2,2) ; imagesc(imdb.images.label(:,:,:,1)) ;
-axis off image ; title('desired output (sharp)') ;
+axis off image ; title('Desired output (sharp)') ;
 
 colormap gray ;
 
@@ -67,18 +67,19 @@ net.layers(end) = [] ;
 train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(4) ; set(4,'name','Part 3.4: Results on the training set') ;
+figure(4) ; set(4, 'name', 'Part 3.4: Results on the training set') ;
 showDeblurringResult(net, imdb, train(1:30:151)) ;
 
-figure(5) ; set(5,'name','Part 3.4: Results on the validation set') ;
+figure(5) ; set(5, 'name', 'Part 3.4: Results on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
 
-figure(6) ; set(6,'name','Part 3.4:Larger example on the validation set') ;
+figure(6) ;
+set(6, 'name', 'Part 3.4: Larger example on the validation set') ;
 colormap gray ;
-subplot(1,2,1) ; imagesc(imdb.examples.blurred{1}, [-1 0]) ;
+subplot(1,2,1) ; imagesc(imdb.examples.blurred{1}, [-1, 0]) ;
 axis image off ;
 title('CNN input') ;
 res = vl_simplenn(net, imdb.examples.blurred{1}) ;
-subplot(1,2,2) ; imagesc(res(end).x, [-1 0]) ;
+subplot(1,2,2) ; imagesc(res(end).x, [-1, 0]) ;
 axis image off ;
 title('CNN output') ;
