@@ -51,13 +51,17 @@ checkDerivativeNumerically(func, x, dx) ;
 
 x0 = randn(size(x), 'single') ;
 
-y = customLayerForward(x, x0) ;
+forward = @l2LossForward; backward = @l2LossBackward;
+% Uncomment to test the L1 loss implementation
+%forward = @l1LossForward; backward = @l1LossBackward;
+
+y = forward(x, x0) ;
 
 p = randn(size(y), 'single') ;
-dx = customLayerBackward(x, x0, p) ;
+dx = backward(x, x0, p) ;
 
 % Check the derivative numerically
 figure(3) ; clf('reset') ;
-set(gcf,'name','Part 2.3: custom layer') ;
-func = @(x) proj(p, customLayerForward(x, x0)) ;
+set(gcf,'name','Part 2.3: custom loss layer') ;
+func = @(x) proj(p, forward(x, x0)) ;
 checkDerivativeNumerically(func, x, dx) ;

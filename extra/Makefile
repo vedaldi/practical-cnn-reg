@@ -5,13 +5,15 @@ ver = 2016a
 
 code=\
 checkDerivativeNumerically.m \
-customLayerBackward.m \
-customLayerForward.m \
+l1LossBackward.m \
+l1LossForward.m \
+l2LossBackward.m \
+l2LossForward.m \
 exercise1.m \
 exercise2.m \
 exercise3.m \
 getBatch.m \
-getCustomLayer.m \
+addCustomLossLayer.m \
 initializeLargeCNN.m \
 initializeSmallCNN.m \
 proj.m \

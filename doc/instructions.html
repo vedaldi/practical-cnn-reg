@@ -79,7 +79,7 @@ cd practical-cnn-reg-2016a
 <h2 id="part1">Part 1: CNN building blocks</h2>
 <p>In this part we will explore two fundamental building blocks of CNNs, linear convolution and non-linear activation functions. Open <code>exercise1.m</code> and run up to the <code>setup()</code> command, which initializes the MATLAB environment to use MatConvNet.</p>
 <h3 id="part1.1">Part 1.1: Convolution</h3>
-<p>A <em>convolutional neural network</em> (CNN) is a sequence of linear and non-linear convolution-like operators. The most important example of such operators is <em>linear convolution</em>. In this part, we will explore linear convolution and see how to use it in MatConvNet. </p>
+<p>A <em>convolutional neural network</em> (CNN) is a sequence of linear and non-linear convolution-like operators. The most important example of such operators is <em>linear convolution</em>. In this part, we will explore linear convolution and see how to use it in MatConvNet.</p>
 <h4 id="part1.1.1">Part 1.1.1: Convolution by a single filter</h4>
 <p>Start by identifying and then running the following code fragment in <code>exercise1.m</code>:</p>
 <pre><code class="language-matlab">% Load an image and convert it to gray scale and single precision
@@ -122,7 +122,7 @@ title('output image y') ;
 <p><img width=80% src="images/conv.png" alt="cover"/></p>
 <p>The input <mathjax>$\bx$</mathjax> is an <mathjax>$M \times N$</mathjax> matrix, which can be interpreted as a gray scale image. The filter <mathjax>$\bw$</mathjax> is the <mathjax>$3 \times 3$</mathjax> matrix
 <mathjax>$$
-\bw = 
+\bw =
 \begin{bmatrix}
 0 &amp; -1 &amp; 0 \\
 -1 &amp; 4 &amp; -1 \\
@@ -156,7 +156,7 @@ w2 = single([
 
 w3 = single([
   -1 -1 -1
-   0  0  0 
+   0  0  0
   +1 +1 +1]) ;
 
 wbank = cat(4, w1, w2, w3) ;
@@ -172,7 +172,7 @@ wbank = cat(4, w1, w2, w3) ;
 y_{ijk} = \sum_{uvp} w_{uvpk}\ x_{i+u,\ j+v,\ p}
 $$</mathjax></p>
 <blockquote>
-<p><strong>Questions:</strong> </p>
+<p><strong>Questions:</strong></p>
 <ul>
 <li>If the input tensor <mathjax>$\bx$</mathjax> has <mathjax>$C$</mathjax> feature channels, what should be the third dimension of <mathjax>$\bw$</mathjax>?</li>
 <li>In the code above, the command <code>wbank = cat(4, w1, w2, w3)</code> concatenates the tensors <code>w1</code>, <code>w2</code>, and <code>w3</code> along the <em>fourth dimension</em>. Why is that given that filters should have three dimensions?</li>
@@ -210,9 +210,9 @@ z = vl_nnrelu(y) ;
 
 <blockquote>
 <p><strong>Task:</strong> Run this code and visualize images <code>x</code>, <code>y</code>, and <code>z</code>.</p>
-<p><strong>Questions:</strong> </p>
+<p><strong>Questions:</strong></p>
 <ul>
-<li>Which kind of image structures are preferred by this filter? </li>
+<li>Which kind of image structures are preferred by this filter?</li>
 <li>Why did we negate the Laplacian?</li>
 </ul>
 </blockquote>
@@ -233,14 +233,14 @@ z = vl_nnrelu(y) ;
 <p>Training CNNs is normally done using a gradient-based optimization method. The CNN <mathjax>$f$</mathjax> is the composition of <mathjax>$L$</mathjax> layers <mathjax>$f_l$</mathjax> each with parameters <mathjax>$\bw_l$</mathjax>, which in the simplest case of a chain looks like:
 <mathjax>$$
  \bx_0
- \longrightarrow 
- \underset{\displaystyle\underset{\displaystyle\bw_1}{\uparrow}}{\boxed{f_1}} 
+ \longrightarrow
+ \underset{\displaystyle\underset{\displaystyle\bw_1}{\uparrow}}{\boxed{f_1}}
  \longrightarrow
  \bx_1
  \longrightarrow
  \underset{\displaystyle\underset{\displaystyle\bw_2}{\uparrow}}{\boxed{f_2}}
  \longrightarrow
- \bx_2 
+ \bx_2
  \longrightarrow
  \dots
  \longrightarrow
@@ -259,7 +259,7 @@ During learning, the last layer of the network is the <em>loss function</em> tha
  \cdots
  \times
  \frac{\partial f_{l+1}}{\partial x_l}(x_l;w_{l+1}) \times
- \frac{\partial f_{l}}{\partial w_l}(x_{l-1};w_l) 
+ \frac{\partial f_{l}}{\partial w_l}(x_{l-1};w_l)
 $$</mathjax>
 With tensors, however, there are some complications. Consider for instance the derivative of a function <mathjax>$\by=f(\bx)$</mathjax> where both <mathjax>$\by$</mathjax> and <mathjax>$\bx$</mathjax> are tensors; this is formed by taking the derivative of each scalar element in the output <mathjax>$\by$</mathjax> w.r.t. each scalar element in the input <mathjax>$\bx$</mathjax>. If <mathjax>$\bx$</mathjax> has dimensions <mathjax>$H \times W \times C$</mathjax> and <mathjax>$\by$</mathjax> has dimensions <mathjax>$H' \times W' \times C'$</mathjax>, then the derivative contains <mathjax>$HWCH'W'C'$</mathjax> elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).</p>
 <p>Note that all intermediate derivatives in the chain rule may be affected by this size explosion except for the derivative of the network output that, being the loss, is a scalar.</p>
@@ -274,7 +274,7 @@ With tensors, however, there are some complications. Consider for instance the d
  \cdots
  \times
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
- \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l} 
+ \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l}
 $$</mathjax>
 The next step is to <em>project</em> the derivative with respect to a tensor <mathjax>$\bp_L = 1$</mathjax> as follows:
 <mathjax>$$
@@ -286,7 +286,7 @@ The next step is to <em>project</em> the derivative with respect to a tensor <ma
  \cdots
  \times
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
- \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l} 
+ \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l}
 $$</mathjax>
 Note that <mathjax>$\bp_L=1$</mathjax> has the same dimension as <mathjax>$\bx_L$</mathjax> (the scalar loss) and, being equal to 1, multiplying it to the left of the expression does not change anything. Things are more interesting when products are evaluated from the left to the right, i.e. <em>backward from the output to the input</em> of the CNN. The first such factors is given by:
 \begin{equation}
@@ -376,15 +376,15 @@ dy = vl_nnrelu(z, p) ;
 </blockquote>
 <h3 id="part-23-design-and-verify-your-own-layer">Part 2.3: Design and verify your own layer</h3>
 <p>Creating new layers is a common task when experimenting with novel CNN architectures. In this part you will implement a layer computing the Euclidean distance between a tensor <code>x</code> and a reference tensor <code>r</code>. This layer will be used later to learn a CNN from data.</p>
-<p>The first step is to write the forward mode. This is contained in the <code>customLayerForward.m</code> function. Open the file and check its content:</p>
-<pre><code class="language-matlab">function y = customLayerForward(x,r)
+<p>The first step is to write the forward mode. This is contained in the <code>l2LossForward.m</code> function. Open the file and check its content:</p>
+<pre><code class="language-matlab">function y = l2LossForward(x,r)
 delta = x - r ;
 y = sum(delta(:).^2) ;
 </code></pre>
 
 <p>The function computes the difference <code>x - r</code>, squares the individual elements (<code>.^2</code>), and then sums the results. The vectorization <code>delta(:)</code> just turns the tensor into a vector by stacking, so that the sum is carried across all elements (by default <code>sum</code> operates only along the first dimension). The overall result is a scalar <code>y</code>, which is the sum of the squared Euclidean distances between <code>x</code> and <code>r</code>, for all data instances.</p>
 <p>Next, we need to implement the backward mode:</p>
-<pre><code class="language-matlab">function dx = customLayerBackward(x,r,p)
+<pre><code class="language-matlab">function dx = l2LossBackward(x,r,p)
 dx = 2 * p * (x - r) ;
 </code></pre>
 
@@ -404,7 +404,7 @@ $$</mathjax></p>
 <p><strong>Tasks:</strong></p>
 <ol>
 <li>Verify that the forward and backward functions are correct by computing the derivatives numerically using <code>checkDerivativeNumerically()</code>.</li>
-<li>Change the code to compute the L1 distance (sum of absolute differences) instead of the squared Euclidean distance.</li>
+<li>Implement the <code>l1LossForward.m</code> and <code>l1LossBackward.m</code> to compute the L1 distance (sum of absolute differences).</li>
 <li>Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more.</li>
 </ol>
 </blockquote>
@@ -463,10 +463,10 @@ colormap gray ;
 <p>The fields are as follows:</p>
 <ul>
 <li>
-<p><code>name</code> specifies a name for the layer, useful for debugging but otherwise arbitrary. </p>
+<p><code>name</code> specifies a name for the layer, useful for debugging but otherwise arbitrary.</p>
 </li>
 <li>
-<p><code>type</code> specifies the layer type, in this case convolution. </p>
+<p><code>type</code> specifies the layer type, in this case convolution.</p>
 </li>
 <li>
 <p><code>weights</code> is a cell array containing the layer parameters, in this case two tensors for the filters and the biases. The filters are initialized using the <code>xavier()</code> function to have dimensions <mathjax>$3 \times 3 \times 1 \times 32$</mathjax> (<mathjax>$3\times 3$</mathjax> spatial support, 1 input feature channels, and 32 filters). <code>xavier()</code> also initializes the biases to be zero.</p>
@@ -596,24 +596,21 @@ colormap gray ;
 <ol>
 <li>How many layers are in this network?</li>
 <li>What is the support (height and width) and depth (number of feature channels) of each intermediate tensor?</li>
-<li>How is the number of feature channels related to the 
+<li>How is the number of feature channels related to the
    dimensions of the filters?</li>
 </ol>
 </blockquote>
-<p>The last row reports the <em>receptive field size</em> for the layer. This is the size (in pixels) of the local image region that affects a particular element in a feature map. </p>
+<p>The last row reports the <em>receptive field size</em> for the layer. This is the size (in pixels) of the local image region that affects a particular element in a feature map.</p>
 <blockquote>
 <p><strong>Question:</strong>  what is the receptive field size of the pixel in the output image (generated by the prediction layer)? Discuss whether a larger receptive field size might be preferable for this problem and how this might be obtained.</p>
 </blockquote>
 <h3 id="part3.3">Part 3.3: Learning the network</h3>
 <p>In this part we will use SGD to learn the CNN from the available training data. As noted above, the CNN must however terminate in a loss layer. We add one such layer as follows:</p>
 <pre><code class="language-matlab">% Add a loss (using our custom layer)
-net.layers{end+1} = getCustomLayer() ;
+net = addCustomLossLayer(net, @l2LossForward, @l2LossBackward) ;
 </code></pre>
 
-<p>The function <code>getCustomLayer()</code> creates a <code>layer</code> structure compatible with SimpleNN. This structure contains handles to the functions defined in Part 2, namely <code>customLayerForward()</code> and <code>customLayerBackward()</code>. </p>
-<blockquote>
-<p><strong>Remark:</strong> If your implementation of <code>customLayerForward()</code> and <code>customLayerBackward()</code> is incorrect, the next few steps will fail!</p>
-</blockquote>
+<p>The function <code>addCustomLossLayer()</code> creates a <code>layer</code> structure compatible with SimpleNN and adds it as the last of the network. This structure contains handles to the functions defined in Part 2, namely <code>l2LossForward()</code> and <code>l2LossBackward()</code>.</p>
 <p>Next, setup the learning parameters:</p>
 <pre><code class="language-matlab">trainOpts.expDir = 'data/text-small' ;
 trainOpts.batchSize = 16 ;
@@ -688,7 +685,7 @@ title('CNN output') ;
 </code></pre>
 
 <blockquote>
-<p><strong>Questions:</strong> </p>
+<p><strong>Questions:</strong></p>
 <ul>
 <li>Do you think the network is doing a good job?</li>
 <li>Is there any obvious difference between training and validation performance?</li>
@@ -709,7 +706,7 @@ trainOpts.gpus = [1] ;
 <blockquote>
 <p><strong>Task:</strong> Test GPU-based training (if possible). How much faster does it run compared to CPU-based training?</p>
 </blockquote>
-<p>Now we are ready to experiment with different CNNs. </p>
+<p>Now we are ready to experiment with different CNNs.</p>
 <blockquote>
 <p><strong>Task:</strong> Run a new experiment, this time using the <code>initializeLargeCNN()</code> function to construct a larger network.</p>
 <p><strong>Questions:</strong></p>
@@ -724,6 +721,7 @@ trainOpts.gpus = [1] ;
 <ul>
 <li>Try adding more layers.</li>
 <li>Try adding more filters.</li>
+<li>Try different loss</li>
 <li>Try increasing the receptive field size by increasing the filter support (do not forget to adjust the padding).</li>
 <li>Try sequences of rank-1 filters, such as <mathjax>$7 \times 1$</mathjax> followed by <mathjax>$1 \times 7$</mathjax> to increase the receptive field size while maintaining efficiency.</li>
 </ul>
