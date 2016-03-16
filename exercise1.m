@@ -20,20 +20,20 @@ y = vl_nnconv(x, w, []) ;
 figure(1) ; clf ; colormap gray ;
 set(gcf,'name','Part 1.1: convolution') ;
 
-subplot(1,3,1) ;
+subplot(2,2,1) ;
 imagesc(x) ;
 axis off image ;
-title('input image x') ;
+title('Input image x') ;
 
-subplot(1,3,2) ;
+subplot(2,2,2) ;
 imagesc(w) ;
 axis off image ;
-title('filter w') ;
+title('Filter w') ;
 
-subplot(1,3,3) ;
+subplot(2,2,3) ;
 imagesc(y) ;
 axis off image ;
-title('output image y') ;
+title('Output image y') ;
 
 %% Part 1.1.2: convolution by a bank of filters
 
