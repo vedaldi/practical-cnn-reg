@@ -1,3 +1,6 @@
+<img src="images/mathworks_logo.png"  alt="MathWorks logo" style="float:right;margin:10px" width="8%" height="8%"/>
+<img src="images/nvidia_logo.svg"  alt="NVIDIA logo" style="float:right;margin:10px" width="10%" height="10%"/>
+
 # VGG CNN Practical: Image Regression
 
 *By Andrea Vedaldi, Karel Lenc, and Joao Henriques*
