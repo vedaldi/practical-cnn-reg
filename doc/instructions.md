@@ -43,7 +43,7 @@ untar('http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a.tar.gz')
 cd practical-cnn-reg-2016a
 ```
 
-After the installation is complete, open and edit the script `exercise1.m` in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for [Part I](#part1) of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files `exercise2.m`, and `exercise3.m`, are given for [Part II](#part2) and [III](#part3).
+After the installation is complete, open and edit the script `exercise1.m` in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for [Part I](#part1) of this document. You can cut and paste this code into the MATLAB window to run it, or use the shortcut `Ctrl+Enter` to run a code section. You will need to modify it as you go through the session. Other files `exercise2.m`, and `exercise3.m`, are given for [Part II](#part2) and [III](#part3).
 
 Each part contains several **Questions** (that may require pen and paper) and **Tasks** (that require experimentation or coding) to be answered/completed before proceeding further in the practical.
 
@@ -215,7 +215,7 @@ y = vl_nnconv(x, - w, bias) ;
 z = vl_nnrelu(y) ;
 ```
 
-There is only one `bias` term because there is only one filter in the bank (note that, as for the reset of the data, `bias` is a single precision quantity). The bias is applied after convolution, effectively subtracting 0.2 from the filter responses. Hence, now a response is not suppressed by the subsequent ReLU operator only if it is at least 0.2 after convolution.
+There is only one `bias` term because there is only one filter in the bank (note that, as for the rest of the data, `bias` is a single precision quantity). The bias is applied after convolution, effectively subtracting 0.2 from the filter responses. Hence, now a response is not suppressed by the subsequent ReLU operator only if it is at least 0.2 after convolution.
 
 > **Task:** Run this code and visualize images `x`, `y`, and `z`.
 
@@ -245,7 +245,7 @@ $$
  \longrightarrow
  \bx_L
 $$
-During learning, the last layer of the network is the *loss function* that should be minimized. Hence, the output $\bx_L = x_L$ of the network is a **scalar** quantity.
+During learning, the last layer of the network is the *loss function* that should be minimized. Hence, the output $\bx_L = x_L$ of the network is a **scalar** quantity (a single number).
 
 The gradient is easily computed using using the **chain rule**. If *all* network variables and parameters are scalar, this is given by[^derivative]:
 $$
@@ -292,7 +292,7 @@ Note that $\bp_L=1$ has the same dimension as $\bx_L$ (the scalar loss) and, bei
  \times
  \frac{\partial \vv f_L}{\partial \vv^\top \bx_L}
 \end{equation}
-This results in a new projection vector $\bp_{L-1}$, which can then be multiplied to the left to obtain $\bp_{L-2}$ and so on. The last projection $\bp_l$ is the desired derivative. Crucially, each projection $\bp_q$ takes as much memory as the corresponding variable $\bx_q$.
+This results in a new projection vector $\bp_{L-1}$, which can then be multiplied from the left to obtain $\bp_{L-2}$ and so on. The last projection $\bp_l$ is the desired derivative. Crucially, each projection $\bp_q$ takes as much memory as the corresponding variable $\bx_q$.
 
 Some might have noticed that, while projections remain small, each factor \eqref{e:factor} does contain one of the large derivatives that we cannot compute explicitly. The trick is that CNN toolboxes contain code that can compute the projected derivatives without explicitly computing this large factor. In particular, for any building block function $\by=f(\bx;\bw)$, a toolbox such as MatConvNet will implement:
 
@@ -410,7 +410,7 @@ $$
 
 Here the subscript $t$ index the data instance in the batch; note that, since this function computes the sum of Euclidean distances for all tensor instances, the output $f(\bx)$ is a scalar, and so is the projection $\bp = p$.
 
-In order to see how to implement the backward mode, compute the derivative w.r.t. each input element $x_{ijkt}$:
+In order to see how to implement the backward mode, compute the derivative w.r.t. each input element $x_{ijkt}$ (note $p$ is constant):
 
 $$
 \frac{\partial}{\partial x_{ijkt}}
@@ -610,10 +610,10 @@ In our example it is also informative to evaluate the *qualitative* result of th
 train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(4) ; set(3,'name','Resluts on the training set') ;
+figure(4) ; set(3,'name','Results on the training set') ;
 showDeblurringResult(net, imdb, train(1:30:151)) ;
 
-figure(5) ; set(4,'name','Resluts on the validation set') ;
+figure(5) ; set(4,'name','Results on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
 ```
 
