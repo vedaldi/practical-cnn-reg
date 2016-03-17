@@ -64,6 +64,10 @@ In this part we will explore two fundamental building blocks of CNNs, linear con
 
 A *convolutional neural network* (CNN) is a sequence of linear and non-linear convolution-like operators. The most important example of such operators is *linear convolution*. In this part, we will explore linear convolution and see how to use it in MatConvNet.
 
+Recall that linear convolution applies one (or more) filters $\bw$ to an image $\bx$ as follows:
+
+<img src="images/conv.svg" alt="conv" width=50%"></img>
+
 #### Part 1.1.1: Convolution by a single filter {#part1.1.1}
 
 Start by identifying and then running the following code fragment in `exercise1.m`:
@@ -86,23 +90,23 @@ The code loads the image `data/ray.jpg` and applies to it a linear filter using 
 
 ```.language-matlab
 % Visualize the results
-figure(1) ; clf ; colormap gray ;
-set(gcf,'name','P1.1: convolution') ;
+figure(11) ; clf ; colormap gray ;
+set(gcf, 'name', 'Part 1.1: convolution') ;
 
-subplot(1,3,1) ;
+subplot(2,2,1) ;
 imagesc(x) ;
 axis off image ;
-title('input image x') ;
+title('Input image x') ;
 
-subplot(1,3,2) ;
+subplot(2,2,2) ;
 imagesc(w) ;
 axis off image ;
-title('filter w') ;
+title('Filter w') ;
 
-subplot(1,3,3) ;
+subplot(2,2,3) ;
 imagesc(y) ;
 axis off image ;
-title('output image y') ;
+title('Output image y') ;
 ```
 
 > **Task:** Run the code above and examine the result, which should look like the following image:
@@ -216,7 +220,7 @@ z = vl_nnrelu(y) ;
 
 ReLU has a very important effect as it implicitly sets to zero the majority of the filter responses. In a certain sense, ReLU works as a detector, with the implicit convention that a certain pattern is detected when a corresponding filter response is large enough (greater than zero).
 
-In practice, while signals are usually centered and therefore a threshold of zero is reasonable, in practice there is no particular reason why this should always be appropriate. For this reason, the convolution operator allows to specify *a bias term* for each filter response. Let us use this term to make the response of ReLU more selective:
+In practice, while signals are usually centered and therefore a threshold of zero is reasonable, there is no particular reason why this should always be appropriate. For this reason, the convolution operator allows to specify *a bias term* for each filter response. Let us use this term to make the response of ReLU more selective:
 
 ```.language-matlab
 bias = single(- 0.2) ;
@@ -250,7 +254,7 @@ $$
  \longrightarrow
  \bx_{L-1}
  \longrightarrow
- \underset{\displaystyle\underset{\displaystyle\bw_2}{\uparrow}}{\boxed{f_L}}
+ \underset{\displaystyle\underset{\displaystyle\bw_L}{\uparrow}}{\boxed{f_L}}
  \longrightarrow
  \bx_L
 $$
@@ -266,7 +270,7 @@ $$
  \frac{\partial f_{l+1}}{\partial x_l}(x_l;w_{l+1}) \times
  \frac{\partial f_{l}}{\partial w_l}(x_{l-1};w_l)
 $$
-With tensors, however, there are some complications. Consider for instance the derivative of a function $\by=f(\bx)$ where both $\by$ and $\bx$ are tensors; this is formed by taking the derivative of each scalar element in the output $\by$ w.r.t. each scalar element in the input $\bx$. If $\bx$ has dimensions $H \times W \times C$ and $\by$ has dimensions $H' \times W' \times C'$, then the derivative contains $HWCH'W'C'$ elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).
+With tensors, however, there are some complications. Consider for instance the derivative of a function $\by=f(\bx)$ where both $\by$ and $\bx$ are tensors; this is formed by taking the derivative of each scalar element in the output $\by$ with respect to each scalar element in the input $\bx$. If $\bx$ has dimensions $H \times W \times C$ and $\by$ has dimensions $H' \times W' \times C'$, then the derivative contains $HWCH'W'C'$ elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).
 
 Note that all intermediate derivatives in the chain rule may be affected by this size explosion except for the derivative of the network output that, being the loss, is a scalar.
 
@@ -282,7 +286,7 @@ $$
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
  \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l}
 $$
-The next step is to *project* the derivative with respect to a tensor $\bp_L = 1$ as follows:
+In order to make this computation memory efficient, we *project* the derivative with respect to a tensor $\bp_L = 1$ as follows:
 $$
  (\vv \bp_L)^\top \times \frac{\partial \vv f}{\partial \vv^\top \bw_l}
  =
@@ -363,7 +367,7 @@ checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 >
 > 1.   Run the code, visualizing the results. Convince yourself that the numerical and analytical derivatives are nearly identical.
 > 2.   Modify the code to compute the derivative of the *first element* of the output tensor $\by$ with respect to *all the elements* of the input tensor $\bx$. **Hint:** it suffices to change the value of $\bp$.
-> 2.   Modify the code to compute the derivative w.r.t. the convolution parameters $\bw$ instead of the convolution input $\bx$.
+> 2.   Modify the code to compute the derivative with respect to the convolution parameters $\bw$ instead of the convolution input $\bx$.
 
 ### Part 2.2: Backpropagation {#part2.3}
 
@@ -416,12 +420,12 @@ Note that the backward mode takes the projection tensor `p` as an additional arg
 
 $$
 \langle \bp, f(\bx) \rangle
-= p \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
+= p \sum_{lmnt} (x_{lmnt} - r_{lmnt})^2.
 $$
 
 Here the subscript $t$ index the data instance in the batch; note that, since this function computes the sum of Euclidean distances for all tensor instances, the output $f(\bx)$ is a scalar, and so is the projection $\bp = p$.
 
-In order to see how to implement the backward mode, compute the derivative w.r.t. each input element $x_{ijkt}$ (note $p$ is constant):
+In order to see how to implement the backward mode, compute the derivative with respect to each input element $x_{ijkt}$ (note that $p$ is constant):
 
 $$
 \frac{\partial}{\partial x_{ijkt}}
@@ -434,7 +438,7 @@ $$
 > 1.  Verify that the forward and backward functions are correct by computing the derivatives numerically using `checkDerivativeNumerically()`.
 > 2.  Implement the `l1LossForward.m` and `l1LossBackward.m` to compute the L1 distance (sum of absolute differences):
 $$
-f(\bx) = \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert.
+f(\bx) = \sum_{lmnt} \lvert x_{lmnt} - r_{lmnt} \rvert.
 $$
 In order to implement the backward pass, you need to find
 $$
@@ -443,7 +447,7 @@ $$
 =
 \frac{\partial}{\partial x_{ijkt} }
 \left[
-p \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert
+p \sum_{lmnt} \lvert x_{lmnt} - r_{lmnt} \rvert
 \right].
 $$
 Recall that for ${v} \neq 0$:

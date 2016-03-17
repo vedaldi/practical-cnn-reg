@@ -95,6 +95,8 @@ cd practical-cnn-reg-2016a
 <p>In this part we will explore two fundamental building blocks of CNNs, linear convolution and non-linear activation functions. Open <code>exercise1.m</code> and run up to the <code>setup()</code> command, which initializes the MATLAB environment to use MatConvNet.</p>
 <h3 id="part1.1">Part 1.1: Convolution</h3>
 <p>A <em>convolutional neural network</em> (CNN) is a sequence of linear and non-linear convolution-like operators. The most important example of such operators is <em>linear convolution</em>. In this part, we will explore linear convolution and see how to use it in MatConvNet.</p>
+<p>Recall that linear convolution applies one (or more) filters <mathjax>$\bw$</mathjax> to an image <mathjax>$\bx$</mathjax> as follows:</p>
+<p><img src="images/conv.svg" alt="conv" width=50%"></img></p>
 <h4 id="part1.1.1">Part 1.1.1: Convolution by a single filter</h4>
 <p>Start by identifying and then running the following code fragment in <code>exercise1.m</code>:</p>
 <pre><code class="language-matlab">% Load an image and convert it to gray scale and single precision
@@ -112,23 +114,23 @@ y = vl_nnconv(x, w, []) ;
 
 <p>The code loads the image <code>data/ray.jpg</code> and applies to it a linear filter using the linear convolution operator. The latter is implemented by the MatConvNet function <code>vl_nnconv()</code>. Note that all variables <code>x</code>, <code>w</code>, and <code>y</code> are in single precision; while MatConvNet supports double precision arithmetic too, single precision is usually preferred in applications as memory is often a bottleneck. The result can be visualized as follows:</p>
 <pre><code class="language-matlab">% Visualize the results
-figure(1) ; clf ; colormap gray ;
-set(gcf,'name','P1.1: convolution') ;
+figure(11) ; clf ; colormap gray ;
+set(gcf, 'name', 'Part 1.1: convolution') ;
 
-subplot(1,3,1) ;
+subplot(2,2,1) ;
 imagesc(x) ;
 axis off image ;
-title('input image x') ;
+title('Input image x') ;
 
-subplot(1,3,2) ;
+subplot(2,2,2) ;
 imagesc(w) ;
 axis off image ;
-title('filter w') ;
+title('Filter w') ;
 
-subplot(1,3,3) ;
+subplot(2,2,3) ;
 imagesc(y) ;
 axis off image ;
-title('output image y') ;
+title('Output image y') ;
 </code></pre>
 
 <blockquote>
@@ -232,7 +234,7 @@ z = vl_nnrelu(y) ;
 </ul>
 </blockquote>
 <p>ReLU has a very important effect as it implicitly sets to zero the majority of the filter responses. In a certain sense, ReLU works as a detector, with the implicit convention that a certain pattern is detected when a corresponding filter response is large enough (greater than zero).</p>
-<p>In practice, while signals are usually centered and therefore a threshold of zero is reasonable, in practice there is no particular reason why this should always be appropriate. For this reason, the convolution operator allows to specify <em>a bias term</em> for each filter response. Let us use this term to make the response of ReLU more selective:</p>
+<p>In practice, while signals are usually centered and therefore a threshold of zero is reasonable, there is no particular reason why this should always be appropriate. For this reason, the convolution operator allows to specify <em>a bias term</em> for each filter response. Let us use this term to make the response of ReLU more selective:</p>
 <pre><code class="language-matlab">bias = single(- 0.2) ;
 y = vl_nnconv(x, - w, bias) ;
 z = vl_nnrelu(y) ;
@@ -261,7 +263,7 @@ z = vl_nnrelu(y) ;
  \longrightarrow
  \bx_{L-1}
  \longrightarrow
- \underset{\displaystyle\underset{\displaystyle\bw_2}{\uparrow}}{\boxed{f_L}}
+ \underset{\displaystyle\underset{\displaystyle\bw_L}{\uparrow}}{\boxed{f_L}}
  \longrightarrow
  \bx_L
 $$</mathjax>
@@ -276,7 +278,7 @@ During learning, the last layer of the network is the <em>loss function</em> tha
  \frac{\partial f_{l+1}}{\partial x_l}(x_l;w_{l+1}) \times
  \frac{\partial f_{l}}{\partial w_l}(x_{l-1};w_l)
 $$</mathjax>
-With tensors, however, there are some complications. Consider for instance the derivative of a function <mathjax>$\by=f(\bx)$</mathjax> where both <mathjax>$\by$</mathjax> and <mathjax>$\bx$</mathjax> are tensors; this is formed by taking the derivative of each scalar element in the output <mathjax>$\by$</mathjax> w.r.t. each scalar element in the input <mathjax>$\bx$</mathjax>. If <mathjax>$\bx$</mathjax> has dimensions <mathjax>$H \times W \times C$</mathjax> and <mathjax>$\by$</mathjax> has dimensions <mathjax>$H' \times W' \times C'$</mathjax>, then the derivative contains <mathjax>$HWCH'W'C'$</mathjax> elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).</p>
+With tensors, however, there are some complications. Consider for instance the derivative of a function <mathjax>$\by=f(\bx)$</mathjax> where both <mathjax>$\by$</mathjax> and <mathjax>$\bx$</mathjax> are tensors; this is formed by taking the derivative of each scalar element in the output <mathjax>$\by$</mathjax> with respect to each scalar element in the input <mathjax>$\bx$</mathjax>. If <mathjax>$\bx$</mathjax> has dimensions <mathjax>$H \times W \times C$</mathjax> and <mathjax>$\by$</mathjax> has dimensions <mathjax>$H' \times W' \times C'$</mathjax>, then the derivative contains <mathjax>$HWCH'W'C'$</mathjax> elements, which is often unmanageable (in the order of several GBs of memory for a single derivative).</p>
 <p>Note that all intermediate derivatives in the chain rule may be affected by this size explosion except for the derivative of the network output that, being the loss, is a scalar.</p>
 <blockquote>
 <p><strong>Question:</strong> The output derivatives have the same size as the parameters in the network. Why?</p>
@@ -291,7 +293,7 @@ With tensors, however, there are some complications. Consider for instance the d
  \frac{\partial \vv f_{l+1}}{\partial \vv^\top \bx_l} \times
  \frac{\partial \vv f_{l}}{\partial \vv^\top \bw_l}
 $$</mathjax>
-The next step is to <em>project</em> the derivative with respect to a tensor <mathjax>$\bp_L = 1$</mathjax> as follows:
+In order to make this computation memory efficient, we <em>project</em> the derivative with respect to a tensor <mathjax>$\bp_L = 1$</mathjax> as follows:
 <mathjax>$$
  (\vv \bp_L)^\top \times \frac{\partial \vv f}{\partial \vv^\top \bw_l}
  =
@@ -364,7 +366,7 @@ checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 <ol>
 <li>Run the code, visualizing the results. Convince yourself that the numerical and analytical derivatives are nearly identical.</li>
 <li>Modify the code to compute the derivative of the <em>first element</em> of the output tensor <mathjax>$\by$</mathjax> with respect to <em>all the elements</em> of the input tensor <mathjax>$\bx$</mathjax>. <strong>Hint:</strong> it suffices to change the value of <mathjax>$\bp$</mathjax>.</li>
-<li>Modify the code to compute the derivative w.r.t. the convolution parameters <mathjax>$\bw$</mathjax> instead of the convolution input <mathjax>$\bx$</mathjax>.</li>
+<li>Modify the code to compute the derivative with respect to the convolution parameters <mathjax>$\bw$</mathjax> instead of the convolution input <mathjax>$\bx$</mathjax>.</li>
 </ol>
 </blockquote>
 <h3 id="part2.3">Part 2.2: Backpropagation</h3>
@@ -407,10 +409,10 @@ dx = 2 * p * (x - r) ;
 <p>Note that the backward mode takes the projection tensor <code>p</code> as an additional argument. Let us show that this code is correct. Recall that the goal of the backward mode is to compute the derivative of the projected function:</p>
 <p><mathjax>$$
 \langle \bp, f(\bx) \rangle
-= p \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
+= p \sum_{lmnt} (x_{lmnt} - r_{lmnt})^2.
 $$</mathjax></p>
 <p>Here the subscript <mathjax>$t$</mathjax> index the data instance in the batch; note that, since this function computes the sum of Euclidean distances for all tensor instances, the output <mathjax>$f(\bx)$</mathjax> is a scalar, and so is the projection <mathjax>$\bp = p$</mathjax>.</p>
-<p>In order to see how to implement the backward mode, compute the derivative w.r.t. each input element <mathjax>$x_{ijkt}$</mathjax> (note <mathjax>$p$</mathjax> is constant):</p>
+<p>In order to see how to implement the backward mode, compute the derivative with respect to each input element <mathjax>$x_{ijkt}$</mathjax> (note that <mathjax>$p$</mathjax> is constant):</p>
 <p><mathjax>$$
 \frac{\partial}{\partial x_{ijkt}}
 \langle \bp, f(\bx) \rangle
@@ -422,7 +424,7 @@ $$</mathjax></p>
 <li>Verify that the forward and backward functions are correct by computing the derivatives numerically using <code>checkDerivativeNumerically()</code>.</li>
 <li>Implement the <code>l1LossForward.m</code> and <code>l1LossBackward.m</code> to compute the L1 distance (sum of absolute differences):
 <mathjax>$$
-f(\bx) = \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert.
+f(\bx) = \sum_{lmnt} \lvert x_{lmnt} - r_{lmnt} \rvert.
 $$</mathjax>
 In order to implement the backward pass, you need to find
 <mathjax>$$
@@ -431,7 +433,7 @@ In order to implement the backward pass, you need to find
 =
 \frac{\partial}{\partial x_{ijkt} }
 \left[
-p \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert
+p \sum_{lmnt} \lvert x_{lmnt} - r_{lmnt} \rvert
 \right].
 $$</mathjax>
 Recall that for <mathjax>${v} \neq 0$</mathjax>:
