@@ -14,6 +14,8 @@ This is an [Oxford Visual Geometry Group](http://www.robots.ox.ac.uk/~vgg) compu
 
 This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters. The second part explores backpropagation, including designing custom layers and verifying them numerically. The last part demonstrates learning a CNN for text deblurring; this differs from the usual problem of image classification and demonstrates the flexibility of these techniques.
 
+This practical is based on MATLAB and the [MatConvNet](http://www.vlfeat.org/matconvnet) library. The practical demonstrates how easy it is to use this environment to prototype new network components and architectures. By only using familar MATLAB syntax, you will be able to implement new layers and take advantage of the GPU for faster computation.
+
 [TOC]
 
 $$
@@ -28,7 +30,9 @@ $$
    \newcommand{\vv}{\operatorname{vec}}
 $$
 
-## Getting started
+## Installation
+
+> If you are running this in the iV&amp;L Summer School, please refer to the [instructions](#ivl) at the end of the document.
 
 Read and understand the [requirements and installation instructions](../overview/index.html#installation). The download links for this practical are:
 
@@ -43,6 +47,10 @@ You can either unpack the archive manually, or use the following MATLAB one-line
 untar('http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a.tar.gz')
 cd practical-cnn-reg-2016a
 ```
+
+<a id='getting'></a>
+
+## Getting started
 
 After the installation is complete, open and edit the script `exercise1.m` in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for [Part I](#part1) of this document. You can cut and paste this code into the MATLAB window to run it, or use the shortcut `Ctrl+Enter` to run a code section. You will need to modify it as you go through the session. Other files `exercise2.m`, and `exercise3.m`, are given for [Part II](#part2) and [III](#part3).
 
@@ -728,6 +736,8 @@ Wait for the progress bar to finish (this may take one or two minutes):
 Click the `lab instructions` link and follow the rest of the instructions:
 
 <img width=450px src="images/step4.png" alt="step4"/>
+
+Once MATLAB is started, continue from [the top](#getting).
 
 ### If shortcuts in MATLAB do not work properly
 By default, MATLAB on Linux systems has EMACS-style shortcuts. To change it to more familiar Windows style shortcuts:

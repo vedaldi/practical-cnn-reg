@@ -17,9 +17,11 @@
 <p><img height=400px src="images/cover.png" alt="cover"/></p>
 <p><em>Convolutional neural networks</em> are an important class of learnable representations applicable, among others, to numerous computer vision problems. Deep CNNs, in particular, are composed of several layers of processing, each involving linear as well as non-linear operators, that are learned jointly, in an end-to-end manner, to solve a particular tasks. These methods are now the dominant approach for feature extraction from audiovisual and textual data.</p>
 <p>This practical explores the basics of learning (deep) CNNs. The first part introduces typical CNN building blocks, such as ReLU units and linear filters. The second part explores backpropagation, including designing custom layers and verifying them numerically. The last part demonstrates learning a CNN for text deblurring; this differs from the usual problem of image classification and demonstrates the flexibility of these techniques.</p>
+<p>This practical is based on MATLAB and the <a href="http://www.vlfeat.org/matconvnet">MatConvNet</a> library. The practical demonstrates how easy it is to use this environment to prototype new network components and architectures. By only using familar MATLAB syntax, you will be able to implement new layers and take advantage of the GPU for faster computation.</p>
 <div class="toc">
 <ul>
 <li><a href="#vgg-cnn-practical-image-regression">VGG CNN Practical: Image Regression</a><ul>
+<li><a href="#installation">Installation</a></li>
 <li><a href="#getting-started">Getting started</a></li>
 <li><a href="#part1">Part 1: CNN building blocks</a><ul>
 <li><a href="#part1.1">Part 1.1: Convolution</a><ul>
@@ -69,7 +71,10 @@
    \newcommand{\vc}{\operatorname{vec}}
    \newcommand{\vv}{\operatorname{vec}}
 $$</mathjax></p>
-<h2 id="getting-started">Getting started</h2>
+<h2 id="installation">Installation</h2>
+<blockquote>
+<p>If you are running this in the iV&amp;L Summer School, please refer to the <a href="#ivl">instructions</a> at the end of the document.</p>
+</blockquote>
 <p>Read and understand the <a href="../overview/index.html#installation">requirements and installation instructions</a>. The download links for this practical are:</p>
 <ul>
 <li>Code and data: <a href="http://www.robots.ox.ac.uk/~vgg/share/practical-cnn-reg-2016a.tar.gz">practical-cnn-reg-2016a.tar.gz</a></li>
@@ -82,6 +87,8 @@ $$</mathjax></p>
 cd practical-cnn-reg-2016a
 </code></pre>
 
+<p><a id='getting'></a></p>
+<h2 id="getting-started">Getting started</h2>
 <p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, or use the shortcut <code>Ctrl+Enter</code> to run a code section. You will need to modify it as you go through the session. Other files <code>exercise2.m</code>, and <code>exercise3.m</code>, are given for <a href="#part2">Part II</a> and <a href="#part3">III</a>.</p>
 <p>Each part contains several <strong>Questions</strong> (that may require pen and paper) and <strong>Tasks</strong> (that require experimentation or coding) to be answered/completed before proceeding further in the practical.</p>
 <h2 id="part1">Part 1: CNN building blocks</h2>
@@ -781,6 +788,7 @@ trainOpts.gpus = [1] ;
 <p><img width=450px src="images/step3.png" alt="step3"/></p>
 <p>Click the <code>lab instructions</code> link and follow the rest of the instructions:</p>
 <p><img width=450px src="images/step4.png" alt="step4"/></p>
+<p>Once MATLAB is started, continue from <a href="#getting">the top</a>.</p>
 <h3 id="if-shortcuts-in-matlab-do-not-work-properly">If shortcuts in MATLAB do not work properly</h3>
 <p>By default, MATLAB on Linux systems has EMACS-style shortcuts. To change it to more familiar Windows style shortcuts:</p>
 <ul>
