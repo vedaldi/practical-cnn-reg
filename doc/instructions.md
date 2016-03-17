@@ -1,3 +1,4 @@
+<img src="images/oxford.png"  alt="Oxford logo" style="float:right;margin:10px" width="8%" height="8%"/>
 <img src="images/mathworks_logo.png"  alt="MathWorks logo" style="float:right;margin:10px" width="8%" height="8%"/>
 <img src="images/nvidia_logo.svg"  alt="NVIDIA logo" style="float:right;margin:10px" width="10%" height="10%"/>
 
@@ -709,9 +710,26 @@ And, of course, make sure to beat the other students.
 
 * NVIDIA and MathWorks for valuable help setting up the development environment for this tutorial.
 
-## Troubleshooting
+<a id='ivl'></a>
+## iV&L Summer School instructions
 
-### Shortcuts in MATLAB do not work properly
+Connect here to Qwick labs as you have been instructed. Press the `Select` button for the MatConvNet Lab:
+
+<img width=450px src="images/step1.png" alt="step1"/>
+
+Press the `Start Lab` button:
+
+<img width=450px src="images/step2.png" alt="step2"/>
+
+Wait for the progress bar to finish (this may take one or two minutes):
+
+<img width=450px src="images/step3.png" alt="step3"/>
+
+Click the `lab instructions` link and follow the rest of the instructions:
+
+<img width=450px src="images/step4.png" alt="step4"/>
+
+### If shortcuts in MATLAB do not work properly
 By default, MATLAB on Linux systems has EMACS-style shortcuts. To change it to more familiar Windows style shortcuts:
 
 * Type `preferences` in MATLAB Command Window.
@@ -719,6 +737,10 @@ By default, MATLAB on Linux systems has EMACS-style shortcuts. To change it to m
 * Change `Active settings` to `Windows Default Set`
 <img width=700px src="images/matlab_set_shortcuts.svg" alt="cover"/>
 * Click `OK` to apply and close the settings window
+
+### If the screen is too small or too large
+
+If you are running the practical through a VNC-based remote desktop connection, you can try adjusting the resolution by changing the setting in the OS (click on the big Ubuntu button on the top left and search for `Displays`).
 
 ## History
 

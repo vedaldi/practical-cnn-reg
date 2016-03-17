@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="prism.css" />
 </head>
 <body>
-<p><img src="images/mathworks_logo.png"  alt="MathWorks logo" style="float:right;margin:10px" width="8%" height="8%"/>
+<p><img src="images/oxford.png"  alt="Oxford logo" style="float:right;margin:10px" width="8%" height="8%"/>
+<img src="images/mathworks_logo.png"  alt="MathWorks logo" style="float:right;margin:10px" width="8%" height="8%"/>
 <img src="images/nvidia_logo.svg"  alt="NVIDIA logo" style="float:right;margin:10px" width="10%" height="10%"/></p>
 <h1 id="vgg-cnn-practical-image-regression">VGG CNN Practical: Image Regression</h1>
 <p><em>By Andrea Vedaldi, Karel Lenc, and Joao Henriques</em></p>
@@ -47,8 +48,9 @@
 </li>
 <li><a href="#links-and-further-work">Links and further work</a></li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
-<li><a href="#troubleshooting">Troubleshooting</a><ul>
-<li><a href="#shortcuts-in-matlab-do-not-work-properly">Shortcuts in MATLAB do not work properly</a></li>
+<li><a href="#ivl-summer-school-instructions">iV&amp;L Summer School instructions</a><ul>
+<li><a href="#if-shortcuts-in-matlab-do-not-work-properly">If shortcuts in MATLAB do not work properly</a></li>
+<li><a href="#if-the-screen-is-too-small-or-too-large">If the screen is too small or too large</a></li>
 </ul>
 </li>
 <li><a href="#history">History</a></li>
@@ -769,8 +771,17 @@ trainOpts.gpus = [1] ;
 <ul>
 <li>NVIDIA and MathWorks for valuable help setting up the development environment for this tutorial.</li>
 </ul>
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="shortcuts-in-matlab-do-not-work-properly">Shortcuts in MATLAB do not work properly</h3>
+<p><a id='ivl'></a></p>
+<h2 id="ivl-summer-school-instructions">iV&amp;L Summer School instructions</h2>
+<p>Connect here to Qwick labs as you have been instructed. Press the <code>Select</code> button for the MatConvNet Lab:</p>
+<p><img width=450px src="images/step1.png" alt="step1"/></p>
+<p>Press the <code>Start Lab</code> button:</p>
+<p><img width=450px src="images/step2.png" alt="step2"/></p>
+<p>Wait for the progress bar to finish (this may take one or two minutes):</p>
+<p><img width=450px src="images/step3.png" alt="step3"/></p>
+<p>Click the <code>lab instructions</code> link and follow the rest of the instructions:</p>
+<p><img width=450px src="images/step4.png" alt="step4"/></p>
+<h3 id="if-shortcuts-in-matlab-do-not-work-properly">If shortcuts in MATLAB do not work properly</h3>
 <p>By default, MATLAB on Linux systems has EMACS-style shortcuts. To change it to more familiar Windows style shortcuts:</p>
 <ul>
 <li>Type <code>preferences</code> in MATLAB Command Window.</li>
@@ -779,6 +790,8 @@ trainOpts.gpus = [1] ;
 <img width=700px src="images/matlab_set_shortcuts.svg" alt="cover"/></li>
 <li>Click <code>OK</code> to apply and close the settings window</li>
 </ul>
+<h3 id="if-the-screen-is-too-small-or-too-large">If the screen is too small or too large</h3>
+<p>If you are running the practical through a VNC-based remote desktop connection, you can try adjusting the resolution by changing the setting in the OS (click on the big Ubuntu button on the top left and search for <code>Displays</code>).</p>
 <h2 id="history">History</h2>
 <ul>
 <li>Used in the <a href="http://ivl-net.eu/ivl-net-training-school-2016/">IV &amp; L Net</a> summer school, Malta, 2016.</li>
