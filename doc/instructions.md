@@ -678,6 +678,8 @@ You are now in control. Play around with the model definition and try to improve
 
 And, of course, make sure to beat the other students.
 
+> **Remark:** You can see the relative change of the network weights by uncommenting the line `trainOpts.plotDiagnostics = true ;`
+
 ## Links and further work
 
 * The code for this practical is written using the software package [MatConvNet](http://www.vlfeat.org/matconvnet). This is a software library written in MATLAB, C++, and CUDA and its source code is freely available.
