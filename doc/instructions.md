@@ -701,7 +701,7 @@ Now we are ready to experiment with different CNNs.
 
 You are now in control. Play around with the model definition and try to improve the performance as much as possible. For example:
 
-* Try adding more layers.
+* Try adding more layers[^goingdeeper].
 * Try adding more filters.
 * Try different loss
 * Try increasing the receptive field size by increasing the filter support (do not forget to adjust the padding).
@@ -775,3 +775,4 @@ $$
 \end{bmatrix}
 $$
 
+[^goingdeeper]: Like <a href="https://pbs.twimg.com/media/CZlPMaBWIAAI6zA.jpg">for example</a>.
