@@ -21,11 +21,13 @@ setup.m \
 showDeblurringResult.m \
 showFeatureChannels.m \
 xavier.m \
+README.md \
 matconvnet
 
 doc=\
 doc/images \
-doc/instructions.html
+doc/instructions.html \
+doc/base.css
 
 data=\
 data/text_imdb.mat \
