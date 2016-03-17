@@ -775,4 +775,3 @@ $$
 \end{bmatrix}
 $$
 
-[^lattice]: A two-dimensional *lattice* is a discrete grid embedded in $R^2$, similar for example to a checkerboard.
