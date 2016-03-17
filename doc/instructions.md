@@ -692,6 +692,17 @@ And, of course, make sure to beat the other students.
 
 * NVIDIA and MathWorks for valuable help setting up the development environment for this tutorial.
 
+## Troubleshooting
+
+### Shortcuts in MATLAB do not work properly
+By default, MATLAB on Linux systems has EMACS-style shortcuts. To change it to more familiar Windows style shortcuts:
+
+* Type `preferences` in MATLAB Command Window.
+* Pick `Keyboard -> Shortcuts`
+* Change `Active settings` to `Windows Default Set`
+<img width=700px src="images/matlab_set_shortcuts.svg" alt="cover"/>
+* Click `OK` to apply and close the settings window
+
 ## History
 
 * Used in the [IV & L Net](http://ivl-net.eu/ivl-net-training-school-2016/) summer school, Malta, 2016.
