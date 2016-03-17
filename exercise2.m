@@ -21,8 +21,8 @@ p = randn(size(y), 'like', y) ;
 [dx,dw] = vl_nnconv(x, w, [], p) ;
 
 % Check the derivative numerically
-figure(1) ; clf('reset') ;
-set(gcf,'name','Part 2.1: single layer backrpop') ;
+figure(21) ; clf('reset') ;
+set(gcf, 'name', 'Part 2.1: single layer backrpop') ;
 checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 
 %% Part 2.2: Backpropagation
@@ -42,8 +42,8 @@ dy = vl_nnrelu(z, p) ;
 [dx,dw] = vl_nnconv(x, w, [], dy) ;
 
 % Check the derivative numerically
-figure(2) ; clf('reset') ;
-set(gcf,'name','Part 2.2: two layers backrpop') ;
+figure(22) ; clf('reset') ;
+set(gcf, 'name', 'Part 2.2: two layers backrpop') ;
 func = @(x) proj(p, vl_nnrelu(vl_nnconv(x, w, []))) ;
 checkDerivativeNumerically(func, x, dx) ;
 
@@ -61,7 +61,7 @@ p = randn(size(y), 'single') ;
 dx = backward(x, x0, p) ;
 
 % Check the derivative numerically
-figure(3) ; clf('reset') ;
-set(gcf,'name','Part 2.3: custom loss layer') ;
+figure(23) ; clf('reset') ;
+set(gcf, 'name', 'Part 2.3: custom loss layer') ;
 func = @(x) proj(p, forward(x, x0)) ;
 checkDerivativeNumerically(func, x, dx) ;
