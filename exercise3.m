@@ -60,9 +60,9 @@ trainOpts.gpus = [] ;
 trainOpts.batchSize = 16 ;
 trainOpts.learningRate = 0.02 ;
 trainOpts.plotDiagnostics = false ;
+%trainOpts.plotDiagnostics = true ; % Uncomment to plot diagnostics
 trainOpts.numEpochs = 20 ;
 trainOpts.errorFunction = 'none' ;
-%trainOpts.plotDiagnostics = true ; % Uncomment to plot diagnostics
 
 net = cnn_train(net, imdb, @getBatch, trainOpts) ;
 

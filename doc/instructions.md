@@ -349,7 +349,7 @@ p = randn(size(y), 'single') ;
 [dx,dw] = vl_nnconv(x, w, [], p) ;
 
 % Check the derivative numerically
-figure(1) ; clf('reset') ;
+figure(21) ; clf('reset') ;
 set(gcf,'name','Part 2.1: single layer backrpop') ;
 checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 ```
@@ -483,13 +483,13 @@ The variable `imdb` is a structure containing $n$ images, which will be used for
 Run the following code, which displays the first image in the dataset and its label:
 
 ```.language-matlab
-figure(100) ; clf ;
+figure(31) ; set(gcf, 'name', 'Part 3.1: Data') ; clf ;
 
 subplot(1,2,1) ; imagesc(imdb.images.data(:,:,:,1)) ;
-axis off image ; title('input (blurred)') ;
+axis off image ; title('Input (blurred)') ;
 
 subplot(1,2,2) ; imagesc(imdb.images.label(:,:,:,1)) ;
-axis off image ; title('desired output (sharp)') ;
+axis off image ; title('Desired output (sharp)') ;
 
 colormap gray ;
 ```
@@ -590,11 +590,11 @@ Next, setup the learning parameters:
 
 ```.language-matlab
 trainOpts.expDir = 'data/text-small' ;
-trainOpts.batchSize = 16 ;
-trainOpts.learningRate = 0.01 ;
-trainOpts.plotDiagnostics = false ;
-trainOpts.numEpochs = 30 ;
 trainOpts.gpus = [] ;
+trainOpts.batchSize = 16 ;
+trainOpts.learningRate = 0.02 ;
+trainOpts.plotDiagnostics = false ;
+trainOpts.numEpochs = 20 ;
 trainOpts.errorFunction = 'none' ;
 ```
 
@@ -602,15 +602,15 @@ The fields are as follows:
 
 * `expDir` specifies a directory to store intermediate data (snapshot and figures) as well as the final model. Note that the code resumes execution from the last snapshot; therefore change this directory or clear it if you want to start learning from scratch.
 
+* `gpus` contains a list of GPU IDs to use. For now, do not use any.
+
 * `batchSize` specifies how many images to include in a batch. Here we use 16.
 
 * `learningRate` is the learning rate in SGD.
 
-* `plotDiagnostic` can be used to plot statistics during training. This is slow, but can help setting a reasonable learning rate. Leave if off for now.
+* `plotDiagnostic` can be used to plot statistics during training. This is slow, but can help setting a reasonable learning rate. Leave it off for now.
 
 * `numEpochs` is the number of epochs (passes through the training data) to perform before SGD stops.
-
-* `gpus` contains a list of GPU IDs to use. For now, do not use any.
 
 * `errorFunction` disables plotting the default error functions that are suitable for classification, but not for our problem.
 
@@ -630,7 +630,7 @@ label = imdb.images.label(:,:,:,batch) ;
 
 The function takes as input the `imdb` structure defined above and a list `batch` of image indexes that should be returned for training. In this case, this amounts to simply extract and copy some data; however, in general `getBatch` can be used to e.g. read images from disk or apply transformations to them on the fly.
 
-> **Task:** run the training code and wait for learning to be complete. Note that the model is saved in `data/text-small/net-epoch-16.mat', where 16 is the number of the last epoch.
+> **Task:** run the training code and wait for learning to be complete. Note that the model is saved in `data/text-small/net-epoch-16.mat`, where 16 is the number of the last epoch.
 
 ### Part 3.4: Evaluate the model
 
@@ -642,17 +642,18 @@ In our example it is also informative to evaluate the *qualitative* result of th
 train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(4) ; set(3,'name','Results on the training set') ;
+figure(33) ; set(gcf, 'name', 'Part 3.4: Results on the training set') ;
 showDeblurringResult(net, imdb, train(1:30:151)) ;
 
-figure(5) ; set(4,'name','Results on the validation set') ;
+figure(34) ; set(gcf, 'name', 'Part 3.4: Results on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
 ```
 
 Since the CNN is convolutional, it can be applied to arbitrarily-sized images. `imdb.examples` contains a few larger examples too. The following code shows one:
 
 ```.language-matlab
-figure(6) ; set(5,'name','Larger example in the validation set') ;
+figure(35) ;
+set(gcf, 'name', 'Part 3.4: Larger example on the validation set') ;
 colormap gray ;
 subplot(1,2,1) ; imagesc(imdb.examples.blurred{1}, [-1 0]) ;
 axis image off ;
@@ -708,7 +709,7 @@ You are now in control. Play around with the model definition and try to improve
 
 And, of course, make sure to beat the other students.
 
-> **Remark:** You can see the relative change of the network weights by uncommenting the line `trainOpts.plotDiagnostics = true ;`
+> **Remark:** You can see the relative change of the network weights by setting `trainOpts.plotDiagnostics = true ;`
 
 ## Links and further work
 
