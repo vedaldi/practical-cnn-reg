@@ -31,5 +31,10 @@ if opts.useGpu
 end
 
 rng(0) ;
+% The EC2 has incorrect screen size which leads to a tiny font in figures
+[~, hostname] = system('hostname');
+if strcmp(hostname(1:3), 'ip-')
+  set(0, 'DefaultAxesFontSize', 30);
+end
 
 
