@@ -382,7 +382,7 @@ dy = vl_nnrelu(z, p) ;
 
 ### Part 2.3: Design and verify your own layer
 
-Creating new layers is a common task when experimenting with novel CNN architectures. MatConvNet makes this particularly easy, since you can use all standard Matlab operators and functions. The same code also works on the GPU.
+Creating new layers is a common task when experimenting with novel CNN architectures. MatConvNet makes this particularly easy, since you can use all standard MATLAB operators and functions. The same code also works on the GPU.
 
 In this part we will show how to implement a layer computing the Euclidean distance between a tensor `x` and a reference tensor `r` and your goal will be then to implement absolute difference (L1) loss. This layer will be used later to learn a CNN from data.
 
@@ -427,11 +427,21 @@ $$
 $$
 f(\bx) = \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert.
 $$
-In order to implement the backward pass, you need to find $\frac{\partial f}{\partial x_{ijkt}}$. Recall that for ${v} \neq 0$:
+In order to implement the backward pass, you need to find
+$$
+\frac{\partial}{\partial x_{ijkt}}
+\langle \bp, f(\bx) \rangle
+=
+\frac{\partial}{\partial x_{ijkt} }
+\left[
+p \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert
+\right].
+$$
+Recall that for ${v} \neq 0$:
 $$
 \frac{\partial |v|}{\partial v} = \begin{cases} -1 & v<0 \\ 1 & v>0 \end{cases}.
 $$
-> 3.  Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more. What happens for the zero points?
+> 3.  Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more. What happens for the components of $\bx$ that are zero or very close to zero?
 
 ## Part 3: Learning a CNN for text deblurring {#part3}
 

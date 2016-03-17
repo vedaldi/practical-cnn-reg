@@ -44,9 +44,11 @@ title('CNN output (not trained yet)') ;
 
 %% Part 3.3: learn the model
 
-% Add a loss (using our custom layer)
+% Add a loss (using a custom layer)
 net = addCustomLossLayer(net, @l2LossForward, @l2LossBackward) ;
-% Uncomment to use your implementation of L1 loss
+
+% Extra: uncomment the following line to use your implementation
+% of the L1 loss
 %net = addCustomLossLayer(net, @l1LossForward, @l1LossBackward) ;
 
 % Train

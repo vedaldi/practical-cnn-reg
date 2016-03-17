@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="prism.css" />
 </head>
 <body>
+<p><img src="images/mathworks_logo.png"  alt="MathWorks logo" style="float:right;margin:10px" width="8%" height="8%"/>
+<img src="images/nvidia_logo.svg"  alt="NVIDIA logo" style="float:right;margin:10px" width="10%" height="10%"/></p>
 <h1 id="vgg-cnn-practical-image-regression">VGG CNN Practical: Image Regression</h1>
 <p><em>By Andrea Vedaldi, Karel Lenc, and Joao Henriques</em></p>
 <p>This is an <a href="http://www.robots.ox.ac.uk/~vgg">Oxford Visual Geometry Group</a> computer vision practical (Release 2016a).</p>
@@ -45,6 +47,10 @@
 </li>
 <li><a href="#links-and-further-work">Links and further work</a></li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a><ul>
+<li><a href="#shortcuts-in-matlab-do-not-work-properly">Shortcuts in MATLAB do not work properly</a></li>
+</ul>
+</li>
 <li><a href="#history">History</a></li>
 </ul>
 </li>
@@ -74,7 +80,7 @@ $$</mathjax></p>
 cd practical-cnn-reg-2016a
 </code></pre>
 
-<p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, and will need to modify it as you go through the session. Other files <code>exercise2.m</code>, and <code>exercise3.m</code>, are given for <a href="#part2">Part II</a> and <a href="#part3">III</a>.</p>
+<p>After the installation is complete, open and edit the script <code>exercise1.m</code> in the MATLAB editor. The script contains commented code and a description for all steps of this exercise, for <a href="#part1">Part I</a> of this document. You can cut and paste this code into the MATLAB window to run it, or use the shortcut <code>Ctrl+Enter</code> to run a code section. You will need to modify it as you go through the session. Other files <code>exercise2.m</code>, and <code>exercise3.m</code>, are given for <a href="#part2">Part II</a> and <a href="#part3">III</a>.</p>
 <p>Each part contains several <strong>Questions</strong> (that may require pen and paper) and <strong>Tasks</strong> (that require experimentation or coding) to be answered/completed before proceeding further in the practical.</p>
 <h2 id="part1">Part 1: CNN building blocks</h2>
 <p>In this part we will explore two fundamental building blocks of CNNs, linear convolution and non-linear activation functions. Open <code>exercise1.m</code> and run up to the <code>setup()</code> command, which initializes the MATLAB environment to use MatConvNet.</p>
@@ -223,7 +229,7 @@ y = vl_nnconv(x, - w, bias) ;
 z = vl_nnrelu(y) ;
 </code></pre>
 
-<p>There is only one <code>bias</code> term because there is only one filter in the bank (note that, as for the reset of the data, <code>bias</code> is a single precision quantity). The bias is applied after convolution, effectively subtracting 0.2 from the filter responses. Hence, now a response is not suppressed by the subsequent ReLU operator only if it is at least 0.2 after convolution.</p>
+<p>There is only one <code>bias</code> term because there is only one filter in the bank (note that, as for the rest of the data, <code>bias</code> is a single precision quantity). The bias is applied after convolution, effectively subtracting 0.2 from the filter responses. Hence, now a response is not suppressed by the subsequent ReLU operator only if it is at least 0.2 after convolution.</p>
 <blockquote>
 <p><strong>Task:</strong> Run this code and visualize images <code>x</code>, <code>y</code>, and <code>z</code>.</p>
 <p><strong>Question:</strong> Is the response now more selective?</p>
@@ -250,7 +256,7 @@ z = vl_nnrelu(y) ;
  \longrightarrow
  \bx_L
 $$</mathjax>
-During learning, the last layer of the network is the <em>loss function</em> that should be minimized. Hence, the output <mathjax>$\bx_L = x_L$</mathjax> of the network is a <strong>scalar</strong> quantity.</p>
+During learning, the last layer of the network is the <em>loss function</em> that should be minimized. Hence, the output <mathjax>$\bx_L = x_L$</mathjax> of the network is a <strong>scalar</strong> quantity (a single number).</p>
 <p>The gradient is easily computed using using the <strong>chain rule</strong>. If <em>all</em> network variables and parameters are scalar, this is given by<sup id="fnref:derivative"><a class="footnote-ref" href="#fn:derivative" rel="footnote">2</a></sup>:
 <mathjax>$$
  \frac{\partial f}{\partial w_l}(x_0;w_1,\dots,w_L)
@@ -295,7 +301,7 @@ Note that <mathjax>$\bp_L=1$</mathjax> has the same dimension as <mathjax>$\bx_L
  \times
  \frac{\partial \vv f_L}{\partial \vv^\top \bx_L}
 \end{equation}
-This results in a new projection vector <mathjax>$\bp_{L-1}$</mathjax>, which can then be multiplied to the left to obtain <mathjax>$\bp_{L-2}$</mathjax> and so on. The last projection <mathjax>$\bp_l$</mathjax> is the desired derivative. Crucially, each projection <mathjax>$\bp_q$</mathjax> takes as much memory as the corresponding variable <mathjax>$\bx_q$</mathjax>.</p>
+This results in a new projection vector <mathjax>$\bp_{L-1}$</mathjax>, which can then be multiplied from the left to obtain <mathjax>$\bp_{L-2}$</mathjax> and so on. The last projection <mathjax>$\bp_l$</mathjax> is the desired derivative. Crucially, each projection <mathjax>$\bp_q$</mathjax> takes as much memory as the corresponding variable <mathjax>$\bx_q$</mathjax>.</p>
 <p>Some might have noticed that, while projections remain small, each factor \eqref{e:factor} does contain one of the large derivatives that we cannot compute explicitly. The trick is that CNN toolboxes contain code that can compute the projected derivatives without explicitly computing this large factor. In particular, for any building block function <mathjax>$\by=f(\bx;\bw)$</mathjax>, a toolbox such as MatConvNet will implement:</p>
 <ul>
 <li>A <strong>forward mode</strong> computing the function <mathjax>$\by=f(\bx;\bw)$</mathjax>.</li>
@@ -375,7 +381,8 @@ dy = vl_nnrelu(z, p) ;
 </ol>
 </blockquote>
 <h3 id="part-23-design-and-verify-your-own-layer">Part 2.3: Design and verify your own layer</h3>
-<p>Creating new layers is a common task when experimenting with novel CNN architectures. In this part you will implement a layer computing the Euclidean distance between a tensor <code>x</code> and a reference tensor <code>r</code>. This layer will be used later to learn a CNN from data.</p>
+<p>Creating new layers is a common task when experimenting with novel CNN architectures. MatConvNet makes this particularly easy, since you can use all standard MATLAB operators and functions. The same code also works on the GPU.</p>
+<p>In this part we will show how to implement a layer computing the Euclidean distance between a tensor <code>x</code> and a reference tensor <code>r</code> and your goal will be then to implement absolute difference (L1) loss. This layer will be used later to learn a CNN from data.</p>
 <p>The first step is to write the forward mode. This is contained in the <code>l2LossForward.m</code> function. Open the file and check its content:</p>
 <pre><code class="language-matlab">function y = l2LossForward(x,r)
 delta = x - r ;
@@ -394,7 +401,7 @@ dx = 2 * p * (x - r) ;
 = p \sum_{lmn} (x_{lmnt} - r_{lmnt})^2.
 $$</mathjax></p>
 <p>Here the subscript <mathjax>$t$</mathjax> index the data instance in the batch; note that, since this function computes the sum of Euclidean distances for all tensor instances, the output <mathjax>$f(\bx)$</mathjax> is a scalar, and so is the projection <mathjax>$\bp = p$</mathjax>.</p>
-<p>In order to see how to implement the backward mode, compute the derivative w.r.t. each input element <mathjax>$x_{ijkt}$</mathjax>:</p>
+<p>In order to see how to implement the backward mode, compute the derivative w.r.t. each input element <mathjax>$x_{ijkt}$</mathjax> (note <mathjax>$p$</mathjax> is constant):</p>
 <p><mathjax>$$
 \frac{\partial}{\partial x_{ijkt}}
 \langle \bp, f(\bx) \rangle
@@ -404,8 +411,25 @@ $$</mathjax></p>
 <p><strong>Tasks:</strong></p>
 <ol>
 <li>Verify that the forward and backward functions are correct by computing the derivatives numerically using <code>checkDerivativeNumerically()</code>.</li>
-<li>Implement the <code>l1LossForward.m</code> and <code>l1LossBackward.m</code> to compute the L1 distance (sum of absolute differences).</li>
-<li>Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more.</li>
+<li>Implement the <code>l1LossForward.m</code> and <code>l1LossBackward.m</code> to compute the L1 distance (sum of absolute differences):
+<mathjax>$$
+f(\bx) = \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert.
+$$</mathjax>
+In order to implement the backward pass, you need to find
+<mathjax>$$
+\frac{\partial}{\partial x_{ijkt}}
+\langle \bp, f(\bx) \rangle
+=
+\frac{\partial}{\partial x_{ijkt} }
+\left[
+p \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert
+\right].
+$$</mathjax>
+Recall that for <mathjax>${v} \neq 0$</mathjax>:
+<mathjax>$$
+\frac{\partial |v|}{\partial v} = \begin{cases} -1 &amp; v&lt;0 \\ 1 &amp; v&gt;0 \end{cases}.
+$$</mathjax></li>
+<li>Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more. What happens for the components of <mathjax>$\bx$</mathjax> that are zero or very close to zero?</li>
 </ol>
 </blockquote>
 <h2 id="part3">Part 3: Learning a CNN for text deblurring</h2>
@@ -665,10 +689,10 @@ label = imdb.images.label(:,:,:,batch) ;
 <pre><code class="language-matlab">train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(4) ; set(3,'name','Resluts on the training set') ;
+figure(4) ; set(3,'name','Results on the training set') ;
 showDeblurringResult(net, imdb, train(1:30:151)) ;
 
-figure(5) ; set(4,'name','Resluts on the validation set') ;
+figure(5) ; set(4,'name','Results on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
 </code></pre>
 
@@ -726,10 +750,13 @@ trainOpts.gpus = [1] ;
 <li>Try sequences of rank-1 filters, such as <mathjax>$7 \times 1$</mathjax> followed by <mathjax>$1 \times 7$</mathjax> to increase the receptive field size while maintaining efficiency.</li>
 </ul>
 <p>And, of course, make sure to beat the other students.</p>
+<blockquote>
+<p><strong>Remark:</strong> You can see the relative change of the network weights by uncommenting the line <code>trainOpts.plotDiagnostics = true ;</code></p>
+</blockquote>
 <h2 id="links-and-further-work">Links and further work</h2>
 <ul>
 <li>
-<p>The code for this practical is written using the software package <a href="http://www.vlfeat.org/matconvnet">MatConvNet</a>. This is a software library written in MATLAB, C++, and CUDA and is freely available as source code and binary.</p>
+<p>The code for this practical is written using the software package <a href="http://www.vlfeat.org/matconvnet">MatConvNet</a>. This is a software library written in MATLAB, C++, and CUDA and its source code is freely available.</p>
 </li>
 <li>
 <p>MatConvNet can train complex computer vision models, such as VGG VD and Inception. Several of these models, including a few cool demos, are available for download.</p>
@@ -740,7 +767,17 @@ trainOpts.gpus = [1] ;
 </ul>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
-<li>NVIDIA and MathWorks.</li>
+<li>NVIDIA and MathWorks for valuable help setting up the development environment for this tutorial.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="shortcuts-in-matlab-do-not-work-properly">Shortcuts in MATLAB do not work properly</h3>
+<p>By default, MATLAB on Linux systems has EMACS-style shortcuts. To change it to more familiar Windows style shortcuts:</p>
+<ul>
+<li>Type <code>preferences</code> in MATLAB Command Window.</li>
+<li>Pick <code>Keyboard -&gt; Shortcuts</code></li>
+<li>Change <code>Active settings</code> to <code>Windows Default Set</code>
+<img width=700px src="images/matlab_set_shortcuts.svg" alt="cover"/></li>
+<li>Click <code>OK</code> to apply and close the settings window</li>
 </ul>
 <h2 id="history">History</h2>
 <ul>
@@ -756,7 +793,15 @@ trainOpts.gpus = [1] ;
 <p>The derivative is computed with respect to a certain assignment <mathjax>$x_0$</mathjax> and <mathjax>$(w_1,\dots,w_L)$</mathjax> to the network input and parameters; furthermore, the intermediate derivatives are computed at points <mathjax>$x_1,\dots,x_L$</mathjax> obtained by evaluating the network at <mathjax>$x_0$</mathjax>.&#160;<a class="footnote-backref" href="#fnref:derivative" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:stacking">
-<p>The stacking operator <mathjax>$\vv$</mathjax> simply unfolds a tensor in a vector by stacking its elements in some pre-defined order.&#160;<a class="footnote-backref" href="#fnref:stacking" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>The stacking operator <mathjax>$\vv$</mathjax> simply unfolds a tensor in a vector by stacking its elements in some pre-defined order. For example:
+<mathjax>$$
+\vv\begin{bmatrix}
+1 &amp; 3 &amp; 5\\
+2 &amp; 4 &amp; 6
+\end{bmatrix}=\begin{bmatrix}
+1\\2\\3\\4\\5\\6
+\end{bmatrix}
+$$</mathjax>&#160;<a class="footnote-backref" href="#fnref:stacking" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:lattice">
 <p>A two-dimensional <em>lattice</em> is a discrete grid embedded in <mathjax>$R^2$</mathjax>, similar for example to a checkerboard.&#160;<a class="footnote-backref" href="#fnref:lattice" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
