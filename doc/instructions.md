@@ -423,8 +423,15 @@ $$
 > **Tasks:**
 >
 > 1.  Verify that the forward and backward functions are correct by computing the derivatives numerically using `checkDerivativeNumerically()`.
-> 2.  Implement the `l1LossForward.m` and `l1LossBackward.m` to compute the L1 distance (sum of absolute differences).
-> 3.  Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more.
+> 2.  Implement the `l1LossForward.m` and `l1LossBackward.m` to compute the L1 distance (sum of absolute differences):
+$$
+f(\bx) = \sum_{lmn} \lvert x_{lmnt} - r_{lmnt} \rvert.
+$$
+In order to implement the backward pass, you need to find $\frac{\partial f}{\partial x_{ijkt}}$. Recall that for ${v} \neq 0$:
+$$
+\frac{\partial |v|}{\partial v} = \begin{cases} -1 & v<0 \\ 1 & v>0 \end{cases}.
+$$
+> 3.  Make sure that both the forward and backward modes are correctly modified by verifying the result numerically once more. What happens for the zero points?
 
 ## Part 3: Learning a CNN for text deblurring {#part3}
 
