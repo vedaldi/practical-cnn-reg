@@ -684,7 +684,8 @@ trainOpts.expDir = 'data/text-small-gpu'
 trainOpts.gpus = [1] ;
 ```
 
-Do not forget to also change `expDir` in order to start a new experiment from scratch.
+The code above also changes `expDir` in order to start a new experiment from scratch.
+
 > **Task:** Test GPU-based training (if possible). How much faster does it run compared to CPU-based training?
 
 Now we are ready to experiment with different CNNs.
