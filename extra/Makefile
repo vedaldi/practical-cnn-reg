@@ -34,10 +34,21 @@ data/text_imdb.mat \
 data/ray.jpg \
 data/crab.jpg
 
+BINPACK_URL=http://www.robots.ox.ac.uk/~karel/project/matconvnet/bin
+
 include extra/practical/Makefile
 
 # Preprocessing
-.PHONY: preproc
+.PHONY: preproc ec2-bin win7-bin
+
+ec2-bin: $(TMPDIR)/matconvnet-ec2-bin.tar.gz
+	tar xzvf $< -C ./matconvnet
+
+win7-bin: $(TMPDIR)/matconvnet-win7-bin.tar.gz
+	tar xzvf $< -C ./matconvnet
+
+$(TMPDIR)/matconvnet-%-bin.tar.gz:
+	wget $(BINPACK_URL)/$(notdir $@) -O $@
 
 papers_url=http://www.robots.ox.ac.uk/~vedaldi/assets/pubs
 papers=\
