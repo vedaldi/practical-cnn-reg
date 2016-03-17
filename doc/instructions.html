@@ -347,7 +347,7 @@ p = randn(size(y), 'single') ;
 [dx,dw] = vl_nnconv(x, w, [], p) ;
 
 % Check the derivative numerically
-figure(1) ; clf('reset') ;
+figure(21) ; clf('reset') ;
 set(gcf,'name','Part 2.1: single layer backrpop') ;
 checkDerivativeNumerically(@(x) proj(p, vl_nnconv(x, w, [])), x, dx) ;
 </code></pre>
@@ -460,13 +460,13 @@ $$</mathjax></li>
 <li><code>imdb.images.set</code>: a <mathjax>$1 \times n$</mathjax> vector containing a 1 for training images and an 2 for validation images. 75% of the images are used for training and 25% for test.</li>
 </ul>
 <p>Run the following code, which displays the first image in the dataset and its label:</p>
-<pre><code class="language-matlab">figure(100) ; clf ;
+<pre><code class="language-matlab">figure(31) ; set(gcf, 'name', 'Part 3.1: Data') ; clf ;
 
 subplot(1,2,1) ; imagesc(imdb.images.data(:,:,:,1)) ;
-axis off image ; title('input (blurred)') ;
+axis off image ; title('Input (blurred)') ;
 
 subplot(1,2,2) ; imagesc(imdb.images.label(:,:,:,1)) ;
-axis off image ; title('desired output (sharp)') ;
+axis off image ; title('Desired output (sharp)') ;
 
 colormap gray ;
 </code></pre>
@@ -648,11 +648,11 @@ net = addCustomLossLayer(net, @l2LossForward, @l2LossBackward) ;
 <p>The function <code>addCustomLossLayer()</code> creates a <code>layer</code> structure compatible with SimpleNN and adds it as the last of the network. This structure contains handles to the functions defined in Part 2, namely <code>l2LossForward()</code> and <code>l2LossBackward()</code>.</p>
 <p>Next, setup the learning parameters:</p>
 <pre><code class="language-matlab">trainOpts.expDir = 'data/text-small' ;
-trainOpts.batchSize = 16 ;
-trainOpts.learningRate = 0.01 ;
-trainOpts.plotDiagnostics = false ;
-trainOpts.numEpochs = 30 ;
 trainOpts.gpus = [] ;
+trainOpts.batchSize = 16 ;
+trainOpts.learningRate = 0.02 ;
+trainOpts.plotDiagnostics = false ;
+trainOpts.numEpochs = 20 ;
 trainOpts.errorFunction = 'none' ;
 </code></pre>
 
@@ -662,19 +662,19 @@ trainOpts.errorFunction = 'none' ;
 <p><code>expDir</code> specifies a directory to store intermediate data (snapshot and figures) as well as the final model. Note that the code resumes execution from the last snapshot; therefore change this directory or clear it if you want to start learning from scratch.</p>
 </li>
 <li>
+<p><code>gpus</code> contains a list of GPU IDs to use. For now, do not use any.</p>
+</li>
+<li>
 <p><code>batchSize</code> specifies how many images to include in a batch. Here we use 16.</p>
 </li>
 <li>
 <p><code>learningRate</code> is the learning rate in SGD.</p>
 </li>
 <li>
-<p><code>plotDiagnostic</code> can be used to plot statistics during training. This is slow, but can help setting a reasonable learning rate. Leave if off for now.</p>
+<p><code>plotDiagnostic</code> can be used to plot statistics during training. This is slow, but can help setting a reasonable learning rate. Leave it off for now.</p>
 </li>
 <li>
 <p><code>numEpochs</code> is the number of epochs (passes through the training data) to perform before SGD stops.</p>
-</li>
-<li>
-<p><code>gpus</code> contains a list of GPU IDs to use. For now, do not use any.</p>
 </li>
 <li>
 <p><code>errorFunction</code> disables plotting the default error functions that are suitable for classification, but not for our problem.</p>
@@ -692,7 +692,7 @@ label = imdb.images.label(:,:,:,batch) ;
 
 <p>The function takes as input the <code>imdb</code> structure defined above and a list <code>batch</code> of image indexes that should be returned for training. In this case, this amounts to simply extract and copy some data; however, in general <code>getBatch</code> can be used to e.g. read images from disk or apply transformations to them on the fly.</p>
 <blockquote>
-<p><strong>Task:</strong> run the training code and wait for learning to be complete. Note that the model is saved in `data/text-small/net-epoch-16.mat', where 16 is the number of the last epoch.</p>
+<p><strong>Task:</strong> run the training code and wait for learning to be complete. Note that the model is saved in <code>data/text-small/net-epoch-16.mat</code>, where 16 is the number of the last epoch.</p>
 </blockquote>
 <h3 id="part-34-evaluate-the-model">Part 3.4: Evaluate the model</h3>
 <p>The network is evaluated on the validation set during training. The validation error (which in our case is the average squared differences between the predicted output pixels and the desired ones), is a good indicator of how well the network is doing (in practice, one should ultimately evaluate the network on a held-out test set).</p>
@@ -700,15 +700,16 @@ label = imdb.images.label(:,:,:,batch) ;
 <pre><code class="language-matlab">train = find(imdb.images.set == 1) ;
 val = find(imdb.images.set == 2) ;
 
-figure(4) ; set(3,'name','Results on the training set') ;
+figure(33) ; set(gcf, 'name', 'Part 3.4: Results on the training set') ;
 showDeblurringResult(net, imdb, train(1:30:151)) ;
 
-figure(5) ; set(4,'name','Results on the validation set') ;
+figure(34) ; set(gcf, 'name', 'Part 3.4: Results on the validation set') ;
 showDeblurringResult(net, imdb, val(1:30:151)) ;
 </code></pre>
 
 <p>Since the CNN is convolutional, it can be applied to arbitrarily-sized images. <code>imdb.examples</code> contains a few larger examples too. The following code shows one:</p>
-<pre><code class="language-matlab">figure(6) ; set(5,'name','Larger example in the validation set') ;
+<pre><code class="language-matlab">figure(35) ;
+set(gcf, 'name', 'Part 3.4: Larger example on the validation set') ;
 colormap gray ;
 subplot(1,2,1) ; imagesc(imdb.examples.blurred{1}, [-1 0]) ;
 axis image off ;
@@ -737,7 +738,7 @@ title('CNN output') ;
 trainOpts.gpus = [1] ;
 </code></pre>
 
-<p>Do not forget to also change <code>expDir</code> in order to start a new experiment from scratch.</p>
+<p>The code above also changes <code>expDir</code> in order to start a new experiment from scratch.</p>
 <blockquote>
 <p><strong>Task:</strong> Test GPU-based training (if possible). How much faster does it run compared to CPU-based training?</p>
 </blockquote>
@@ -754,15 +755,15 @@ trainOpts.gpus = [1] ;
 <h3 id="part-36-challenge">Part 3.6: Challenge!</h3>
 <p>You are now in control. Play around with the model definition and try to improve the performance as much as possible. For example:</p>
 <ul>
-<li>Try adding more layers.</li>
+<li>Try adding more layers<sup id="fnref:goingdeeper"><a class="footnote-ref" href="#fn:goingdeeper" rel="footnote">4</a></sup>.</li>
 <li>Try adding more filters.</li>
-<li>Try different loss</li>
+<li>Try a different loss function, such as <mathjax>$L^1$</mathjax>.</li>
 <li>Try increasing the receptive field size by increasing the filter support (do not forget to adjust the padding).</li>
 <li>Try sequences of rank-1 filters, such as <mathjax>$7 \times 1$</mathjax> followed by <mathjax>$1 \times 7$</mathjax> to increase the receptive field size while maintaining efficiency.</li>
 </ul>
 <p>And, of course, make sure to beat the other students.</p>
 <blockquote>
-<p><strong>Remark:</strong> You can see the relative change of the network weights by uncommenting the line <code>trainOpts.plotDiagnostics = true ;</code></p>
+<p><strong>Remark:</strong> You can see the relative change of the network weights by setting <code>trainOpts.plotDiagnostics = true ;</code></p>
 </blockquote>
 <h2 id="links-and-further-work">Links and further work</h2>
 <ul>
@@ -826,8 +827,8 @@ trainOpts.gpus = [1] ;
 \end{bmatrix}
 $$</mathjax>&#160;<a class="footnote-backref" href="#fnref:stacking" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
-<li id="fn:lattice">
-<p>A two-dimensional <em>lattice</em> is a discrete grid embedded in <mathjax>$R^2$</mathjax>, similar for example to a checkerboard.&#160;<a class="footnote-backref" href="#fnref:lattice" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<li id="fn:goingdeeper">
+<p>Like <a href="https://pbs.twimg.com/media/CZlPMaBWIAAI6zA.jpg">for example</a>.&#160;<a class="footnote-backref" href="#fnref:goingdeeper" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div><script type="text/x-mathjax-config">

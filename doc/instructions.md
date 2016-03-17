@@ -684,7 +684,8 @@ trainOpts.expDir = 'data/text-small-gpu'
 trainOpts.gpus = [1] ;
 ```
 
-Do not forget to also change `expDir` in order to start a new experiment from scratch.
+The code above also changes `expDir` in order to start a new experiment from scratch.
+
 > **Task:** Test GPU-based training (if possible). How much faster does it run compared to CPU-based training?
 
 Now we are ready to experiment with different CNNs.
@@ -703,7 +704,7 @@ You are now in control. Play around with the model definition and try to improve
 
 * Try adding more layers[^goingdeeper].
 * Try adding more filters.
-* Try different loss
+* Try a different loss function, such as $L^1$.
 * Try increasing the receptive field size by increasing the filter support (do not forget to adjust the padding).
 * Try sequences of rank-1 filters, such as $7 \times 1$ followed by $1 \times 7$ to increase the receptive field size while maintaining efficiency.
 
