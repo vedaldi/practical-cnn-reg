@@ -28,7 +28,8 @@ doc=\
 doc/images \
 doc/instructions.html \
 doc/base.css \
-doc/prism.css
+doc/prism.css \
+doc/prism.js
 
 data=\
 data/text_imdb.mat \
