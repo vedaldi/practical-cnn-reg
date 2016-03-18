@@ -15,7 +15,7 @@ w = single([
 y = vl_nnconv(x, w, []) ;
 
 % Pick a random projection tensor
-p = randn(size(y), 'like', y) ;
+p = randn(size(y), 'single') ;
 
 % Backward mode: projected derivatives
 [dx,dw] = vl_nnconv(x, w, [], p) ;
@@ -35,7 +35,7 @@ y = vl_nnconv(x, w, []) ;
 z = vl_nnrelu(y) ;
 
 % Pick a random projection tensor
-p = randn(size(z), 'like', z) ;
+p = randn(size(z), 'single') ;
 
 % Backward mode: projected derivatives
 dy = vl_nnrelu(z, p) ;
