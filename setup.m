@@ -30,7 +30,13 @@ if opts.useGpu
   end
 end
 
-rng(0) ;
+if verLessThan('matlab','7.12')
+  % MATLAB R2010b did not have rng()
+  randn('state',0) ;
+  rand('state',0) ;
+else
+  rng(0)  ;
+end
 
 % The EC2 has incorrect screen size which
 % leads to a tiny font in figures

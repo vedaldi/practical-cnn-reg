@@ -9,7 +9,6 @@ function weights = xavier(varargin)
 % "Understanding the difficulty of training deep feedforward neural networks."
 % International conference on artificial intelligence and statistics. 2010.
 
-rng(1) ;
 filterSize = [varargin{:}] ;
 scale = sqrt(2/prod(filterSize(1:3))) ;
 filters = randn(filterSize, 'single') * scale ;
