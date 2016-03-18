@@ -27,7 +27,8 @@ matconvnet
 doc=\
 doc/images \
 doc/instructions.html \
-doc/base.css
+doc/base.css \
+doc/prism.css
 
 data=\
 data/text_imdb.mat \
