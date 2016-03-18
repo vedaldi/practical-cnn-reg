@@ -1,7 +1,7 @@
 # Build practical
 
-name = practical-cnn-reg
-ver = 2016a
+name ?= practical-cnn-reg
+ver ?= 2016a
 
 code=\
 checkDerivativeNumerically.m \
@@ -45,7 +45,7 @@ $(TMPDIR)/matconvnet-%-bin.tar.gz:
 	wget $(BINPACK_URL)/$(notdir $@) -O $@
 
 # Preprocessing
-.PHONY: preproc
+.PHONY: preproc bins
 
 papers_url=http://www.robots.ox.ac.uk/~vedaldi/assets/pubs
 papers=\
@@ -111,6 +111,12 @@ papers:=$(addprefix data/text/,$(papers))
 papers_crops=$(papers:%.pdf=%.png)
 
 preproc: $(papers) $(papers_crops)
+
+bins: win7-bin maci64-bin glnxa64-bin
+	rm -f matlab/mex/*.mex*
+
+ec2bins: ec2-bin
+	rm -f matlab/mex/*.mex*
 
 data/text/%.pdf:
 	mkdir -p data/text ; \
