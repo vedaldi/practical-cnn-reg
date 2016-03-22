@@ -161,7 +161,7 @@ wbank = cat(4, w1, w2, w3) ;
 
 The first filter $\bw_1$ is the Laplacian operator seen above; two additional filters $\bw_2$ and $\bw_3$ are horizontal and vertical image derivatives, respectively. The command `vl_nnconv(x, wbank, [])` then applies all the filters in the bank to the input image `x`. Note that the output `y` is not just a matrix, but a 3D  array (often called a *tensor* in the CNN jargon). This tensor has dimensions $H \times W \times K$, where $K$ is the number of *feature channels*.
 
-> **Question:** What is the number of feature channels $C$ in this example? Why?
+> **Question:** What is the number of feature channels $K$ in this example? Why?
 
 > **Task:** Run the code above and visualize the individual feature channels in the tensor `y` by using the provided function `showFeatureChannels()`. Do the channel responses make sense given the filter used to generate them?
 
@@ -264,7 +264,7 @@ The gradient is easily computed using using the **chain rule**. If *all* network
 $$
  \frac{\partial f}{\partial w_l}(x_0;w_1,\dots,w_L)
  =
- \frac{\partial f_L}{\partial x_L}(x_L;w_L) \times
+ \frac{\partial f_L}{\partial x_{L-1}}(x_{L-1};w_L) \times
  \cdots
  \times
  \frac{\partial f_{l+1}}{\partial x_l}(x_l;w_{l+1}) \times
